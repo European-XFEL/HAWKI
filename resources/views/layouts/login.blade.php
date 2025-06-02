@@ -120,7 +120,7 @@
 
             } else {
                 // console.log('login failed');
-                document.getElementById("login-message").textContent = 'Login Failed!';
+                document.getElementById("login-message").textContent = data.message;
             }
         } catch (error) {
             console.error(error);
