@@ -27,7 +27,8 @@ Route::middleware('prevent_back')->group(function () {
     Route::get('/', [LoginController::class, 'index']);
 
     Route::get('/login', [LoginController::class, 'index']);
-    Route::post('/req/login-ldap', [AuthenticationController::class, 'ldapLogin']);
+    Route::post('/req/login-ldap', [AuthenticationController::class, 'ldapLogin'])
+        ->middleware(\App\Http\Middleware\Xfel\PermissionCheck::class);
     Route::post('/req/login-shibboleth', [AuthenticationController::class, 'shibbolethLogin']);
     Route::post('/req/login-oidc', [AuthenticationController::class, 'openIDLogin']);
     
