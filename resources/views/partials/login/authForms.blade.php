@@ -11,6 +11,13 @@
         <label for="password">{{ $translation["password"] }}</label>
         <input type="password" name="password" id="password" onkeypress="onLoginKeydown(event)">
     </form>
+    <div id="login-progress" style="display:none; margin-top: 10px;">
+        <div class="spinner"></div> 
+        <div style="display: inline-block;vertical-align: middle">
+            <span  style="color: green;">Logging in...</span> 
+            <br>May take 5-10 seconds
+        </div>
+    </div>
     <div id="login-Button-panel">
         <div id="login-message"></div>
         <button id="loginButton" class="btn-lg-fill align-end top-gap-1" type="button" onclick="LoginLDAP()">{{ $translation['Login'] }}</button>

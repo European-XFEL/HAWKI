@@ -12,6 +12,7 @@
     <link rel="stylesheet" href="{{ asset('css_v2.0.1_f1/style.css') }}">
     <link rel="stylesheet" href="{{ asset('css_v2.0.1_f1/login_style.css') }}">
     <link rel="stylesheet" href="{{ asset('css_v2.0.1_f1/settings_style.css') }}">
+    <link rel="stylesheet" href="{{ url('xfel/xfel.css') }}">
 
     <script src="{{ asset('js_v2.0.1_f1/functions.js') }}"></script>
     <script src="{{ asset('js_v2.0.1_f1/settings_functions.js') }}"></script>
@@ -94,6 +95,13 @@
         }
     }
     async function LoginLDAP() {
+        const progress = document.getElementById("login-progress");
+        const button = document.getElementById("loginButton");
+        const message = document.getElementById("login-message");
+        
+        progress.style.display = "block";
+        button.style.display = "none";
+        message.textContent = '';        
         try {
             var formData = new FormData();
             formData.append("account", document.getElementById("account").value);
@@ -120,10 +128,14 @@
 
             } else {
                 // console.log('login failed');
-                document.getElementById("login-message").textContent = data.message;
+                message.textContent = data.message;
             }
         } catch (error) {
             console.error(error);
+        } finally {
+            progress.style.display = "none";
+            button.style.display = "block";
         }
+        
     }
 </script>
