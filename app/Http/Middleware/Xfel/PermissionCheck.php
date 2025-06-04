@@ -46,7 +46,7 @@ class PermissionCheck
                 if ($trainingValid && !$hasGroup){
                     //assign group
                     // but user may need to wait
-                    $accountService->assignGroup($username, $accessGroupName);
+                    $apiReaponse = $accountService->assignGroup($username, $accessGroupName);
                     return response()->json([
                         'success' => false,
                         'message' => 'Permissions set up is in progress... Please try to login after 5 minutes']);
@@ -54,7 +54,7 @@ class PermissionCheck
                 if (!$trainingValid && $hasGroup){
                     //revoke group
                     // revoke may take time
-                    $accountService->revokeGroup($username, $accessGroupName); 
+                    $apiReaponse = $accountService->revokeGroup($username, $accessGroupName); 
                     return response()->json([
                         'success' => false,
                         'message' => 'You do not have permissions. Be sure you did the required training']);                    

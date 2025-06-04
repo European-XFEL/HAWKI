@@ -81,10 +81,24 @@ class AccountService
     
     public function assignGroup($login, $group){
         Log::info('AccountService::assignGroup. user:' . $login . ' group:'. $group);
+        $request = [
+            'form_params' => [
+                'ldap_name' => $login,
+                'group_name' => $group,
+            ],
+        ];
+        return $this->executeAndGetData('post','user/assign_group', $request);        
     }
 
     public function revokeGroup($login, $group){
         Log::info('AccountService::revokeGroup. user:' . $login . ' group:'. $group);
+        $request = [
+            'form_params' => [
+                'ldap_name' => $login,
+                'group_name' => $group,
+            ],
+        ];
+        return $this->executeAndGetData('post','user/revoke_group', $request);
     }
     
 }
