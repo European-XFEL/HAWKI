@@ -14,8 +14,26 @@ class PermissionCheck
 {
     public function handle(Request $request, Closure $next): Response
     {
+        $username = $request->get('account');
+        
+        # whitelist based access - for test system
+        # if enabled only users from the whitelist can pass
+        # user fron the white list skip all the on-top checks 
+        $whitelist = env('XFEL_LOGIN_WHITELIST');
+        if ($whitelist){
+            $whitelist = str_replace(' ','', strtolower($whitelist));
+            $whitelist = explode(',', $whitelist);
+            if (in_array(strtolower($username), $whitelist)){
+                return $next($request);
+            }
+            else{
+                return response()->json([
+                    'success' => false,
+                    'message' => 'You are not in the access list.']);
+            }
+        }
+        
         $accountService = new AccountService();
-            
         //skip this check if
         if (!$accountService->enabled()){
             return $next($request);
@@ -23,7 +41,6 @@ class PermissionCheck
         
         $ldapService = new LdapService(); 
         
-        $username = $request->get('account');
         if ($ldapService->checkCredentials($username, $request->get('password'))){
             $accountInfo = $accountService->getAccountInfo($username);
             
