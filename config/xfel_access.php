@@ -8,4 +8,5 @@ return [
     'secret' => env('XFEL_ACCESS_SECRET'),
     'access_right_id' => env('XFEL_ACCESS_RIGHT_ID'),
     'access_group_name' => env('XFEL_ACCESS_GROUP_NAME'),
+    'staff_group_name' => env('XFEL_STAFF_GROUP_NAME'),
  ];

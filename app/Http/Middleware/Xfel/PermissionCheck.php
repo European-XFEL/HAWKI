@@ -53,6 +53,14 @@ class PermissionCheck
             
             $accessRightId = config('xfel_access.access_right_id');
             $accessGroupName = config('xfel_access.access_group_name');
+            $staffGroupName = config('xfel_access.staff_group_name');
+            
+            //check if staff member
+            if( !empty($staffGroupName) && !in_array($staffGroupName, (array)$accountInfo['ldap']['groups'])){
+                return response()->json([
+                    'success' => false,
+                    'message' => 'You do not have permissions. Staff members only.']);
+            }
             
             //we consider values are not valid if no params set
             $trainingValid =  (bool)$accessRightId && (bool)$accountInfo['dachs'][$accessRightId]['valid'];
