@@ -199,8 +199,6 @@ class AiConvController extends Controller
             $imagePath = EncryptedDataStorageController::storeData($validatedData['image'], 'user_images');
         }
 
-        Log::info('imagePath', ['path' => $imagePath]);
-
         $message = AiConvMsg::create([
             'conv_id' => $conv->id,
             'user_id' => $user->id,
@@ -236,8 +234,7 @@ class AiConvController extends Controller
 
         // add author data + creation and update dates to response data.
         $messageData = $message->toArray();
-        Log::info('created', $messageData);
-
+        
         $messageData['author'] = [
             'username' => $user->username,
             'name' => $user->name,

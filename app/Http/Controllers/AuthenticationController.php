@@ -79,7 +79,6 @@ class AuthenticationController extends Controller
             ]);
         }
 
-        Log::info('LOGIN: ' . $authenticatedUserInfo['username']);
         $username = $authenticatedUserInfo['username'];
         $user = User::where('username', $username)->first();
 
@@ -117,8 +116,6 @@ class AuthenticationController extends Controller
                 return response()->json(['error' => 'Login Failed!'], 401);
             }
 
-            Log::info('LOGIN: ' . $authenticatedUserInfo['username']);
-
             $user = User::where('username', $authenticatedUserInfo['username'])->first();
 
             if($user && $user->isRemoved === 0){
@@ -147,8 +144,6 @@ class AuthenticationController extends Controller
             if (!$authenticatedUserInfo) {
                 return response()->json(['error' => 'Login Failed!'], 401);
             }
-
-            Log::info('LOGIN: ' . $authenticatedUserInfo['username']);
 
             $user = User::where('username', $authenticatedUserInfo['username'])->first();
 

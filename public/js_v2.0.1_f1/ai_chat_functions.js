@@ -578,9 +578,7 @@ async function loadConv(btn=null, slug=null){
         msg.content = decryptedContent;
         
         if (msg.image) {
-            console.log("Have an image");
             msg.imageData = await decryptWithSymKey(convKey, msg.image, msg.image_iv, msg.image_tag);
-            console.log("Decrypted it");
         }
         // console.log(msg.content);
         const auxiliaries = msg.auxiliaries ?? []

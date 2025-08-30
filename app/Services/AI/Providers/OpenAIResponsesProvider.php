@@ -235,7 +235,6 @@ class OpenAIResponsesProvider extends BaseAIModelProvider
 
         if (isset($jsonChunk['type']) && $jsonChunk['type'] == 'response.image_generation_call.completed') {
             session(['image_output_index' => $jsonChunk['output_index']]);
-            Log::info('Image completed', $jsonChunk);
             // return an empty chunk as not to overwrite any partial image
             return [
                 'content' => ['text' => ''],
