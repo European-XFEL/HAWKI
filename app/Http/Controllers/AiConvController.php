@@ -247,7 +247,7 @@ class AiConvController extends Controller
         return response()->json([
             'success' => true,
             'messageData' => $messageData,
-            'response' => "Message created and boradcasted.",
+            'response' => "Message created and broadcasted.",
         ]);
     }
 
@@ -278,6 +278,11 @@ class AiConvController extends Controller
 
         //find the target message
         $message = $conv->messages->where('message_id', $validatedData['message_id'])->first();
+
+        $imagePath = '';
+        if(isset($validatedData['image'])) {
+            $imagePath = EncryptedDataStorageController::storeData($validatedData['image'], 'user_images');
+        }
 
         $message->update([
             'content' => $validatedData['content'],

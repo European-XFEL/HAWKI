@@ -200,6 +200,11 @@ class OpenAIResponsesProvider extends BaseAIModelProvider
             ];
         }
 
+         // we need to push out the very first update, even if it's empty
+        // otherwise the UI will not know that streaming is in progress.
+        $isFirstUpdate = session('is_first_update', true);
+        session(['is_first_update' => false]);
+
         // The Responses streaming events often include a "type" field.
         // Completed event:
         $reasoning = [];
@@ -220,6 +225,9 @@ class OpenAIResponsesProvider extends BaseAIModelProvider
             } 
             // reset it
             session(['image_output_index' => -1]);
+
+            // reset the first update after we are done
+            session(['is_first_update' => true]);
         }
 
         // Delta-style updates may include output/content deltas
@@ -240,7 +248,7 @@ class OpenAIResponsesProvider extends BaseAIModelProvider
                 'content' => ['text' => ''],
                 'isDone' => false,
                 'usage' => null,
-                'skip' => true,
+                'skip' => !$isFirstUpdate,
             ];
         }
 
@@ -256,6 +264,7 @@ class OpenAIResponsesProvider extends BaseAIModelProvider
             $responseId = $jsonChunk['id'];
         }
         
+       
 
         $response = [
             'content' => [
@@ -264,7 +273,7 @@ class OpenAIResponsesProvider extends BaseAIModelProvider
             'isDone' => $isDone,
             'usage' => $usage,
             'auxiliaries' => [],
-            'skip' => empty($content) && empty($imageData) && !$isDone,
+            'skip' => empty($content) && empty($imageData) && !$isDone && !$isFirstUpdate,
         ];
         
         
