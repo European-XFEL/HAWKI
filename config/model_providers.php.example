@@ -83,6 +83,11 @@ return [
                     'label' => 'OpenAI GPT 5',
                     'streamable' => false,
                     'reasoning_effort' => 'medium',
+                    // the openai-responses API supports image genertion
+                    'enable_image_generation' => true,
+                    'quality' => 'low', // low, mediun, high, auto
+                    'size' => '1024x1024', //1024x1024, 1024x1536, 1536x1024, or auto
+                    'partial_images' => 3, // maximum number of partial image updates to generate when streaming, can be up to 3
                 ],
                 [
                     'id' => 'gpt-5-mini',
