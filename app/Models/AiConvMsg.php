@@ -19,6 +19,9 @@ class AiConvMsg extends Model
         'tag',
         'content',
         'completion',
+        'image_path',
+        'image_iv',
+        'image_tag',
     ];
 
     // Define the relationship with AiConv

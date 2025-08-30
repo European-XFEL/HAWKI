@@ -94,6 +94,16 @@ async function sendMessageConv(inputField) {
         // encrypt message
         const convKey = await keychainGet('aiConvKey');
         const cryptoMsg = await encryptWithSymKey(convKey, messageObj.content, false);
+        
+        messageObj.encryptedImage = '';
+        messageObj.imageIv = '';
+        messageObj.imageTag = '';
+        if (messageObj.imageData) {
+            const contImage =  await encryptWithSymKey(convKey, messageObj.imageData, false);
+            messageObj.encryptedImage = contImage.ciphertext;
+            messageObj.imageIv = contImage.iv;
+            messageObj.imageTag = contImage.tag;
+        }
         messageObj.ciphertext = cryptoMsg.ciphertext;
         messageObj.iv = cryptoMsg.iv;
         messageObj.tag = cryptoMsg.tag;
@@ -124,7 +134,8 @@ async function sendMessageConv(inputField) {
         }
         const submittedObj = await submitMessageToServer(requestObj, `/req/conv/sendMessage/${activeConv.slug}`);
         submittedObj.content = messageObj.content;
-        submittedObj.username = userInfo.username
+        submittedObj.username = userInfo.username;
+        submittedObj.imageData = messageObj.imageData;
 
         // create and add message element to chatlog.
         const messageElement = addMessageToChatlog(submittedObj);
@@ -204,6 +215,15 @@ async function buildRequestObjectForAiConv(msgAttributes, messageElement = null,
                 scrollPanelToLast(messageElement.querySelector('.think').querySelector('.content-container'));
             }
 
+            // add any images we might have
+            if (imageData) {
+                const img = document.createElement('img');
+                img.src = imageData.startsWith('data:') ? imageData : 'data:image/png;base64,' + imageData;
+                img.alt = 'image';
+                img.width = '500';
+                msgTxtElement.appendChild(img);
+            }
+    
             scrollToLast(false, messageElement);
         }
 
@@ -217,6 +237,16 @@ async function buildRequestObjectForAiConv(msgAttributes, messageElement = null,
 
             const convKey = await keychainGet('aiConvKey');
             const cryptoMsg = await encryptWithSymKey(convKey, cryptoContent, false);
+
+            messageObj.encryptedImage = '';
+            messageObj.imageIv = '';
+            messageObj.imageTag = '';
+            if (messageObj.imageData) {
+                const contImage =  await encryptWithSymKey(convKey, messageObj.imageData, false);
+                messageObj.encryptedImage = contImage.ciphertext;
+                messageObj.imageIv = contImage.iv;
+                messageObj.imageTag = contImage.tag;
+            }
 
             messageObj.ciphertext = cryptoMsg.ciphertext;
             messageObj.iv = cryptoMsg.iv;
@@ -316,6 +346,17 @@ async function initNewConv(messageObj){
     //Encyrpt message
     const convKey = await keychainGet('aiConvKey');
     const contData = await encryptWithSymKey(convKey, messageObj.content);
+   
+    messageObj.encryptedImage = '';
+    messageObj.imageIv = '';
+    messageObj.imageTag = '';
+    if (messageObj.imageData) {
+        const contImage =  await encryptWithSymKey(convKey, messageObj.imageData, false);
+        messageObj.imageIv = contImage.iv;
+        messageObj.imageTag = contImage.tag;
+        messageObj.encryptedImage = contImage.ciphertext;
+    }
+
     messageObj.ciphertext = contData.ciphertext;
     messageObj.iv = contData.iv;
     messageObj.tag = contData.tag;
@@ -535,6 +576,12 @@ async function loadConv(btn=null, slug=null){
     for (const msg of msgs) {
         const decryptedContent =  await decryptWithSymKey(convKey, msg.content, msg.iv, msg.tag);
         msg.content = decryptedContent;
+        
+        if (msg.image) {
+            console.log("Have an image");
+            msg.imageData = await decryptWithSymKey(convKey, msg.image, msg.image_iv, msg.image_tag);
+            console.log("Decrypted it");
+        }
         // console.log(msg.content);
         const auxiliaries = msg.auxiliaries ?? []
         for (const aux of auxiliaries) {

@@ -91,35 +91,47 @@ async function deriveKey(passkey, label, serverSalt) {
 
 
 
-
+function base64ToUint8Array(base64) {
+    const binaryString = window.atob(base64);
+    const len = binaryString.length;
+    const bytes = new Uint8Array(len);
+    for (let i = 0; i < len; i++) {
+        bytes[i] = binaryString.charCodeAt(i);
+    }
+    return bytes;
+}
 
 //#region Symmetric
 async function encryptWithSymKey(encKey, data, isKey = false) {
     const iv = window.crypto.getRandomValues(new Uint8Array(12)); // 12-byte IV
-
     // If the data is a key (binary), skip text encoding
     const encodedData = isKey ? data : new TextEncoder().encode(data);
 
-    // Encrypt the data
-    const encryptedData = await window.crypto.subtle.encrypt(
-        {
-            name: "AES-GCM",
-            iv: iv
-        },
-        encKey, // Symmetric key
-        encodedData // Data to encrypt
-    );
+    try {
+        // Encrypt the data
+        const encryptedData = await window.crypto.subtle.encrypt(
+            {
+                name: "AES-GCM",
+                iv: iv
+            },
+            encKey, // Symmetric key
+            encodedData // Data to encrypt
+        );
 
-    // Extract the authentication tag (last 16 bytes)
-    const tag = encryptedData.slice(-16);
-    const ciphertext = encryptedData.slice(0, encryptedData.byteLength - 16);
+        // Extract the authentication tag (last 16 bytes)
+        const tag = encryptedData.slice(-16);
+        const ciphertext = encryptedData.slice(0, encryptedData.byteLength - 16);
 
-    // Return ciphertext, iv, and tag as Base64 encoded
-    return {
-        ciphertext: arrayBufferToBase64(ciphertext),
-        iv: arrayBufferToBase64(iv),
-        tag: arrayBufferToBase64(tag)
-    };
+        // Return ciphertext, iv, and tag as Base64 encoded
+        return {
+            ciphertext: arrayBufferToBase64(ciphertext),
+            iv: arrayBufferToBase64(iv),
+            tag: arrayBufferToBase64(tag)
+        };
+    } catch (error) {
+        console.error("Encryption failed:", error.message, error);
+        throw error; // Rethrow the error for further handling
+    }
 }
 
 
@@ -150,7 +162,7 @@ async function decryptWithSymKey(encKey, ciphertext, iv, tag, isKey = false) {
         // Return decrypted data (binary or text based on isKey)
         return isKey ? new Uint8Array(decryptedData) : new TextDecoder().decode(decryptedData);
     } catch (error) {
-        // console.error("Decryption failed:", error);
+        console.error("Decryption failed:", error.message);
         throw new Error("Decryption failed: " + error.message);
     }
 }
@@ -641,11 +653,13 @@ async function fetchServerSalt(saltLabel) {
 }
 
 
-
-
 function arrayBufferToBase64(buffer) {
-    const binary = String.fromCharCode.apply(null, new Uint8Array(buffer));
-    return btoa(binary);
+    const binary = [];
+    const uint8Array = new Uint8Array(buffer);
+    for (let i = 0; i < uint8Array.length; i++) {
+        binary.push(String.fromCharCode(uint8Array[i]));
+    }
+    return btoa(binary.join(''));
 }
 
 function base64ToArrayBuffer(base64) {

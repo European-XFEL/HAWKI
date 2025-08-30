@@ -157,6 +157,7 @@ class AiConvController extends Controller
             ]; 
             array_push($messagesData, $msgData);
         }
+        
         return $messagesData;
 
     }
@@ -192,6 +193,14 @@ class AiConvController extends Controller
         $messageRole = $validatedData['isAi'] ? 'assistant' : 'user';
 
         $nextMessageId = $this->generateMessageID($conv, $validatedData['threadID']);
+
+        $imagePath = '';
+        if(isset($validatedData['image'])) {
+            $imagePath = EncryptedDataStorageController::storeData($validatedData['image'], 'user_images');
+        }
+
+        Log::info('imagePath', ['path' => $imagePath]);
+
         $message = AiConvMsg::create([
             'conv_id' => $conv->id,
             'user_id' => $user->id,
@@ -203,6 +212,9 @@ class AiConvController extends Controller
             'tag' => $validatedData['tag'],
             'content' => $validatedData['content'],
             'completion' => $validatedData['completion'],
+            'image_path' => $imagePath,
+            'image_iv' => $validatedData['image_iv'],
+            'image_tag' => $validatedData['image_tag'],
         ]);
 
         // add any auxiliary data
@@ -224,6 +236,8 @@ class AiConvController extends Controller
 
         // add author data + creation and update dates to response data.
         $messageData = $message->toArray();
+        Log::info('created', $messageData);
+
         $messageData['author'] = [
             'username' => $user->username,
             'name' => $user->name,
@@ -247,7 +261,7 @@ class AiConvController extends Controller
         Log::info("!!!!", $request->all());
         $validatedData = $request->validate([
             'message_id' => 'required|string',
-            'content' => 'required|string|max:10000',
+            'content' => 'required|string|max:10000000',
             'iv' => 'required|string',
             'tag' => 'required|string',
             'model' => 'nullable|string',

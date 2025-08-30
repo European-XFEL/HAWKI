@@ -92,6 +92,27 @@ class OpenAIResponsesProvider extends BaseAIModelProvider
         if (isset($config['keep_reasoning_tokens']) && $config['keep_reasoning_tokens']) {
             $payload['include'] = ["reasoning.encrypted_content"];
         }
+
+        $tools = [];
+        if (isset($modelConfig['enable_image_generation']) && $modelConfig['enable_image_generation']) {
+            $imageTool = ['type' => 'image_generation'];
+            if (isset($modelConfig['quality']) ) {
+                $imageTool['quality'] = $modelConfig['quality'];
+            }
+            if (isset($modelConfig['size']) ) {
+                $imageTool['size'] = $modelConfig['size'];
+            }
+            // partial images are only available when streaming
+            if (isset($modelConfig['partial_images']) && $payload['stream']) {
+                $imageTool['partial_images'] = $modelConfig['partial_images'];
+            }
+            $tools[] = $imageTool;
+        }
+       
+        if (!empty($tools)) {
+            $payload['tools'] = $tools;
+            $payload['tool_choice'] = 'auto';
+        }
         
         return $payload;
     }
@@ -110,6 +131,7 @@ class OpenAIResponsesProvider extends BaseAIModelProvider
 
         $texts = [];
         $reasoning = [];
+        $imageData = '';
         
         if (!empty($jsonContent['output']) && is_array($jsonContent['output'])) {
             foreach ($jsonContent['output'] as $outputItem) {
@@ -126,24 +148,34 @@ class OpenAIResponsesProvider extends BaseAIModelProvider
                     // here we get encrypted reasoning tokens
                     // for input we'll need the entire data structure
                     $reasoning[] = $outputItem;
+                } elseif ($outputItem['type'] == "image_generation_call") {
+                    $imageData = $outputItem['result'];
                 }
             }
         }
 
         $contentText = implode('', $texts);
+        $auxiliaries =  [
+            [
+                'type' => 'openAiResponsesSpecific',
+                'content' => json_encode(["reasoning" => $reasoning]),
+            ]
+        ];
 
+        if ($imageData) {
+            $auxiliaries[] = [
+                'type' => 'imageResponse',
+                'content' => $imageData,
+            ];
+        }
+        
         return [
             'content' => [
                 'text' => $contentText,
             ],
             'usage' => $this->extractUsage($jsonContent),
             // we don't need this in the CLI, hence we pass an encoded vesion
-            'auxiliaries' => [
-                [
-                    'type' => 'openAiResponsesSpecific',
-                    'content' => json_encode(["reasoning" => $reasoning]),
-                ]
-            ],
+            'auxiliaries' => $auxiliaries,
         ];
     }
 
@@ -183,8 +215,14 @@ class OpenAIResponsesProvider extends BaseAIModelProvider
         }
 
         // Delta-style updates may include output/content deltas
-        if (isset($jsonChunk['type']) && in_array($jsonChunk['type'], ['response.output_text.delta'], true)) {
+        if (isset($jsonChunk['type']) && $jsonChunk['type'] == 'response.output_text.delta') {
            $content = $jsonChunk['delta'];
+        }
+
+        // image data comes in form of partial images - or only the final - it's the same data
+        $imageData = '';
+        if (isset($jsonChunk['type']) && $jsonChunk['type'] == 'response.image_generation_call.partial_image') {
+           $imageData = $jsonChunk['partial_image_b64'];
         }
 
         // Extract usage data if available
@@ -206,15 +244,24 @@ class OpenAIResponsesProvider extends BaseAIModelProvider
             ],
             'isDone' => $isDone,
             'usage' => $usage,
+            'auxiliaries' => [],
         ];
-
+        
+        
         if ($reasoning) {
-            $response['auxiliaries'] = [
-                [
+            $response['auxiliaries'][] = [
                     'type' => 'openAiResponsesSpecific',
                     'content' => json_encode(["reasoning" => $reasoning]),
-                ]
             ];
+            
+        }
+
+        if ($imageData) {
+            $response['auxiliaries'][] = [
+                    'type' => 'imageResponse',
+                    'content' => $imageData,
+            ];
+            
         }
         return $response;
     }
@@ -262,6 +309,7 @@ class OpenAIResponsesProvider extends BaseAIModelProvider
     {
         // Ensure stream is set to false
         $payload['stream'] = false;
+        set_time_limit(120);
 
         // Initialize cURL
         $ch = curl_init();
