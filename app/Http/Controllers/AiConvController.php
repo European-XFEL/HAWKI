@@ -178,6 +178,10 @@ class AiConvController extends Controller
 
             array_push($messagesData, $msgData);
         }
+<<<<<<< HEAD
+=======
+        return $messagesData;
+>>>>>>> 22282a2 (Cleanup)
         
         return $messagesData;
 
@@ -215,6 +219,14 @@ class AiConvController extends Controller
 
         $nextMessageId = $this->generateMessageID($conv, $validatedData['threadID']);
 
+<<<<<<< HEAD
+=======
+        $imagePath = '';
+        if(isset($validatedData['image'])) {
+            $imagePath = EncryptedDataStorageController::storeData($validatedData['image'], 'user_images');
+        }
+
+>>>>>>> 22282a2 (Cleanup)
         $message = AiConvMsg::create([
             'conv_id' => $conv->id,
             'user_id' => $user->id,

@@ -98,7 +98,6 @@ class StreamController extends Controller
      */
     public function handleAiConnectionRequest(Request $request)
     {
-        Log::info('Rquesting', $request->all());
         //validate payload
        
         $validatedData = $request->validate([
@@ -167,8 +166,6 @@ class StreamController extends Controller
      */
     private function handleStreamingRequest(array $payload, User $user, ?string $avatar_url)
     {
-        Log::info('handleGroupChatRequest', $payload);
-        
         // Set headers for SSE
         header('Content-Type: text/event-stream');
         header('Cache-Control: no-cache');
