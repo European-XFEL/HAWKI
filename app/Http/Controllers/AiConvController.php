@@ -226,6 +226,9 @@ class AiConvController extends Controller
             'tag' => $validatedData['tag'],
             'content' => $validatedData['content'],
             'completion' => $validatedData['completion'],
+            'image_path' => $imagePath,
+            'image_iv' => $validatedData['image_iv'],
+            'image_tag' => $validatedData['image_tag'],
         ]);
 
         // add any auxiliary data

@@ -33,6 +33,12 @@ function addMessageToChatlog(messageObj, isFromServer = false){
         messageElement.dataset.auxiliaries = '';
     }
 
+    if(messageObj.imageData) {
+        messageElement.dataset.imageData = messageObj.imageData;
+    } else {
+        messageElement.dataset.imageData = '';
+    }
+
     /// CLASSES & AVATARS
     // add classes AI ME MEMBER to the element
     if(messageObj.message_role === "assistant"){
@@ -163,6 +169,7 @@ function addMessageToChatlog(messageObj, isFromServer = false){
         }
     }
 
+<<<<<<< HEAD
     for (aux of messageObj.auxiliaries ?? []) {
         if (aux['type'] == 'imageResponse') {
             const img = document.createElement('img');
@@ -175,6 +182,15 @@ function addMessageToChatlog(messageObj, isFromServer = false){
             // simplify clipboard logic
             messageElement.dataset.imageData = imageData;
         }
+=======
+    if (messageObj.imageData) {
+        const imageData = messageObj.imageData;
+        const img = document.createElement('img');
+        img.src = imageData.startsWith('data:') ? imageData : 'data:image/png;base64,' + imageData;
+        img.alt = 'image';
+        img.width = '500';
+        msgTxtElement.appendChild(img);
+>>>>>>> 52206ad (Working images in non-streaming)
     }
 
 

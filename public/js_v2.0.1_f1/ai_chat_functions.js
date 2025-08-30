@@ -234,6 +234,16 @@ async function buildRequestObjectForAiConv(msgAttributes, messageElement = null,
             const convKey = await keychainGet('aiConvKey');
             const cryptoMsg = await encryptWithSymKey(convKey, cryptoContent, false);
 
+            messageObj.encryptedImage = '';
+            messageObj.imageIv = '';
+            messageObj.imageTag = '';
+            if (messageObj.imageData) {
+                const contImage =  await encryptWithSymKey(convKey, messageObj.imageData, false);
+                messageObj.encryptedImage = contImage.ciphertext;
+                messageObj.imageIv = contImage.iv;
+                messageObj.imageTag = contImage.tag;
+            }
+
             messageObj.ciphertext = cryptoMsg.ciphertext;
             messageObj.iv = cryptoMsg.iv;
             messageObj.tag = cryptoMsg.tag;
