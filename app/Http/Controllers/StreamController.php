@@ -196,6 +196,15 @@ class StreamController extends Controller
                 // Format the chunk
                 $formatted = $provider->formatStreamChunk($chunk);
 
+                Log::info('Formatted', $formatted);
+
+                // we might want to skip an update, e.g. for intermediate responses
+                // with not displayable content. The OpenAI response API for instance
+                // produces tool completed updates without a displayable payload.
+                if (isset($formatted['skip']) && $formatted['skip']) {
+                    continue;
+                }
+
                 // Record usage if available
                 if ($formatted['usage']) {
                     $this->usageAnalyzer->submitUsageRecord(
@@ -217,6 +226,7 @@ class StreamController extends Controller
                     'content' => json_encode($formatted['content']),
                     'auxiliaries' => $formatted['auxiliaries'] ?? [],
                 ];
+               
                 echo json_encode($messageData) . "\n";
             }
         };

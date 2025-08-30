@@ -203,6 +203,7 @@ class OpenAIResponsesProvider extends BaseAIModelProvider
         // The Responses streaming events often include a "type" field.
         // Completed event:
         $reasoning = [];
+        $imageData = '';
         if (isset($jsonChunk['type']) && in_array($jsonChunk['type'], ['response.completed', 'response.refreshed'], true)) {
             $isDone = true;
             // check for encrypted reasoning tokens
@@ -212,6 +213,13 @@ class OpenAIResponsesProvider extends BaseAIModelProvider
                     $reasoning[] = $item;
                 }
             }
+            // get the final image if we have one
+            $idx = session('image_output_index', -1);
+            if ($idx >= 0) {
+                $imageData = $jsonChunk['response']['output'][$idx]['result'];
+            } 
+            // reset it
+            session(['image_output_index' => -1]);
         }
 
         // Delta-style updates may include output/content deltas
@@ -220,9 +228,21 @@ class OpenAIResponsesProvider extends BaseAIModelProvider
         }
 
         // image data comes in form of partial images - or only the final - it's the same data
-        $imageData = '';
+        
         if (isset($jsonChunk['type']) && $jsonChunk['type'] == 'response.image_generation_call.partial_image') {
            $imageData = $jsonChunk['partial_image_b64'];
+        }
+
+        if (isset($jsonChunk['type']) && $jsonChunk['type'] == 'response.image_generation_call.completed') {
+            session(['image_output_index' => $jsonChunk['output_index']]);
+            Log::info('Image completed', $jsonChunk);
+            // return an empty chunk as not to overwrite any partial image
+            return [
+                'content' => ['text' => ''],
+                'isDone' => false,
+                'usage' => null,
+                'skip' => true,
+            ];
         }
 
         // Extract usage data if available
@@ -245,6 +265,7 @@ class OpenAIResponsesProvider extends BaseAIModelProvider
             'isDone' => $isDone,
             'usage' => $usage,
             'auxiliaries' => [],
+            'skip' => empty($content) && empty($imageData) && !$isDone,
         ];
         
         
