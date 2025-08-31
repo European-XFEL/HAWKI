@@ -148,7 +148,7 @@ class OpenAIResponsesProvider extends BaseAIModelProvider
                     // here we get encrypted reasoning tokens
                     // for input we'll need the entire data structure
                     $reasoning[] = $outputItem;
-                } elseif ($outputItem['type'] == "image_generation_call") {
+                } else if ($outputItem['type'] == "image_generation_call") {
                     $imageData = $outputItem['result'];
                 }
             }

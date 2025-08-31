@@ -33,12 +33,6 @@ function addMessageToChatlog(messageObj, isFromServer = false){
         messageElement.dataset.auxiliaries = '';
     }
 
-    if(messageObj.imageData) {
-        messageElement.dataset.imageData = messageObj.imageData;
-    } else {
-        messageElement.dataset.imageData = '';
-    }
-
     /// CLASSES & AVATARS
     // add classes AI ME MEMBER to the element
     if(messageObj.message_role === "assistant"){
@@ -169,13 +163,18 @@ function addMessageToChatlog(messageObj, isFromServer = false){
         }
     }
 
-    if (messageObj.imageData) {
-        const imageData = messageObj.imageData;
-        const img = document.createElement('img');
-        img.src = imageData.startsWith('data:') ? imageData : 'data:image/png;base64,' + imageData;
-        img.alt = 'image';
-        img.width = '500';
-        msgTxtElement.appendChild(img);
+    for (aux of messageObj.auxiliaries ?? []) {
+        if (aux['type'] == 'imageResponse') {
+            const img = document.createElement('img');
+            const imageData = aux['content'];
+            img.src = imageData.startsWith('data:') ? imageData : 'data:image/png;base64,' + imageData;
+            img.alt = 'image';
+            img.width = '500';
+            msgTxtElement.appendChild(img);
+
+            // simplify clipboard logic
+            messageElement.dataset.imageData = imageData;
+        }
     }
 
 
@@ -398,7 +397,7 @@ function deconstContent(inputContent){
     }
     else{
         
-        if(inputContent.text){
+        if(inputContent.text === '' || inputContent.text){
             messageText = inputContent.text;
         }
         else{

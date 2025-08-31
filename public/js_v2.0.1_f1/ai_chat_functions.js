@@ -95,15 +95,6 @@ async function sendMessageConv(inputField) {
         const convKey = await keychainGet('aiConvKey');
         const cryptoMsg = await encryptWithSymKey(convKey, messageObj.content, false);
         
-        messageObj.encryptedImage = '';
-        messageObj.imageIv = '';
-        messageObj.imageTag = '';
-        if (messageObj.imageData) {
-            const contImage =  await encryptWithSymKey(convKey, messageObj.imageData, false);
-            messageObj.encryptedImage = contImage.ciphertext;
-            messageObj.imageIv = contImage.iv;
-            messageObj.imageTag = contImage.tag;
-        }
         messageObj.ciphertext = cryptoMsg.ciphertext;
         messageObj.iv = cryptoMsg.iv;
         messageObj.tag = cryptoMsg.tag;
@@ -135,8 +126,7 @@ async function sendMessageConv(inputField) {
         const submittedObj = await submitMessageToServer(requestObj, `/req/conv/sendMessage/${activeConv.slug}`);
         submittedObj.content = messageObj.content;
         submittedObj.username = userInfo.username;
-        submittedObj.imageData = messageObj.imageData;
-
+        
         // create and add message element to chatlog.
         const messageElement = addMessageToChatlog(submittedObj);
         messageElement.dataset.rawMsg = submittedObj.content;
@@ -216,12 +206,18 @@ async function buildRequestObjectForAiConv(msgAttributes, messageElement = null,
             }
 
             // add any images we might have
-            if (imageData) {
-                const img = document.createElement('img');
-                img.src = imageData.startsWith('data:') ? imageData : 'data:image/png;base64,' + imageData;
-                img.alt = 'image';
-                img.width = '500';
-                msgTxtElement.appendChild(img);
+            for (aux of messageObj.auxiliaries) {
+                if (aux['type'] == 'imageResponse') {
+                    const img = document.createElement('img');
+                    const imageData = aux['content'];
+                    img.src = imageData.startsWith('data:') ? imageData : 'data:image/png;base64,' + imageData;
+                    img.alt = 'image';
+                    img.width = '500';
+                    msgTxtElement.appendChild(img);
+
+                    // make this friendly for the clipboard
+                    messageElement.dataset.imageData = imageData;
+                }
             }
     
             scrollToLast(false, messageElement);
@@ -237,16 +233,6 @@ async function buildRequestObjectForAiConv(msgAttributes, messageElement = null,
 
             const convKey = await keychainGet('aiConvKey');
             const cryptoMsg = await encryptWithSymKey(convKey, cryptoContent, false);
-
-            messageObj.encryptedImage = '';
-            messageObj.imageIv = '';
-            messageObj.imageTag = '';
-            if (messageObj.imageData) {
-                const contImage =  await encryptWithSymKey(convKey, messageObj.imageData, false);
-                messageObj.encryptedImage = contImage.ciphertext;
-                messageObj.imageIv = contImage.iv;
-                messageObj.imageTag = contImage.tag;
-            }
 
             messageObj.ciphertext = cryptoMsg.ciphertext;
             messageObj.iv = cryptoMsg.iv;
@@ -347,16 +333,6 @@ async function initNewConv(messageObj){
     const convKey = await keychainGet('aiConvKey');
     const contData = await encryptWithSymKey(convKey, messageObj.content);
    
-    messageObj.encryptedImage = '';
-    messageObj.imageIv = '';
-    messageObj.imageTag = '';
-    if (messageObj.imageData) {
-        const contImage =  await encryptWithSymKey(convKey, messageObj.imageData, false);
-        messageObj.imageIv = contImage.iv;
-        messageObj.imageTag = contImage.tag;
-        messageObj.encryptedImage = contImage.ciphertext;
-    }
-
     messageObj.ciphertext = contData.ciphertext;
     messageObj.iv = contData.iv;
     messageObj.tag = contData.tag;
@@ -577,9 +553,6 @@ async function loadConv(btn=null, slug=null){
         const decryptedContent =  await decryptWithSymKey(convKey, msg.content, msg.iv, msg.tag);
         msg.content = decryptedContent;
         
-        if (msg.image) {
-            msg.imageData = await decryptWithSymKey(convKey, msg.image, msg.image_iv, msg.image_tag);
-        }
         // console.log(msg.content);
         const auxiliaries = msg.auxiliaries ?? []
         for (const aux of auxiliaries) {
@@ -625,7 +598,7 @@ async function RequestConvContent(slug){
         return data;
     }
     catch (err){
-        console.error('Error fetching data:', error);
+        console.error('Error fetching data:', err);
         throw err;
     }
 }

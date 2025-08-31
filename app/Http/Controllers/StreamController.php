@@ -143,7 +143,6 @@ class StreamController extends Controller
                         $validatedData['payload']['model']
                     );
                 }
-
                 // Return response to client
                 return response()->json([
                     'author' => [
