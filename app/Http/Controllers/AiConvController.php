@@ -178,10 +178,6 @@ class AiConvController extends Controller
 
             array_push($messagesData, $msgData);
         }
-<<<<<<< HEAD
-=======
-        return $messagesData;
->>>>>>> 22282a2 (Cleanup)
         
         return $messagesData;
 
@@ -219,14 +215,6 @@ class AiConvController extends Controller
 
         $nextMessageId = $this->generateMessageID($conv, $validatedData['threadID']);
 
-<<<<<<< HEAD
-=======
-        $imagePath = '';
-        if(isset($validatedData['image'])) {
-            $imagePath = EncryptedDataStorageController::storeData($validatedData['image'], 'user_images');
-        }
-
->>>>>>> 22282a2 (Cleanup)
         $message = AiConvMsg::create([
             'conv_id' => $conv->id,
             'user_id' => $user->id,
@@ -238,9 +226,6 @@ class AiConvController extends Controller
             'tag' => $validatedData['tag'],
             'content' => $validatedData['content'],
             'completion' => $validatedData['completion'],
-            'image_path' => $imagePath,
-            'image_iv' => $validatedData['image_iv'],
-            'image_tag' => $validatedData['image_tag'],
         ]);
 
         // add any auxiliary data
@@ -327,6 +312,14 @@ class AiConvController extends Controller
         if (isset($validatedData['auxiliaries'])) {
             // drop previous auxiliaries and recreate them
             $message->auxiliaries()->delete();
+            
+            // images are stored by path only
+            if ($auxiliary['type'] == 'imageResponse') {
+                // for images we get the from disk as we only have the path contained
+                $imagePath = EncryptedDataStorageController::storeData($auxiliary['content'], 'user_images');
+                $auxiliary['content'] = $imagePath;
+            }
+            
             foreach($validatedData['auxiliaries'] as $auxiliary) {
                 // images are stored by path only
                 if ($auxiliary['type'] == 'imageResponse') {
