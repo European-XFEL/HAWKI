@@ -239,7 +239,7 @@ async function buildRequestObjectForAiConv(msgAttributes, messageElement = null,
                 }
                 auxiliaries.push(aux);
             };
-            
+
             activateMessageControls(messageElement);
 
             const requestObj = {

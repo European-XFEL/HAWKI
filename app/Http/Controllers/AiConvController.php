@@ -244,6 +244,7 @@ class AiConvController extends Controller
 
     public function updateMessage(Request $request, $slug) {
         
+        Log::info("!!!!", $request->all());
         $validatedData = $request->validate([
             'message_id' => 'required|string',
             'content' => 'required|string|max:10000',
