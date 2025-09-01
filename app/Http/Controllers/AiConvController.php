@@ -312,14 +312,6 @@ class AiConvController extends Controller
         if (isset($validatedData['auxiliaries'])) {
             // drop previous auxiliaries and recreate them
             $message->auxiliaries()->delete();
-            
-            // images are stored by path only
-            if ($auxiliary['type'] == 'imageResponse') {
-                // for images we get the from disk as we only have the path contained
-                $imagePath = EncryptedDataStorageController::storeData($auxiliary['content'], 'user_images');
-                $auxiliary['content'] = $imagePath;
-            }
-            
             foreach($validatedData['auxiliaries'] as $auxiliary) {
                 // images are stored by path only
                 if ($auxiliary['type'] == 'imageResponse') {
