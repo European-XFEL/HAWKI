@@ -38,6 +38,15 @@ class OpenAIResponsesProvider extends BaseAIModelProvider
         
         $messages = $this->mapMessages($messages);
         
+        // add aditional configuration options
+        $config = $this->config;
+        $modelConfig = [];
+        foreach ($config['models'] as $conf) {
+            if ($conf['id'] == $modelId) {
+                $modelConfig = $conf;
+                break;
+            }
+        }
 
         // Convert messages into the Responses API "input" shape
         $input = [];
@@ -59,7 +68,17 @@ class OpenAIResponsesProvider extends BaseAIModelProvider
                     foreach ($reasoning as $reasoningItem) {
                         $input[] = $reasoningItem;
                     }
-                }
+                } else if ($aux['type'] == 'imageResponse' && isset($modelConfig['add_thread_images_as_input']) && $modelConfig['add_thread_images_as_input']) {
+                    $input[] = [
+                        'role' => 'user',
+                        'content' => [
+                            [
+                            'type' => 'input_image',
+                            'image_url' => $aux['content'], 
+                            ]
+                        ]
+                    ];
+                } 
             }
         }
 
@@ -73,15 +92,7 @@ class OpenAIResponsesProvider extends BaseAIModelProvider
         ];
 
 
-        // add aditional configuration options
-        $config = $this->config;
-        $modelConfig = [];
-        foreach ($config['models'] as $conf) {
-            if ($conf['id'] == $modelId) {
-                $modelConfig = $conf;
-                break;
-            }
-        }
+        
 
         // set the reasoning effort
         if (isset($modelConfig['reasoning_effort'])) {
