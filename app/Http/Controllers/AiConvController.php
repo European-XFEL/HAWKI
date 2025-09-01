@@ -103,6 +103,15 @@ class AiConvController extends Controller
             return response()->json(['success' => false, 'message' => 'Unauthorized'], 403);
         }
 
+        // delete auxiliary data
+        foreach($conv->messages as $msg) {
+            foreach($msg->auxiliaries as $aux) {
+                if ($aux['type'] == 'imageResponse') {
+                    EncryptedDataStorageController::delete($aux['content']);
+                }
+            }
+        }
+    
         // Delete related messages and members
         $conv->messages()->delete();
 
@@ -299,19 +308,18 @@ class AiConvController extends Controller
             'completion' => $validatedData['completion'],
         ]);
 
+        
         $auxiliaries = [];
         if (isset($validatedData['auxiliaries'])) {
             // drop previous auxiliaries and recreate them
             $message->auxiliaries()->delete();
-            
-            // images are stored by path only
-            if ($auxiliary['type'] == 'imageResponse') {
-                // for images we get the from disk as we only have the path contained
-                $imagePath = EncryptedDataStorageController::storeData($auxiliary['content'], 'user_images');
-                $auxiliary['content'] = $imagePath;
-            }
-            
             foreach($validatedData['auxiliaries'] as $auxiliary) {
+                // images are stored by path only
+                if ($auxiliary['type'] == 'imageResponse') {
+                    // for images we get the from disk as we only have the path contained
+                    $imagePath = EncryptedDataStorageController::storeData($auxiliary['content'], 'user_images');
+                    $auxiliary['content'] = $imagePath;
+                }
                 $aux = AiConvMsgAux::create([
                     'msg_id' => $message->id,
                     'user_id' => $message->user_id,

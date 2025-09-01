@@ -20,5 +20,13 @@ class EncryptedDataStorageController extends Controller
 
     }
 
+    public static function delete($filePath)
+    {
+       
+
+        Storage::disk('public')->delete($filePath);
+        
+    }
+
     
 }
