@@ -165,7 +165,8 @@ class OpenAIResponsesProvider extends BaseAIModelProvider
         if ($imageData) {
             $auxiliaries[] = [
                 'type' => 'imageResponse',
-                'content' => $imageData,
+                // the prefix is missing
+                'content' => "data:image/png;base64,".$imageData,
             ];
         }
         
@@ -200,10 +201,10 @@ class OpenAIResponsesProvider extends BaseAIModelProvider
             ];
         }
 
-         // we need to push out the very first update, even if it's empty
+        // we need to push out the very first update, even if it's empty
         // otherwise the UI will not know that streaming is in progress.
-        $isFirstUpdate = session('is_first_update', true);
-        session(['is_first_update' => false]);
+        $isFirstUpdate = $this->isFirstUpdate ?? true;
+        $this->isFirstUpdate = false;
 
         // The Responses streaming events often include a "type" field.
         // Completed event:
@@ -219,15 +220,10 @@ class OpenAIResponsesProvider extends BaseAIModelProvider
                 }
             }
             // get the final image if we have one
-            $idx = session('image_output_index', -1);
-            if ($idx >= 0) {
+            $idx = $this->image_output_index ?? -1;
+            if ($idx > 0) {
                 $imageData = $jsonChunk['response']['output'][$idx]['result'];
             } 
-            // reset it
-            session(['image_output_index' => -1]);
-
-            // reset the first update after we are done
-            session(['is_first_update' => true]);
         }
 
         // Delta-style updates may include output/content deltas
@@ -242,7 +238,7 @@ class OpenAIResponsesProvider extends BaseAIModelProvider
         }
 
         if (isset($jsonChunk['type']) && $jsonChunk['type'] == 'response.image_generation_call.completed') {
-            session(['image_output_index' => $jsonChunk['output_index']]);
+            $this->image_output_index = $jsonChunk['output_index'];
             // return an empty chunk as not to overwrite any partial image
             return [
                 'content' => ['text' => ''],
@@ -263,8 +259,6 @@ class OpenAIResponsesProvider extends BaseAIModelProvider
         if (!empty($jsonChunk['id'])) {
             $responseId = $jsonChunk['id'];
         }
-        
-       
 
         $response = [
             'content' => [
@@ -288,7 +282,8 @@ class OpenAIResponsesProvider extends BaseAIModelProvider
         if ($imageData) {
             $response['auxiliaries'][] = [
                     'type' => 'imageResponse',
-                    'content' => $imageData,
+                    // the prefix is missing
+                    'content' => "data:image/png;base64,".$imageData,
             ];
             
         }
@@ -349,7 +344,7 @@ class OpenAIResponsesProvider extends BaseAIModelProvider
 
         // Execute the request
         $response = curl_exec($ch);
-        
+
         // Handle errors
         if (curl_errno($ch)) {
             $error = 'Error: ' . curl_error($ch);

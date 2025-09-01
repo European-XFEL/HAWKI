@@ -106,7 +106,8 @@ class StreamController extends Controller
             'payload.messages' => 'required|array',
             'payload.messages.*.role' => 'required|string',
             'payload.messages.*.content' => 'required|array',
-            'payload.messages.*.content.text' => 'required|string',
+            // for image responses text can be null
+            'payload.messages.*.content.text' => 'nullable|string',
             'payload.messages.*.auxiliaries' => 'nullable|array',
             'payload.messages.*.auxiliaries.*.type' => 'required|string',
             'payload.messages.*.auxiliaries.*.content' => 'required|string',
@@ -127,6 +128,7 @@ class StreamController extends Controller
             
             if ($validatedData['payload']['stream']) {
                 // Handle streaming response
+               
                 $this->handleStreamingRequest($validatedData['payload'], $user, $avatar_url);
             } else {
                 // Handle standard response
@@ -170,11 +172,15 @@ class StreamController extends Controller
         header('Connection: keep-alive');
         header('Access-Control-Allow-Origin: *');
         
+        // Get the provider for this model
+        // we do this outside the $onData function so that the provider
+        // instance can capture state across streaming events
+        $provider = $this->aiConnectionService->getProviderForModel($payload['model']);
 
         // Create a callback function to process streaming chunks
-        $onData = function ($data) use ($user, $avatar_url, $payload) {
-
-          // Only use normaliseDataChunk if the content of $data does not begin with ‘data: ’.
+        $onData = function ($data) use ($user, $avatar_url, $payload, $provider) {
+            
+            // Only use normaliseDataChunk if the content of $data does not begin with ‘data: ’.
             if (strpos(trim($data), 'data: ') !== 0) {
                 $data = $this->normalizeDataChunk($data);
                 //Log::info('google chunk detected');
@@ -186,8 +192,7 @@ class StreamController extends Controller
                 if (connection_aborted()) break;
                 if (!json_decode($chunk, true) || empty($chunk)) continue;
                 
-                // Get the provider for this model
-                $provider = $this->aiConnectionService->getProviderForModel($payload['model']);
+                
                 
                 // Format the chunk
                 $formatted = $provider->formatStreamChunk($chunk);
