@@ -241,7 +241,6 @@ class AiConvController extends Controller
             
                 $aux = AiConvMsgAux::create([
                     'msg_id' => $message->id,
-                    'user_id' => $user->id,
                     'iv' => $auxiliary['iv'],
                     'tag' => $auxiliary['tag'],
                     'type' => $auxiliary['type'],
@@ -322,7 +321,6 @@ class AiConvController extends Controller
                 }
                 $aux = AiConvMsgAux::create([
                     'msg_id' => $message->id,
-                    'user_id' => $message->user_id,
                     'iv' => $auxiliary['iv'],
                     'tag' => $auxiliary['tag'],
                     'type' => $auxiliary['type'],
