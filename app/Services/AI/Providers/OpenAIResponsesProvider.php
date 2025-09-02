@@ -249,11 +249,7 @@ class OpenAIResponsesProvider extends BaseAIModelProvider
         }
 
         if (isset($jsonChunk['type']) && $jsonChunk['type'] == 'response.image_generation_call.completed') {
-<<<<<<< HEAD
             $this->image_output_index = $jsonChunk['output_index'];
-=======
-            session(['image_output_index' => $jsonChunk['output_index']]);
->>>>>>> 22282a2 (Cleanup)
             // return an empty chunk as not to overwrite any partial image
             return [
                 'content' => ['text' => ''],
