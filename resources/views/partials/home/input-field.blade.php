@@ -160,7 +160,8 @@
 
     </div>
     <div class="input" id="0">
-        <div class="input-wrapper">
+       <div class="input-wrapper">
+            <div id="drop-error-overlay" class="drop-error-overlay" style="display: none;">This model does not support document input</div>
             <textarea  
                 class="input-field"
                 id="main-input-field" 
@@ -181,8 +182,39 @@
                 @endif
 
                 onfocus="onInputFieldFocus(this); toggleOffRelativeInputControl(this)"
-                onfocusout="onInputFieldFocusOut(this)"></textarea>
+                onfocusout="onInputFieldFocusOut(this)"
+                ondrop="handleDrop(event)"></textarea>
+                
         </div>
+
+        <script>
+        function handleDrop(event) {
+            event.preventDefault();
+            console.log(activeModel);
+            if (activeModel && activeModel.enable_document_input) {
+                const files = event.dataTransfer.files;
+                if (files.length > 0) {
+                    // Call your defined callback function and pass the dropped files
+                    myCallbackFunction(files);
+                }
+            } else {
+                // Show the non-visible overlay and then fade it out
+                const overlay = document.getElementById('drop-error-overlay');
+                overlay.style.position = 'absolute'; // Added for positioning
+                overlay.style.top = '0'; // Adjust as needed
+                overlay.style.left = '0'; // Position next to the element
+                overlay.style.display = 'block';
+                setTimeout(() => {
+                    overlay.style.transition = 'opacity 3s';
+                    overlay.style.opacity = 0;
+                    setTimeout(() => {
+                        overlay.style.display = 'none';
+                        overlay.style.opacity = 1; // reset for next use
+                    }, 3000); // wait for the fade-out duration
+                }, 100); // display for 100ms before fading
+            }
+        }
+        </script>
 
 
         <div class="input-send tooltip-parent">

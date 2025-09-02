@@ -960,6 +960,14 @@
     outline: none;
 }
 
+.drop-error-overlay {
+    text-align: center;
+    width: 100%;
+    height: 100%;
+    color: #b23838;
+    background-color: #ffcdcd;
+    position: absolute;
+}
 
 
 #send-btn{
