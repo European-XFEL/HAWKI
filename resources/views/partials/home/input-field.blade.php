@@ -162,60 +162,31 @@
     <div class="input" id="0">
        <div class="input-wrapper">
             <div id="drop-error-overlay" class="drop-error-overlay" style="display: none;">This model does not support document input</div>
+            
+            <!-- Added a new container for displaying files -->
+            <div id="drop-file-list" class="drop-file-list" style="display: none;"></div>
+
             <textarea  
                 class="input-field"
                 id="main-input-field" 
                 type="text"
+                data-files='[]'
 
                 @if($activeModule === 'chat')
-
                     placeholder="{{ $translation['Input_Placeholder_Chat'] }}" 
                     oninput="resizeInputField(this);" 
                     onkeypress="onHandleKeydownConv(event)"
-
                 @elseif($activeModule === 'groupchat')
-
-                    placeholder="{{ $translation['Input_Placeholder_Room'] ." ". config('app.aiHandle')}}"
+                    placeholder="{{ $translation['Input_Placeholder_Room'] ." ". config('app.aiHandle')}}" 
                     oninput="resizeInputField(this); onGroupchatType()" 
                     onkeypress="onHandleKeydownRoom(event)"
-                
                 @endif
 
                 onfocus="onInputFieldFocus(this); toggleOffRelativeInputControl(this)"
                 onfocusout="onInputFieldFocusOut(this)"
                 ondrop="handleDrop(event)"></textarea>
-                
+
         </div>
-
-        <script>
-        function handleDrop(event) {
-            event.preventDefault();
-            console.log(activeModel);
-            if (activeModel && activeModel.enable_document_input) {
-                const files = event.dataTransfer.files;
-                if (files.length > 0) {
-                    // Call your defined callback function and pass the dropped files
-                    myCallbackFunction(files);
-                }
-            } else {
-                // Show the non-visible overlay and then fade it out
-                const overlay = document.getElementById('drop-error-overlay');
-                overlay.style.position = 'absolute'; // Added for positioning
-                overlay.style.top = '0'; // Adjust as needed
-                overlay.style.left = '0'; // Position next to the element
-                overlay.style.display = 'block';
-                setTimeout(() => {
-                    overlay.style.transition = 'opacity 3s';
-                    overlay.style.opacity = 0;
-                    setTimeout(() => {
-                        overlay.style.display = 'none';
-                        overlay.style.opacity = 1; // reset for next use
-                    }, 3000); // wait for the fade-out duration
-                }, 100); // display for 100ms before fading
-            }
-        }
-        </script>
-
 
         <div class="input-send tooltip-parent">
             @if($activeModule === 'chat')

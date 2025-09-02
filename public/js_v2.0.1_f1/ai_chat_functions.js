@@ -44,6 +44,72 @@ function onHandleKeydownConv(event){
     }
 }
 
+function handleDrop(event) {
+    event.preventDefault();
+    if (activeModel && activeModel.enable_document_input) {
+        const files = event.dataTransfer.files;
+        const textArea = document.getElementById('main-input-field');
+        let fileArray = JSON.parse(textArea.getAttribute('data-files'));
+        
+        for (let file of files) {
+            fileArray.push({ name: file.name, size: file.size });
+        }
+        
+        textArea.setAttribute('data-files', JSON.stringify(fileArray));
+        displayFiles(fileArray);
+    } else {
+        // Show the non-visible overlay and then fade it out
+        const overlay = document.getElementById('drop-error-overlay');
+        overlay.style.position = 'absolute'; 
+        overlay.style.top = '0'; 
+        overlay.style.left = '0'; 
+        overlay.style.display = 'block';
+        setTimeout(() => {
+            overlay.style.transition = 'opacity 3s';
+            overlay.style.opacity = 0;
+            setTimeout(() => {
+                overlay.style.display = 'none';
+                overlay.style.opacity = 1; 
+            }, 3000);
+        }, 100);
+    }
+}
+
+function displayFiles(files) {
+    const fileListDiv = document.getElementById('drop-file-list');
+    fileListDiv.innerHTML = ''; // Clear previous content
+    if (files.length > 0) {
+        fileListDiv.style.display = 'block';
+        files.forEach((file, index) => {
+            const fileItem = document.createElement('div');
+            fileItem.classList.add('drop-file-item');
+            console.log(file.name);
+            const removeButton = document.createElement('span');
+            removeButton.classList.add('remove-file');
+            removeButton.innerHTML = '&#10006;';
+            removeButton.onclick = function() {
+                removeFile(index); // Ensure you have an appropriate removeFile function defined
+            };
+
+
+            fileItem.innerHTML = file.name + `(${(file.size / 1024).toFixed(0)} KB)`;
+            fileItem.appendChild(removeButton);
+            fileListDiv.appendChild(fileItem);
+
+        });
+    } else {
+        fileListDiv.style.display = 'none';
+    }
+}
+
+function removeFile(index) {
+    const textArea = document.getElementById('main-input-field');
+    let fileArray = JSON.parse(textArea.getAttribute('data-files'));
+    fileArray.splice(index, 1); // Remove the file at the specified index
+    textArea.setAttribute('data-files', JSON.stringify(fileArray));
+    displayFiles(fileArray);
+}
+
 function onSendClickConv(btn){
 
     if(getSendBtnStat() === SendBtnStatus.SENDABLE){
