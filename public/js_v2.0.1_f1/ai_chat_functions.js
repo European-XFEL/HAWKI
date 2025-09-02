@@ -178,12 +178,8 @@ async function buildRequestObjectForAiConv(msgAttributes, messageElement = null,
                 messageElement = addMessageToChatlog(messageObj, false);
             }
             messageElement.dataset.rawMsg = msg;
-<<<<<<< HEAD
-
-=======
             messageElement.dataset.auxiliaries = JSON.stringify(messageObj.auxiliaries);
     
->>>>>>> df1a51c (Refactor so that tokens are kept encrypted in the database and can be reused)
             const msgTxtElement = messageElement.querySelector(".message-text");
 
             msgTxtElement.innerHTML = formatChunk(content, groundingMetadata);
