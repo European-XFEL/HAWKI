@@ -64,7 +64,6 @@ function clearChatlog(){
 
 
 async function submitMessageToServer(requestObj, url){
-    // console.log(requestObj);
     try {
         const response = await fetch(url, {
             method: "POST",

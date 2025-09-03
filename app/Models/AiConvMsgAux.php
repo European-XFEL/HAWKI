@@ -11,7 +11,6 @@ class AiConvMsgAux extends Model
 
     protected $fillable = [
         'msg_id',
-        'user_id',
         'type',
         'iv',
         'tag',

@@ -94,6 +94,7 @@ async function sendMessageConv(inputField) {
         // encrypt message
         const convKey = await keychainGet('aiConvKey');
         const cryptoMsg = await encryptWithSymKey(convKey, messageObj.content, false);
+        
         messageObj.ciphertext = cryptoMsg.ciphertext;
         messageObj.iv = cryptoMsg.iv;
         messageObj.tag = cryptoMsg.tag;
@@ -124,8 +125,8 @@ async function sendMessageConv(inputField) {
         }
         const submittedObj = await submitMessageToServer(requestObj, `/req/conv/sendMessage/${activeConv.slug}`);
         submittedObj.content = messageObj.content;
-        submittedObj.username = userInfo.username
-
+        submittedObj.username = userInfo.username;
+        
         // create and add message element to chatlog.
         const messageElement = addMessageToChatlog(submittedObj);
         messageElement.dataset.rawMsg = submittedObj.content;
@@ -204,6 +205,21 @@ async function buildRequestObjectForAiConv(msgAttributes, messageElement = null,
                 scrollPanelToLast(messageElement.querySelector('.think').querySelector('.content-container'));
             }
 
+            // add any images we might have
+            for (aux of messageObj.auxiliaries) {
+                if (aux['type'] == 'imageResponse') {
+                    const img = document.createElement('img');
+                    const imageData = aux['content'];
+                    img.src = imageData.startsWith('data:') ? imageData : 'data:image/png;base64,' + imageData;
+                    img.alt = 'image';
+                    img.width = '500';
+                    msgTxtElement.appendChild(img);
+
+                    // make this friendly for the clipboard
+                    messageElement.dataset.imageData = imageData;
+                }
+            }
+    
             scrollToLast(false, messageElement);
         }
 
@@ -239,7 +255,7 @@ async function buildRequestObjectForAiConv(msgAttributes, messageElement = null,
                 }
                 auxiliaries.push(aux);
             };
-            
+
             activateMessageControls(messageElement);
 
             const requestObj = {
@@ -316,6 +332,7 @@ async function initNewConv(messageObj){
     //Encyrpt message
     const convKey = await keychainGet('aiConvKey');
     const contData = await encryptWithSymKey(convKey, messageObj.content);
+   
     messageObj.ciphertext = contData.ciphertext;
     messageObj.iv = contData.iv;
     messageObj.tag = contData.tag;
@@ -535,6 +552,7 @@ async function loadConv(btn=null, slug=null){
     for (const msg of msgs) {
         const decryptedContent =  await decryptWithSymKey(convKey, msg.content, msg.iv, msg.tag);
         msg.content = decryptedContent;
+        
         // console.log(msg.content);
         const auxiliaries = msg.auxiliaries ?? []
         for (const aux of auxiliaries) {
@@ -580,7 +598,7 @@ async function RequestConvContent(slug){
         return data;
     }
     catch (err){
-        console.error('Error fetching data:', error);
+        console.error('Error fetching data:', err);
         throw err;
     }
 }

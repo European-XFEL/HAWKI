@@ -163,6 +163,20 @@ function addMessageToChatlog(messageObj, isFromServer = false){
         }
     }
 
+    for (aux of messageObj.auxiliaries ?? []) {
+        if (aux['type'] == 'imageResponse') {
+            const img = document.createElement('img');
+            const imageData = aux['content'];
+            img.src = imageData.startsWith('data:') ? imageData : 'data:image/png;base64,' + imageData;
+            img.alt = 'image';
+            img.width = '500';
+            msgTxtElement.appendChild(img);
+
+            // simplify clipboard logic
+            messageElement.dataset.imageData = imageData;
+        }
+    }
+
 
     /// check for completion status. ONLY FOR CONV MESSAGES FROM AI.
     if (messageObj.hasOwnProperty('completion')){
@@ -383,7 +397,7 @@ function deconstContent(inputContent){
     }
     else{
         
-        if(inputContent.text){
+        if(inputContent.text === '' || inputContent.text){
             messageText = inputContent.text;
         }
         else{
@@ -524,10 +538,28 @@ function CopyMessageToClipboard(provider) {
     const messageElement = provider.closest('.message');
 
     // Get the text content of the modified clone
-    const content = messageElement.dataset.rawMsg;
+    if (!messageElement.dataset.imageData) {
+        const content = messageElement.dataset.rawMsg;
 
-    const trimmedMsg = content.trim();
-    navigator.clipboard.writeText(trimmedMsg);
+        const trimmedMsg = content.trim();
+        navigator.clipboard.writeText(trimmedMsg);
+    } else {
+        // we copy the image instead
+        const imageData = messageElement.dataset.imageData;
+        // Create a Blob from the Base64 string
+        const byteCharacters = atob(imageData);
+        const byteNumbers = new Uint8Array(byteCharacters.length);
+        for (let i = 0; i < byteCharacters.length; i++) {
+            byteNumbers[i] = byteCharacters.charCodeAt(i);
+        }
+        const imageBlob = new Blob([byteNumbers], { type: 'image/png' });
+
+        
+        const clipboardItem = new ClipboardItem({
+            'image/png': imageBlob
+        });
+        navigator.clipboard.write([clipboardItem]);
+    }
 }
 
 function copyCodeBlockToClipboard(provider) {

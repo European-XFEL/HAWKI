@@ -47,4 +47,6 @@ class ImageController extends Controller
             'response' => 'Invalid image data'
         ]);
     }
+
+    
 }
