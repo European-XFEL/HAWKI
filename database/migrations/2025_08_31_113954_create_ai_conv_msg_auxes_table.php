@@ -17,7 +17,7 @@ return new class extends Migration
             $table->string('type');
             $table->string('iv');
             $table->string('tag');
-            $table->string('content');
+            $table->mediumText('content');
             $table->timestamps();
         });
     }
