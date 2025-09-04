@@ -89,7 +89,7 @@ function wrapPhpBlocks(content) {
     if (!trimmed) return true; // allow blank lines inside PHP block
 
     // Characters/strings that usually appear in PHP syntax
-    const phpIndicators = ["$", ";", "{", "}", "->", "=>", "::", "//", "/*"];
+    const phpIndicators = ["$", ";", "{", "}", "->", "=>", "::", "//", "/*", "?>"];
     if (phpIndicators.some((ch) => trimmed.includes(ch))) return true;
     if (/\S\(/.test(trimmed)) return true;
 
