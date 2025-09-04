@@ -214,6 +214,7 @@ function createMsgObject(msg){
             content: aux.content,
         });
     }
+    console.log("messageObject", filteredAux);
     messageObject = {
         role: role,
         content: {
@@ -221,6 +222,7 @@ function createMsgObject(msg){
         },
         auxiliaries: filteredAux,
     }
+
     return messageObject;
 }
 

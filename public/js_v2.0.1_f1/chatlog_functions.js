@@ -73,8 +73,9 @@ async function submitMessageToServer(requestObj, url){
             },
             body: JSON.stringify(requestObj)
         });
-
-        const data = await response.json();
+        const resp = await response.text();
+        const data = JSON.parse(resp); //await response.json();
+        
         if (data.success) {
             return data.messageData;
             // updateMessageElement(messageElement, data.messageData);

@@ -46,44 +46,69 @@ function onHandleKeydownConv(event){
 
 function handleDrop(event) {
     event.preventDefault();
+    extensionErrors = [];
+    unsupported = true;
     if (activeModel && activeModel.enable_document_input) {
         const files = event.dataTransfer.files;
         const textArea = document.getElementById('main-input-field');
         let fileArray = JSON.parse(textArea.getAttribute('data-files'));
         
+        
         for (let file of files) {
-            fileArray.push({ name: file.name, size: file.size });
+            if (['application/pdf', 'image/png', 'image/jpeg'].includes(file.type)) {
+                const reader = new FileReader();
+                reader.onload = function(event) {
+                    const base64Content = event.target.result;
+                    fileArray.push({ name: file.name, size: file.size, content: base64Content, type: file.type});
+                    textArea.setAttribute('data-files', JSON.stringify(fileArray));
+                    displayFiles(fileArray);
+                };
+                reader.readAsDataURL(file);
+            } else {
+                extensionErrors.push({ name: file.name, type: file.type });
+            }
         }
         
         textArea.setAttribute('data-files', JSON.stringify(fileArray));
         displayFiles(fileArray);
-    } else {
+        unsupported = false;
+    }
+    if (extensionErrors.length > 0 || unsupported) {
         // Show the non-visible overlay and then fade it out
         const overlay = document.getElementById('drop-error-overlay');
         overlay.style.position = 'absolute'; 
         overlay.style.top = '0'; 
         overlay.style.left = '0'; 
         overlay.style.display = 'block';
+        if (unsupported) {
+            overlay.innerText = 'This model does not support document input!';
+        } else {
+            var errorMsg = 'The following files have unsupported file types <br/>';
+            for (let fileError of extensionErrors) {
+                errorMsg += fileError.name + ": " + fileError.type + "<br/>";
+            }
+            
+            overlay.innerHTML = errorMsg;
+        }
         setTimeout(() => {
-            overlay.style.transition = 'opacity 3s';
+            overlay.style.transition = 'opacity 7s';
             overlay.style.opacity = 0;
             setTimeout(() => {
                 overlay.style.display = 'none';
                 overlay.style.opacity = 1; 
-            }, 3000);
+            }, 7000);
         }, 100);
     }
 }
 
 function displayFiles(files) {
     const fileListDiv = document.getElementById('drop-file-list');
-    fileListDiv.innerHTML = ''; // Clear previous content
+    if (!fileListDiv) return;
     if (files.length > 0) {
         fileListDiv.style.display = 'block';
         files.forEach((file, index) => {
             const fileItem = document.createElement('div');
             fileItem.classList.add('drop-file-item');
-            console.log(file.name);
             const removeButton = document.createElement('span');
             removeButton.classList.add('remove-file');
             removeButton.innerHTML = '&#10006;';
@@ -101,6 +126,19 @@ function displayFiles(files) {
         fileListDiv.style.display = 'none';
     }
 }
+
+
+function clearFiles() {
+    const fileListDiv = document.getElementById('drop-file-list');
+    if (!fileListDiv) return;
+    fileListDiv.style.display = 'none';
+    
+    // Assuming there's a dataset object to clear files from
+    if (fileListDiv.dataset && fileListDiv.dataset.files) {
+        fileListDiv.dataset.files = []; // Clear dataset.files
+    }
+}
+
 
 function removeFile(index) {
     const textArea = document.getElementById('main-input-field');
@@ -135,6 +173,24 @@ async function sendMessageConv(inputField) {
 
     setSendBtnStatus(SendBtnStatus.LOADING);
 
+    // format auxiliary data that me might want to add
+    let files = JSON.parse(inputField.dataset.files);
+    auxiliaries = [];
+    for(let file of files) {
+        auxiliaries.push({
+            type: "attachment:" + file.type,
+            content: JSON.stringify({
+                content: file.content,
+                name: file.name,
+                type: file.type,
+                size: file.size
+            })
+        })
+    }
+
+    // we have the files, clear them from display
+    clearFiles();
+
     //create a message object.
     let messageObj = {
         message_role: 'user',
@@ -144,8 +200,11 @@ async function sendMessageConv(inputField) {
             username: userInfo.username,
             name: userInfo.name,
             avatar_url: userInfo.avatar_url,
-        }
+        },
+        auxiliaries: auxiliaries,
     };
+
+    console.log("1", messageObj);
     // empty input field
     inputField.value = "";
     resizeInputField(inputField);
@@ -179,7 +238,6 @@ async function sendMessageConv(inputField) {
         };
 
         // Submit Message to server.
-
         const requestObj = {
             'isAi': false,
             'threadID': activeThreadIndex,
@@ -196,7 +254,8 @@ async function sendMessageConv(inputField) {
         // create and add message element to chatlog.
         const messageElement = addMessageToChatlog(submittedObj);
         messageElement.dataset.rawMsg = submittedObj.content;
-        messageElement.dataset.auxiliaries = JSON.stringify(submittedObj.auxiliaries);
+        messageElement.dataset.auxiliaries = JSON.stringify(messageObj.auxiliaries);
+        console.log("3", messageElement.dataset.auxiliaries);
         scrollToLast(true, messageElement);
     }
 
@@ -431,7 +490,7 @@ async function initNewConv(messageObj){
     submittedObj.content = messageObj.content;
     // messageObj.content is still not processed. it equals the rawData.
     messageElement.dataset.rawMsg = submittedObj.content;
-    messageElement.dataset.auxiliaries = JSON.stringify(submittedObj.auxiliaries);
+    messageElement.dataset.auxiliaries = JSON.stringify(messageObj.auxiliaries);
 
     // set the unassigned attirbutes to the temporarily made message Element.
     updateMessageElement(messageElement, submittedObj);

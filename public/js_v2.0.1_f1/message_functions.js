@@ -1,4 +1,22 @@
 
+function displayAttachments(messageElement, files) {
+    const fileListDiv = messageElement.querySelector('#attachment-list');
+    if (!fileListDiv) return;
+    if (files.length > 0) {
+        fileListDiv.style.display = 'block';
+        files.forEach((file, index) => {
+            const fileItem = document.createElement('div');
+            fileItem.classList.add('attachment-item');
+            
+            fileItem.innerHTML = file.name + `(${(file.size / 1024).toFixed(0)} KB)`;
+            fileListDiv.appendChild(fileItem);
+
+        });
+    } else {
+        fileListDiv.style.display = 'none';
+    }
+}
+
 function addMessageToChatlog(messageObj, isFromServer = false){
 
     const {messageText, groundingMetadata} = deconstContent(messageObj.content);
@@ -163,7 +181,7 @@ function addMessageToChatlog(messageObj, isFromServer = false){
         }
     }
 
-
+    var attachments = []
     for (aux of messageObj.auxiliaries ?? []) {
         if (aux['type'] == 'imageResponse') {
             const img = document.createElement('img');
@@ -175,9 +193,14 @@ function addMessageToChatlog(messageObj, isFromServer = false){
 
             // simplify clipboard logic
             messageElement.dataset.imageData = imageData;
+        } else if (aux['type'].startsWith('attachment:')) {
+            // content in this case is a JSON string
+            const content = JSON.parse(aux['content']);
+            attachments.push(content);
         }
     }
 
+    displayAttachments(messageElement, attachments);
 
     /// check for completion status. ONLY FOR CONV MESSAGES FROM AI.
     if (messageObj.hasOwnProperty('completion')){
