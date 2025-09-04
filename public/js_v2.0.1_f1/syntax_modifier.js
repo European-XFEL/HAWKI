@@ -63,6 +63,93 @@ function escapeHTML(text) {
   });
 }
 
+function wrapPhpBlocks(content) {
+  if (!content) return content;
+
+  // 1) Extract existing fenced blocks and replace them with placeholders
+  const fences = [];
+  const fencePlaceholder = (i) => `\u0000FENCE${i}\u0000`;
+  const fenceRegex = /(```[\s\S]*?```|~~~[\s\S]*?~~~)/g;
+  content = content.replace(fenceRegex, (m) => {
+    const idx = fences.length;
+    fences.push(m);
+    return fencePlaceholder(idx);
+  });
+
+  // 2) Process content line by line
+  const lines = content.split("\n");
+  const result = [];
+  let inPhpBlock = false;
+  let phpBlock = [];
+
+  const isPhpStart = (line) => /^\s*<\?(?:php|=)/.test(line);
+
+  const isPhpLine = (line) => {
+    const trimmed = line.trim();
+    if (!trimmed) return true; // allow blank lines inside PHP block
+
+    // Characters/strings that usually appear in PHP syntax
+    const phpIndicators = ["$", ";", "{", "}", "->", "=>", "::", "//", "/*"];
+    if (phpIndicators.some((ch) => trimmed.includes(ch))) return true;
+    if (/\S\(/.test(trimmed)) return true;
+
+    return false;
+  };
+
+  for (let i = 0; i < lines.length; i++) {
+    const line = lines[i];
+
+    if (!inPhpBlock && isPhpStart(line)) {
+      inPhpBlock = true;
+      phpBlock.push(line);
+      continue;
+    }
+
+    if (inPhpBlock) {
+      phpBlock.push(line);
+
+      // End PHP block on closing tag
+      if (line.includes("?>")) {
+        result.push("```php\n" + phpBlock.join("\n").trim() + "\n```");
+        phpBlock = [];
+        inPhpBlock = false;
+        continue;
+      }
+
+      // Look ahead: skip empty lines when checking if next line is PHP
+      let nextNonEmptyLine = "";
+      for (let j = i + 1; j < lines.length; j++) {
+        if (lines[j].trim() !== "") {
+          nextNonEmptyLine = lines[j];
+          break;
+        }
+      }
+
+      if (nextNonEmptyLine && !isPhpLine(nextNonEmptyLine) && !isPhpStart(nextNonEmptyLine)) {
+        result.push("```php\n" + phpBlock.join("\n").trim() + "\n```");
+        phpBlock = [];
+        inPhpBlock = false;
+      }
+
+      continue;
+    }
+
+    // Not in PHP block, just append
+    result.push(line);
+  }
+
+  // Flush any remaining PHP block
+  if (phpBlock.length) {
+    result.push("```php\n" + phpBlock.join("\n").trim() + "\n```");
+  }
+
+  // 3) Restore original fenced blocks
+  let output = result.join("\n");
+  output = output.replace(/\u0000FENCE(\d+)\u0000/g, (m, idx) => fences[idx]);
+
+  return output;
+}
+
 function formatMessage(rawContent, groundingMetadata = '') {
   // Early exit for empty content
   if (!rawContent || rawContent.trim() === '') {
@@ -74,7 +161,7 @@ function formatMessage(rawContent, groundingMetadata = '') {
     const contentToProcess = formatGoogleCitations(rawContent, groundingMetadata);
 
     // Process content with placeholders for math and think blocks
-    const { processedContent, mathReplacements, thinkReplacements } = preprocessContent(contentToProcess);
+    const { processedContent, mathReplacements, thinkReplacements } = preprocessContent(wrapPhpBlocks(contentToProcess));
 
     // Apply markdown rendering
     const markdownProcessed = md.render(processedContent);
