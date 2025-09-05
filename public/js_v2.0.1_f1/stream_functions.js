@@ -214,7 +214,6 @@ function createMsgObject(msg){
             content: aux.content,
         });
     }
-    console.log("messageObject", filteredAux);
     messageObject = {
         role: role,
         content: {
