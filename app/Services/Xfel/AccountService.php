@@ -72,33 +72,33 @@ class AccountService
             'form_params' => [
                 'ldap_name' => $login,
                 'ldap' => 1,
-                'registry' => 1,
-                'dachs' => 1,
+                //'registry' => 1,
+                'dachs_requirements' => 1,
             ],
         ];
         return $this->executeAndGetData('post','user/get_external_data', $request);
     }
     
-    public function assignGroup($login, $group){
-        Log::info('AccountService::assignGroup. user:' . $login . ' group:'. $group);
+    public function assignResource($login, $resource){
+        Log::info('AccountService::assignResource. user:' . $login . ' resource:'. $resource);
         $request = [
             'form_params' => [
                 'ldap_name' => $login,
-                'group_name' => $group,
+                'resource_name' => $resource,
             ],
         ];
-        return $this->executeAndGetData('post','user/assign_group', $request);        
+        return $this->executeAndGetData('post','user/assign_resource', $request);        
     }
 
-    public function revokeGroup($login, $group){
-        Log::info('AccountService::revokeGroup. user:' . $login . ' group:'. $group);
+    public function unassignResource($login, $resource){
+        Log::info('AccountService::unassignResource. user:' . $login . ' resource:'. $resource);
         $request = [
             'form_params' => [
                 'ldap_name' => $login,
-                'group_name' => $group,
+                'resource_name' => $resource,
             ],
         ];
-        return $this->executeAndGetData('post','user/revoke_group', $request);
+        return $this->executeAndGetData('post','user/unassign_resource', $request);
     }
     
 }

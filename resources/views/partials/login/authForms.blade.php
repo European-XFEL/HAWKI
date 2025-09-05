@@ -15,7 +15,7 @@
         <div class="spinner"></div> 
         <div style="display: inline-block;vertical-align: middle">
             <span  style="color: green;">Logging in...</span> 
-            <br>May take 5-10 seconds
+            <br>May take 5-20 seconds
         </div>
     </div>
     <div id="login-Button-panel">

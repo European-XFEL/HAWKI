@@ -6,7 +6,7 @@ return [
     'api_url' => trim(env('XFEL_ACCESS_BASE_URL'), '/') . '/api',
     'client' => env('XFEL_ACCESS_CLIENT'),
     'secret' => env('XFEL_ACCESS_SECRET'),
-    'access_right_id' => env('XFEL_ACCESS_RIGHT_ID'),
-    'access_group_name' => env('XFEL_ACCESS_GROUP_NAME'),
-    'staff_group_name' => env('XFEL_STAFF_GROUP_NAME'),
+    'dachs_requirement_id' => env('XFEL_ACCESS_DACHS_REQUIREMENT_ID'),
+    'base_resource_name' => env('XFEL_ACCESS_BASE_RESOURCE_NAME'),
+    'training_resource_name' => env('XFEL_ACCESS_TRAINING_RESOURCE_NAME'),
  ];
