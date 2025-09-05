@@ -44,15 +44,15 @@ function onHandleKeydownConv(event){
     }
 }
 
-function handleDrop(event) {
+function handleDrop(textArea, event) {
+    console.log("Dropped");
     event.preventDefault();
     extensionErrors = [];
     unsupported = true;
     if (activeModel && activeModel.enable_document_input) {
+        console.log("Supported");
         const files = event.dataTransfer.files;
-        const textArea = document.getElementById('main-input-field');
-        let fileArray = JSON.parse(textArea.getAttribute('data-files'));
-        
+        let fileArray = textArea.dataset.files ? JSON.parse(textArea.getAttribute('data-files')) : [];
         
         for (let file of files) {
             if (['application/pdf', 'image/png', 'image/jpeg'].includes(file.type)) {
@@ -61,7 +61,7 @@ function handleDrop(event) {
                     const base64Content = event.target.result;
                     fileArray.push({ name: file.name, size: file.size, content: base64Content, type: file.type});
                     textArea.setAttribute('data-files', JSON.stringify(fileArray));
-                    displayFiles(fileArray);
+                    displayFiles(fileArray, textArea);
                 };
                 reader.readAsDataURL(file);
             } else {
@@ -70,7 +70,6 @@ function handleDrop(event) {
         }
         
         textArea.setAttribute('data-files', JSON.stringify(fileArray));
-        displayFiles(fileArray);
         unsupported = false;
     }
     if (extensionErrors.length > 0 || unsupported) {
@@ -101,9 +100,10 @@ function handleDrop(event) {
     }
 }
 
-function displayFiles(files) {
-    const fileListDiv = document.getElementById('drop-file-list');
+function displayFiles(files, textArea) {
+    const fileListDiv = textArea.parentElement.querySelector('#drop-file-list');
     if (!fileListDiv) return;
+    fileListDiv.innerHTML = '';
     if (files.length > 0) {
         fileListDiv.style.display = 'block';
         files.forEach((file, index) => {
@@ -113,7 +113,7 @@ function displayFiles(files) {
             removeButton.classList.add('remove-file');
             removeButton.innerHTML = '&#10006;';
             removeButton.onclick = function() {
-                removeFile(index); // Ensure you have an appropriate removeFile function defined
+                removeFile(index, textArea);
             };
 
 
@@ -128,24 +128,27 @@ function displayFiles(files) {
 }
 
 
-function clearFiles() {
-    const fileListDiv = document.getElementById('drop-file-list');
+function clearFiles(inputField) {
+   
+    const fileListDiv = inputField.parentElement.querySelector('#drop-file-list');
+     console.log("clearing", inputField, fileListDiv);
     if (!fileListDiv) return;
+    fileListDiv.innerHTML = '';
     fileListDiv.style.display = 'none';
     
     // Assuming there's a dataset object to clear files from
-    if (fileListDiv.dataset && fileListDiv.dataset.files) {
-        fileListDiv.dataset.files = []; // Clear dataset.files
+    if (inputField.dataset && inputField.dataset.files) {
+        inputField.dataset.files = []; // Clear dataset.files
     }
+    console.log("cleared");
 }
 
 
-function removeFile(index) {
-    const textArea = document.getElementById('main-input-field');
+function removeFile(index, textArea) {
     let fileArray = JSON.parse(textArea.getAttribute('data-files'));
     fileArray.splice(index, 1); // Remove the file at the specified index
     textArea.setAttribute('data-files', JSON.stringify(fileArray));
-    displayFiles(fileArray);
+    displayFiles(fileArray, textArea);
 }
 
 function onSendClickConv(btn){
@@ -189,7 +192,8 @@ async function sendMessageConv(inputField) {
     }
 
     // we have the files, clear them from display
-    clearFiles();
+    console.log("Will clear");
+    clearFiles(inputField);
 
     //create a message object.
     let messageObj = {
@@ -250,6 +254,8 @@ async function sendMessageConv(inputField) {
         const submittedObj = await submitMessageToServer(requestObj, `/req/conv/sendMessage/${activeConv.slug}`);
         submittedObj.content = messageObj.content;
         submittedObj.username = userInfo.username;
+        // these need to be the unencrypted auxiliaries
+        submittedObj.auxiliaries = messageObj.auxiliaries;
         
         // create and add message element to chatlog.
         const messageElement = addMessageToChatlog(submittedObj);
@@ -516,6 +522,13 @@ function startNewChat(){
     }
 
     document.getElementById('input-container').focus();
+
+    // make sure we don't carry over any files
+    const textArea = document.getElementById('main-input-field');
+    textArea.dataset.files = [];
+    const fileList = document.getElementById('drop-file-list');
+    fileList.innerHTML = '';
+    
 }
 
 function createChatItem(conv = null){

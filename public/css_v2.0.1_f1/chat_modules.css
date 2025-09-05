@@ -1003,8 +1003,7 @@
 .attachment-list {
     text-align: left;
     width: 100%;
-    /*color: #4b3cd2;
-    background-color: #bab9ff;*/
+    clear: both;
 }
 
 .attachment-item {

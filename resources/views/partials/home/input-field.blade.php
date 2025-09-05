@@ -161,9 +161,8 @@
     </div>
     <div class="input" id="0">
        <div class="input-wrapper">
-            <div id="drop-error-overlay" class="drop-error-overlay" style="display: none;">This model does not support document input</div>
+            <div id="drop-error-overlay" class="drop-error-overlay" style="display: none;">This model does not support document input!</div>
             
-            <!-- Added a new container for displaying files -->
             <div id="drop-file-list" class="drop-file-list" style="display: none;"></div>
 
             <textarea  
@@ -184,7 +183,7 @@
 
                 onfocus="onInputFieldFocus(this); toggleOffRelativeInputControl(this)"
                 onfocusout="onInputFieldFocusOut(this)"
-                ondrop="handleDrop(event)"></textarea>
+                ondrop="handleDrop(this, event);"></textarea>
 
         </div>
 

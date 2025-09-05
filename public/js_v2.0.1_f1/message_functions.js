@@ -3,7 +3,7 @@ function displayAttachments(messageElement, files) {
     const fileListDiv = messageElement.querySelector('#attachment-list');
     if (!fileListDiv) return;
     if (files.length > 0) {
-        fileListDiv.style.display = 'block';
+        fileListDiv.style.display = 'inline-block';
         files.forEach((file, index) => {
             const fileItem = document.createElement('div');
             fileItem.classList.add('attachment-item');
@@ -194,7 +194,7 @@ function addMessageToChatlog(messageObj, isFromServer = false){
             // simplify clipboard logic
             messageElement.dataset.imageData = imageData;
         } else if (aux['type'].startsWith('attachment:')) {
-            // content in this case is a JSON string
+            // content in this case is a JSON string, if this was passed
             const content = JSON.parse(aux['content']);
             attachments.push(content);
         }

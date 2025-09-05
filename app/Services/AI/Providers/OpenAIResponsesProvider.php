@@ -80,7 +80,7 @@ class OpenAIResponsesProvider extends BaseAIModelProvider
                         continue;
                     }
 
-                    Log::info("attachment", $content);
+                    Log::info("attachment ". $content['type']);
 
                     switch ($content['type']) {
                         case 'application/pdf':
@@ -89,6 +89,7 @@ class OpenAIResponsesProvider extends BaseAIModelProvider
                                 'content' => [
                                     [
                                     'type' => 'input_file',
+                                    'filename' => $content['name'],
                                     'file_data' => $content['content'], 
                                     ]
                                 ]
@@ -118,7 +119,7 @@ class OpenAIResponsesProvider extends BaseAIModelProvider
             ];
         }
 
-        Log::info("Input", $input);
+        //Log::info("Input", $input);
 
         // Build payload for Responses endpoint
         $payload = [
@@ -129,8 +130,6 @@ class OpenAIResponsesProvider extends BaseAIModelProvider
             'store' => false, // always false for data safety, otherwise OpenAI retain may responses
         ];
 
-
-        
 
         // set the reasoning effort
         if (isset($modelConfig['reasoning_effort'])) {
