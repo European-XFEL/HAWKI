@@ -164,7 +164,6 @@ class OpenWebUIProvider extends BaseAIModelProvider
         if (empty($data['usage'])) {
             return null;
         }
-        //Log::info($data['usage']);
         return [
             'prompt_tokens' => $data['usage']['prompt_tokens'],
             'completion_tokens' => $data['usage']['completion_tokens'],
