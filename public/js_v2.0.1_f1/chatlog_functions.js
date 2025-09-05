@@ -363,6 +363,17 @@ function setModel(modelID = null){
         }
     });
 
+    const inputSelectors = document.querySelectorAll('#main-input-field');
+    inputSelectors.forEach(selector => {
+        if (activeModel.enable_document_input) {
+            selector.setAttribute("placeholder", selector.getAttribute("data-file-drop-enabled-placeholder"));
+        } else {
+            selector.setAttribute("placeholder", selector.getAttribute("data-file-drop-disabled-placeholder"));
+        }
+    });
+    // update input field placeholder
+    //file-drop-placeholder
+
 }
 //#endregion
 

@@ -45,17 +45,16 @@ function onHandleKeydownConv(event){
 }
 
 function handleDrop(textArea, event) {
-    console.log("Dropped");
+    
     event.preventDefault();
     extensionErrors = [];
     unsupported = true;
     if (activeModel && activeModel.enable_document_input) {
-        console.log("Supported");
         const files = event.dataTransfer.files;
         let fileArray = textArea.dataset.files ? JSON.parse(textArea.getAttribute('data-files')) : [];
         
         for (let file of files) {
-            if (['application/pdf', 'image/png', 'image/jpeg'].includes(file.type)) {
+            if (['application/pdf', 'image/png', 'image/jpeg'].includes(file.type) && file.size / 1000 <= activeModel.max_attachment_size_kb) {
                 const reader = new FileReader();
                 reader.onload = function(event) {
                     const base64Content = event.target.result;
@@ -65,7 +64,7 @@ function handleDrop(textArea, event) {
                 };
                 reader.readAsDataURL(file);
             } else {
-                extensionErrors.push({ name: file.name, type: file.type });
+                extensionErrors.push({ name: file.name, type: file.type, size: file.size });
             }
         }
         
@@ -80,11 +79,11 @@ function handleDrop(textArea, event) {
         overlay.style.left = '0'; 
         overlay.style.display = 'block';
         if (unsupported) {
-            overlay.innerText = 'This model does not support document input!';
+            overlay.innerText = textArea.getAttribute("data-file-drop-unsupported");
         } else {
-            var errorMsg = 'The following files have unsupported file types <br/>';
+            var errorMsg = textArea.getAttribute("data-file-drop-error").replace("${maxFileSize}", activeModel.max_attachment_size_kb) + "<br/>";
             for (let fileError of extensionErrors) {
-                errorMsg += fileError.name + ": " + fileError.type + "<br/>";
+                errorMsg += `${fileError.name}: ${fileError.type} (${Math.floor(fileError.size / 1000)} kB)<br/>`;
             }
             
             overlay.innerHTML = errorMsg;
@@ -117,7 +116,7 @@ function displayFiles(files, textArea) {
             };
 
 
-            fileItem.innerHTML = file.name + `(${(file.size / 1024).toFixed(0)} KB)`;
+            fileItem.innerHTML = file.name + ` (${(file.size / 1024).toFixed(0)} KB)`;
             fileItem.appendChild(removeButton);
             fileListDiv.appendChild(fileItem);
 
@@ -131,7 +130,6 @@ function displayFiles(files, textArea) {
 function clearFiles(inputField) {
    
     const fileListDiv = inputField.parentElement.querySelector('#drop-file-list');
-     console.log("clearing", inputField, fileListDiv);
     if (!fileListDiv) return;
     fileListDiv.innerHTML = '';
     fileListDiv.style.display = 'none';
@@ -140,7 +138,7 @@ function clearFiles(inputField) {
     if (inputField.dataset && inputField.dataset.files) {
         inputField.dataset.files = []; // Clear dataset.files
     }
-    console.log("cleared");
+    
 }
 
 
@@ -192,7 +190,6 @@ async function sendMessageConv(inputField) {
     }
 
     // we have the files, clear them from display
-    console.log("Will clear");
     clearFiles(inputField);
 
     //create a message object.
@@ -208,7 +205,6 @@ async function sendMessageConv(inputField) {
         auxiliaries: auxiliaries,
     };
 
-    console.log("1", messageObj);
     // empty input field
     inputField.value = "";
     resizeInputField(inputField);
@@ -261,7 +257,6 @@ async function sendMessageConv(inputField) {
         const messageElement = addMessageToChatlog(submittedObj);
         messageElement.dataset.rawMsg = submittedObj.content;
         messageElement.dataset.auxiliaries = JSON.stringify(messageObj.auxiliaries);
-        console.log("3", messageElement.dataset.auxiliaries);
         scrollToLast(true, messageElement);
     }
 

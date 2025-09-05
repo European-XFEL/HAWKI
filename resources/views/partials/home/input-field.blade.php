@@ -170,6 +170,10 @@
                 id="main-input-field" 
                 type="text"
                 data-files='[]'
+                data-file-drop-enabled-placeholder="{{ $translation['Input_Placeholder_Chat_With_Filedrop'] }}"
+                data-file-drop-disabled-placeholder="{{ $translation['Input_Placeholder_Chat'] }}"
+                data-file-drop-error="{{ $translation['Filedrop_Error'] }}"
+                data-file-drop-unsupported="{{ $translation['Filedrop_Unsupported'] }}"
 
                 @if($activeModule === 'chat')
                     placeholder="{{ $translation['Input_Placeholder_Chat'] }}" 

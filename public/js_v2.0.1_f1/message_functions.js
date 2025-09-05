@@ -8,7 +8,7 @@ function displayAttachments(messageElement, files) {
             const fileItem = document.createElement('div');
             fileItem.classList.add('attachment-item');
             
-            fileItem.innerHTML = file.name + `(${(file.size / 1024).toFixed(0)} KB)`;
+            fileItem.innerHTML = file.name + ` (${(file.size / 1024).toFixed(0)} KB)`;
             fileListDiv.appendChild(fileItem);
 
         });
