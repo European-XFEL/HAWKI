@@ -90,7 +90,7 @@ class PermissionCheck
                     }
                     return response()->json([
                         'success' => false,
-                        'message' => 'You do not have permissions. Be sure you did the AI online training']);                    
+                        'message' => 'AI online training required it may take 5-10 minutes before training becomes effective).']);                    
                 }
             }
             //else we do not do anything - resources will be checked with the following default ldap auth
