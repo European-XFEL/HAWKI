@@ -224,4 +224,8 @@
             </div>
         </div>
     </div>
+    <div class="model-capabilities">
+        <span class="model-capability" id="model-capability-image-gen" title="{{ $translation['Model_Capability_Image_Gen'] }}">&#x1F3DE;</span>
+        <span class="model-capability" id="model-capability-attachments" title="{{ $translation['Model_Capability_Attachments'] }}">&#x1F4CE;</span>
+    </div>
 </div>

@@ -1445,3 +1445,13 @@ sup{
     font-size: var(--font-md);
     padding-left: .5rem;
 }
+
+
+.model-capabilities {
+    padding-left: 10px;
+    padding-top: 3px;
+}
+
+.model-capability {
+    filter: grayscale();
+}

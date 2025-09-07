@@ -371,8 +371,9 @@ function setModel(modelID = null){
             selector.setAttribute("placeholder", selector.getAttribute("data-file-drop-disabled-placeholder"));
         }
     });
-    // update input field placeholder
-    //file-drop-placeholder
+    
+    document.querySelector('#model-capability-image-gen').style.display = activeModel.enable_image_generation ? "inline-block" : "none";
+    document.querySelector('#model-capability-attachments').style.display = activeModel.enable_document_input ? "inline-block" : "none";
 
 }
 //#endregion

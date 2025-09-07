@@ -92,6 +92,8 @@
     "Input_Placeholder_Chat_With_Filedrop": "Hier kannst Du deine Anfrage stellen und Dateien ablegen",
     "Filedrop_Error": "Folgende Dateien haben ein nicht unterstütztes Dateiformat oder oder sind größer als ${maxFileSize} kB",
     "Filedrop_Unsupported": "Das aktuelle Modell unterstützt keine Dateianhänge",
+    "Model_Capability_Image_Gen": "Das aktuelle Modell kann Bilder generieren",
+    "Model_Capability_Attachments": "Das aktuelle Modell erlaubt es Dateien anzuhängen",
     "Input_Placeholder_Room": "Schreibe eine Gruppennachricht oder nutze die KI mit ",
     "language": "Sprache",
     "LeaveRoom": "Raum Verlassen",
