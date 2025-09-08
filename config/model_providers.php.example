@@ -98,6 +98,14 @@ return [
                     'label' => 'OpenAI GPT 5 mini',
                     'streamable' => false,
                     'reasoning_effort' => 'medium',
+                    'enable_web_search' => true,
+                    'user_location' => [  // the location assumed for the websearch, to not add a location, comment this
+                        'country' => 'DE',
+                        'city' => 'Hamburg',
+                        "region" => 'Hamburg',
+                        "type" => "approximate",
+                    ],
+                    'include_search_results' => true,
                 ]
             ]
         ],
