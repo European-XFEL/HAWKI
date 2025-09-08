@@ -17,6 +17,23 @@ function displayAttachments(messageElement, files) {
     }
 }
 
+function displayAnnotations(messageElement, annotations) {
+    const annotationDiv = messageElement.querySelector('#annotation-list');
+    if (!annotationDiv) return;
+    if (annotations.length > 0) {
+        annotationDiv.style.display = 'inline-block';
+        annotations.forEach((item, index) => {
+            const annotation = document.createElement('div');
+            annotation.classList.add('annotation-item');
+            annotation.innerHTML = `<a href="${item.url}">${item.title}</a>`;
+            annotationDiv.appendChild(annotation);
+
+        });
+    } else {
+        annotationDiv.style.display = 'none';
+    }
+}
+
 function addMessageToChatlog(messageObj, isFromServer = false){
 
     const {messageText, groundingMetadata} = deconstContent(messageObj.content);
@@ -181,7 +198,8 @@ function addMessageToChatlog(messageObj, isFromServer = false){
         }
     }
 
-    var attachments = []
+    var attachments = [];
+    var annotations = [];
     for (aux of messageObj.auxiliaries ?? []) {
         if (aux['type'] == 'imageResponse') {
             const img = document.createElement('img');
@@ -197,10 +215,15 @@ function addMessageToChatlog(messageObj, isFromServer = false){
             // content in this case is a JSON string, if this was passed
             const content = JSON.parse(aux['content']);
             attachments.push(content);
+        } else if (aux['type'] == 'webSearchAnnotations') {
+            // content in this case is a JSON string, if this was passed
+            const content = JSON.parse(aux['content']);
+            annotations = annotations.concat(content);
         }
     }
 
     displayAttachments(messageElement, attachments);
+    displayAnnotations(messageElement, annotations);
 
     /// check for completion status. ONLY FOR CONV MESSAGES FROM AI.
     if (messageObj.hasOwnProperty('completion')){
