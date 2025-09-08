@@ -16,10 +16,10 @@ class PermissionCheck
     {
         $username = $request->get('account');
         
-        # whitelist based access - for test system
-        # if enabled only users from the whitelist can pass
-        # user fron the white list skip all the on-top checks 
-        $whitelist = env('XFEL_LOGIN_WHITELIST');
+        # Whitelist based access - for test system
+        # If enabled only users from the whitelist can pass
+        # User fron the white list skip all the on-top checks but still will be checked with the following default ldap auth 
+        $whitelist = env('XFEL_ACCESS_WHITELIST');
         if ($whitelist){
             $whitelist = str_replace(' ','', strtolower($whitelist));
             $whitelist = explode(',', $whitelist);
@@ -44,66 +44,61 @@ class PermissionCheck
         if ($ldapService->checkCredentials($username, $request->get('password'))){
             $accountInfo = $accountService->getAccountInfo($username);
             
-            //if getAccountInfo fail lets just skip it. Access right will be checked based on current LDAP
-            //the case of external system is down
-            if (empty($accountInfo) || empty($accountInfo['dachs']) || empty($accountInfo['ldap'])){
+            //If getAccountInfo fail lets just skip it. Access permissions will be checked with the following default ldap auth
+            //E.g. when external systems are down
+            if (empty($accountInfo) || empty($accountInfo['dachs_requirements']) || empty($accountInfo['ldap'])){
                 Log::error('PermissionCheck getAccountInfo failed: ' . $username);
                 return $next($request);
             }
             
-            $accessRightId = config('xfel_access.access_right_id');
-            $accessGroupName = config('xfel_access.access_group_name');
-            $staffGroupName = config('xfel_access.staff_group_name');
+            $dachsRequirementId = config('xfel_access.dachs_requirement_id');
+            $trainingResourceName = config('xfel_access.training_resource_name');
+            $baseResourceName = config('xfel_access.base_resource_name');
             
-            //check if staff member
-            if( !empty($staffGroupName) && !in_array($staffGroupName, (array)$accountInfo['ldap']['groups'])){
+            // If basic resource is in configuration lets check it.
+            // This will be always checked with the following default ldap auth, but here we can cut it earlier and have a proper message to user
+            if( !empty($baseResourceName) && !in_array($baseResourceName, (array)$accountInfo['ldap']['resource_groups'])){
                 return response()->json([
                     'success' => false,
                     'message' => 'You do not have permissions. Staff members only.']);
             }
             
-            //we consider values are not valid if no params set
-            $trainingValid =  (bool)$accessRightId && (bool)$accountInfo['dachs'][$accessRightId]['valid'];
-            $hasGroup = (bool)$accessGroupName && in_array($accessGroupName, (array)$accountInfo['ldap']['groups']);
-            
-            //if both aspects are checked then lets try to set/unset group based on training
-            if($accessRightId && $accessGroupName){
-                if ($trainingValid && !$hasGroup){
-                    //assign group
-                    // but user may need to wait
-                    $apiReaponse = $accountService->assignGroup($username, $accessGroupName);
+            // If conditional resources related to trainings are in the configuration lets check them.
+            // This will be always checked with the following default ldap auth,
+            // but here we can update resource based on training and give a nice messsages to user
+            if($dachsRequirementId && $trainingResourceName){
+                $trainingValid =  (bool)$accountInfo['dachs_requirements'][$dachsRequirementId]['valid'];
+                $hasResource = in_array($trainingResourceName, (array)$accountInfo['ldap']['resource_groups']);
+
+                if ($trainingValid){
+                    if(!$hasResource){
+                        //assign resource
+                        // but user may need to wait
+                        $apiResponse = $accountService->assignResource($username, $trainingResourceName);
+                        return response()->json([
+                            'success' => false,
+                            'message' => 'We\'re setting up your permissions. Please try logging in again in about 5 minutes.']);
+                    }
+                    else{
+                        return $next($request); // if both are ok - proceed to default ldap auth
+                    }
+                }
+                else{
+                    //If training is not valid but still have resource - revoke it
+                    if($hasResource){
+                        $apiResponse = $accountService->unassignResource($username, $trainingResourceName);
+                    }
                     return response()->json([
                         'success' => false,
-                        'message' => 'Permissions set up is in progress... Please try to login after 5 minutes']);
-                }
-                if (!$trainingValid && $hasGroup){
-                    //revoke group
-                    // revoke may take time
-                    $apiReaponse = $accountService->revokeGroup($username, $accessGroupName); 
-                    return response()->json([
-                        'success' => false,
-                        'message' => 'You do not have permissions. Be sure you did the required training']);                    
+                        'message' => 'AI online training required it may take 5-10 minutes before training becomes effective).']);                    
                 }
             }
-            
-            //In this point we have !$accessRightId || !$accessGroupName
-            //the only interesting case here is $accessRightId && !$trainingValid - we should drop it
-            
-            //if access right required but failed
-            if ($accessRightId && !$trainingValid){
-                // in this step there is no $accessGroupName knownw so we can not update it - just exit
-                return response()->json([
-                    'success' => false,
-                    'message' => 'You do not have permissions. Be sure you did the required training']);
-            }
-            
-            //All other cases - nothing to do
-            //Group will be considered on the next step with ldap filter config
+            //else we do not do anything - resources will be checked with the following default ldap auth
             //proceed to log in
             return $next($request);
         }
         else{
-            //invalid credentials - will be killed on the next step
+            //invalid credentials - will be killed by the following default ldap auth
             return response()->json([
                 'success' => false,
                 'message' => 'Login Failed']);
