@@ -106,7 +106,7 @@ class AiConvController extends Controller
         // delete auxiliary data
         foreach($conv->messages as $msg) {
             foreach($msg->auxiliaries as $aux) {
-                if ($aux['type'] == 'imageResponse') {
+                if ($aux['type'] == 'imageResponse' || strpos($aux['type'], 'attachment:') === 0) {
                     EncryptedDataStorageController::delete($aux['content']);
                 }
             }
@@ -168,7 +168,7 @@ class AiConvController extends Controller
             $auxiliaries = $message->auxiliaries ? $message->auxiliaries->toArray() : [];
             $resolvedAux = [];
             foreach($auxiliaries as $aux) {
-                if ($aux['type'] == 'imageResponse') {
+                if ($aux['type'] == 'imageResponse' || strpos($aux['type'], 'attachment:') === 0) {
                     // for images we get the from disk as we only have the path contained
                     $aux['content'] = Storage::disk('public')->get($aux['content']);
                 }
@@ -233,10 +233,15 @@ class AiConvController extends Controller
         if (isset($validatedData['auxiliaries'])) {
             foreach($validatedData['auxiliaries'] as $auxiliary) {
                 // images are stored by path only
+                $auxType = $auxiliary['type'];
                 if ($auxiliary['type'] == 'imageResponse') {
                     // for images we get the from disk as we only have the path contained
                     $imagePath = EncryptedDataStorageController::storeData($auxiliary['content'], 'user_images');
                     $auxiliary['content'] = $imagePath;
+                } else if (strpos($auxType, 'attachment:') === 0) {
+                    // similar as for images, but we use a different storage path
+                    $attachmentPath = EncryptedDataStorageController::storeData($auxiliary['content'], 'user_attachments');
+                    $auxiliary['content'] = $attachmentPath;
                 }
             
                 $aux = AiConvMsgAux::create([
@@ -313,10 +318,15 @@ class AiConvController extends Controller
             $message->auxiliaries()->delete();
             foreach($validatedData['auxiliaries'] as $auxiliary) {
                 // images are stored by path only
+                $auxType = $auxiliary['type'];
                 if ($auxiliary['type'] == 'imageResponse') {
                     // for images we get the from disk as we only have the path contained
                     $imagePath = EncryptedDataStorageController::storeData($auxiliary['content'], 'user_images');
                     $auxiliary['content'] = $imagePath;
+                } else if (strpos($auxType, 'attachment:') === 0) {
+                    // similar as for images, but we use a different storage path
+                    $attachmentPath = EncryptedDataStorageController::storeData($auxiliary['content'], 'user_attachments');
+                    $auxiliary['content'] = $attachmentPath;
                 }
                 $aux = AiConvMsgAux::create([
                     'msg_id' => $message->id,

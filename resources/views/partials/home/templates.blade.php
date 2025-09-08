@@ -54,7 +54,9 @@
 				<div class="dot"></div>
 				<div class="message-author"></div>
 			</div>
-
+			<div>
+				<div id="attachment-list" class="attachment-list" style="display: none;"></div>
+			</div>
 			<div class="message-content">
 				<span class="assistant-mention"></span>
 				<span class="message-text"></span>

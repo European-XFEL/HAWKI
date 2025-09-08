@@ -73,8 +73,9 @@ async function submitMessageToServer(requestObj, url){
             },
             body: JSON.stringify(requestObj)
         });
-
-        const data = await response.json();
+        const resp = await response.text();
+        const data = JSON.parse(resp); //await response.json();
+        
         if (data.success) {
             return data.messageData;
             // updateMessageElement(messageElement, data.messageData);
@@ -361,6 +362,18 @@ function setModel(modelID = null){
             selector.classList.remove('active');
         }
     });
+
+    const inputSelectors = document.querySelectorAll('#main-input-field');
+    inputSelectors.forEach(selector => {
+        if (activeModel.enable_document_input) {
+            selector.setAttribute("placeholder", selector.getAttribute("data-file-drop-enabled-placeholder"));
+        } else {
+            selector.setAttribute("placeholder", selector.getAttribute("data-file-drop-disabled-placeholder"));
+        }
+    });
+    
+    document.querySelector('#model-capability-image-gen').style.display = activeModel.enable_image_generation ? "inline-block" : "none";
+    document.querySelector('#model-capability-attachments').style.display = activeModel.enable_document_input ? "inline-block" : "none";
 
 }
 //#endregion

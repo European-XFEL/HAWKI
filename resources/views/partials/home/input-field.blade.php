@@ -160,30 +160,36 @@
 
     </div>
     <div class="input" id="0">
-        <div class="input-wrapper">
+       <div class="input-wrapper">
+            <div id="drop-error-overlay" class="drop-error-overlay" style="display: none;">This model does not support document input!</div>
+            
+            <div id="drop-file-list" class="drop-file-list" style="display: none;"></div>
+
             <textarea  
                 class="input-field"
                 id="main-input-field" 
                 type="text"
+                data-files='[]'
+                data-file-drop-enabled-placeholder="{{ $translation['Input_Placeholder_Chat_With_Filedrop'] }}"
+                data-file-drop-disabled-placeholder="{{ $translation['Input_Placeholder_Chat'] }}"
+                data-file-drop-error="{{ $translation['Filedrop_Error'] }}"
+                data-file-drop-unsupported="{{ $translation['Filedrop_Unsupported'] }}"
 
                 @if($activeModule === 'chat')
-
                     placeholder="{{ $translation['Input_Placeholder_Chat'] }}" 
                     oninput="resizeInputField(this);" 
                     onkeypress="onHandleKeydownConv(event)"
-
                 @elseif($activeModule === 'groupchat')
-
-                    placeholder="{{ $translation['Input_Placeholder_Room'] ." ". config('app.aiHandle')}}"
+                    placeholder="{{ $translation['Input_Placeholder_Room'] ." ". config('app.aiHandle')}}" 
                     oninput="resizeInputField(this); onGroupchatType()" 
                     onkeypress="onHandleKeydownRoom(event)"
-                
                 @endif
 
                 onfocus="onInputFieldFocus(this); toggleOffRelativeInputControl(this)"
-                onfocusout="onInputFieldFocusOut(this)"></textarea>
-        </div>
+                onfocusout="onInputFieldFocusOut(this)"
+                ondrop="handleDrop(this, event);"></textarea>
 
+        </div>
 
         <div class="input-send tooltip-parent">
             @if($activeModule === 'chat')
@@ -217,5 +223,9 @@
                 {{ $translation["PromptImprovement"] }}
             </div>
         </div>
+    </div>
+    <div class="model-capabilities">
+        <span class="model-capability" id="model-capability-image-gen" title="{{ $translation['Model_Capability_Image_Gen'] }}">&#x1F3DE;</span>
+        <span class="model-capability" id="model-capability-attachments" title="{{ $translation['Model_Capability_Attachments'] }}">&#x1F4CE;</span>
     </div>
 </div>

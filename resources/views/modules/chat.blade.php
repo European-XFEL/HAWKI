@@ -34,7 +34,9 @@
 
 
 
-	<div class="dy-main-panel">
+	<div class="dy-main-panel"
+		ondrop="event.preventDefault();"
+		ondragover="event.preventDefault();">
 
 		<div class="dy-main-content" id="chat">
 

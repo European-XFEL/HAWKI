@@ -51,13 +51,7 @@ class OpenAIResponsesProvider extends BaseAIModelProvider
         // Convert messages into the Responses API "input" shape
         $input = [];
         foreach ($messages as $message) {
-            $contentText = $message['content']['text'] ?? '';
             
-            $input[] = [
-                'role' => $message['role'],
-                'content' => $contentText
-            ];
-
             $auxiliaries = $message['auxiliaries'] ?? [];
             
             foreach($auxiliaries as $aux) {
@@ -78,9 +72,53 @@ class OpenAIResponsesProvider extends BaseAIModelProvider
                             ]
                         ]
                     ];
-                } 
+                } else if (strpos($aux['type'], 'attachment') === 0) {
+                    // this is a stringified JSON at this point
+                    $content = json_decode($aux['content'], true);
+                    if (!$content) {
+                        //Log::info("Attachement failure");
+                        continue;
+                    }
+                    //Log::info("attachment ". $content['type']);
+
+                    switch ($content['type']) {
+                        case 'application/pdf':
+                            $input[] = [
+                                'role' => 'user',
+                                'content' => [
+                                    [
+                                    'type' => 'input_file',
+                                    'filename' => $content['name'],
+                                    'file_data' => $content['content'], 
+                                    ]
+                                ]
+                            ];
+                            break;
+                        case 'image/png':
+                        case 'image/jpeg':
+                            $input[] = [
+                                'role' => 'user',
+                                'content' => [
+                                    [
+                                    'type' => 'input_image',
+                                    'image_url' => $content['content'], 
+                                    ]
+                                ]
+                            ];
+                            break;    
+                    }
+                    
+                }
+                
             }
+            $contentText = $message['content']['text'] ?? '';
+            $input[] = [
+                'role' => $message['role'],
+                'content' => $contentText
+            ];
         }
+
+        //Log::info("Input", $input);
 
         // Build payload for Responses endpoint
         $payload = [
@@ -91,8 +129,6 @@ class OpenAIResponsesProvider extends BaseAIModelProvider
             'store' => false, // always false for data safety, otherwise OpenAI retain may responses
         ];
 
-
-        
 
         // set the reasoning effort
         if (isset($modelConfig['reasoning_effort'])) {

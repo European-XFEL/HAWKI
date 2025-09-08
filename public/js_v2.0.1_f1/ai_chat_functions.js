@@ -44,6 +44,111 @@ function onHandleKeydownConv(event){
     }
 }
 
+function handleDrop(textArea, event) {
+    
+    event.preventDefault();
+    extensionErrors = [];
+    unsupported = true;
+    if (activeModel && activeModel.enable_document_input) {
+        const files = event.dataTransfer.files;
+        let fileArray = textArea.dataset.files ? JSON.parse(textArea.getAttribute('data-files')) : [];
+        
+        for (let file of files) {
+            if (['application/pdf', 'image/png', 'image/jpeg'].includes(file.type) && file.size / 1000 <= activeModel.max_attachment_size_kb) {
+                const reader = new FileReader();
+                reader.onload = function(event) {
+                    const base64Content = event.target.result;
+                    fileArray.push({ name: file.name, size: file.size, content: base64Content, type: file.type});
+                    textArea.setAttribute('data-files', JSON.stringify(fileArray));
+                    displayFiles(fileArray, textArea);
+                };
+                reader.readAsDataURL(file);
+            } else {
+                extensionErrors.push({ name: file.name, type: file.type, size: file.size });
+            }
+        }
+        
+        textArea.setAttribute('data-files', JSON.stringify(fileArray));
+        unsupported = false;
+    }
+    if (extensionErrors.length > 0 || unsupported) {
+        // Show the non-visible overlay and then fade it out
+        const overlay = document.getElementById('drop-error-overlay');
+        overlay.style.position = 'absolute'; 
+        overlay.style.top = '0'; 
+        overlay.style.left = '0'; 
+        overlay.style.display = 'block';
+        if (unsupported) {
+            overlay.innerText = textArea.getAttribute("data-file-drop-unsupported");
+        } else {
+            var errorMsg = textArea.getAttribute("data-file-drop-error").replace("${maxFileSize}", activeModel.max_attachment_size_kb) + "<br/>";
+            for (let fileError of extensionErrors) {
+                errorMsg += `${fileError.name}: ${fileError.type} (${Math.floor(fileError.size / 1000)} kB)<br/>`;
+            }
+            
+            overlay.innerHTML = errorMsg;
+        }
+        setTimeout(() => {
+            overlay.style.transition = 'opacity 7s';
+            overlay.style.opacity = 0;
+            setTimeout(() => {
+                overlay.style.display = 'none';
+                overlay.style.opacity = 1; 
+            }, 7000);
+        }, 100);
+    }
+}
+
+function displayFiles(files, textArea) {
+    const fileListDiv = textArea.parentElement.querySelector('#drop-file-list');
+    if (!fileListDiv) return;
+    fileListDiv.innerHTML = '';
+    if (files.length > 0) {
+        fileListDiv.style.display = 'block';
+        files.forEach((file, index) => {
+            const fileItem = document.createElement('div');
+            fileItem.classList.add('drop-file-item');
+            const removeButton = document.createElement('span');
+            removeButton.classList.add('remove-file');
+            removeButton.innerHTML = '&#10006;';
+            removeButton.onclick = function() {
+                removeFile(index, textArea);
+            };
+
+
+            fileItem.innerHTML = file.name + ` (${(file.size / 1024).toFixed(0)} KB)`;
+            fileItem.appendChild(removeButton);
+            fileListDiv.appendChild(fileItem);
+
+        });
+    } else {
+        fileListDiv.style.display = 'none';
+    }
+}
+
+
+function clearFiles(inputField) {
+   
+    const fileListDiv = inputField.parentElement.querySelector('#drop-file-list');
+    if (!fileListDiv) return;
+    fileListDiv.innerHTML = '';
+    fileListDiv.style.display = 'none';
+    
+    // Assuming there's a dataset object to clear files from
+    if (inputField.dataset && inputField.dataset.files) {
+        inputField.dataset.files = []; // Clear dataset.files
+    }
+    
+}
+
+
+function removeFile(index, textArea) {
+    let fileArray = JSON.parse(textArea.getAttribute('data-files'));
+    fileArray.splice(index, 1); // Remove the file at the specified index
+    textArea.setAttribute('data-files', JSON.stringify(fileArray));
+    displayFiles(fileArray, textArea);
+}
+
 function onSendClickConv(btn){
 
     if(getSendBtnStat() === SendBtnStatus.SENDABLE){
@@ -69,6 +174,27 @@ async function sendMessageConv(inputField) {
 
     setSendBtnStatus(SendBtnStatus.LOADING);
 
+    // format auxiliary data that me might want to add
+    let files = [];
+    try {
+        files = JSON.parse(inputField.dataset.files);
+    } catch (error) {}
+    auxiliaries = [];
+    for(let file of files) {
+        auxiliaries.push({
+            type: "attachment:" + file.type,
+            content: JSON.stringify({
+                content: file.content,
+                name: file.name,
+                type: file.type,
+                size: file.size
+            })
+        })
+    }
+
+    // we have the files, clear them from display
+    clearFiles(inputField);
+
     //create a message object.
     let messageObj = {
         message_role: 'user',
@@ -78,8 +204,10 @@ async function sendMessageConv(inputField) {
             username: userInfo.username,
             name: userInfo.name,
             avatar_url: userInfo.avatar_url,
-        }
+        },
+        auxiliaries: auxiliaries,
     };
+
     // empty input field
     inputField.value = "";
     resizeInputField(inputField);
@@ -113,7 +241,6 @@ async function sendMessageConv(inputField) {
         };
 
         // Submit Message to server.
-
         const requestObj = {
             'isAi': false,
             'threadID': activeThreadIndex,
@@ -126,11 +253,13 @@ async function sendMessageConv(inputField) {
         const submittedObj = await submitMessageToServer(requestObj, `/req/conv/sendMessage/${activeConv.slug}`);
         submittedObj.content = messageObj.content;
         submittedObj.username = userInfo.username;
+        // these need to be the unencrypted auxiliaries
+        submittedObj.auxiliaries = messageObj.auxiliaries;
         
         // create and add message element to chatlog.
         const messageElement = addMessageToChatlog(submittedObj);
         messageElement.dataset.rawMsg = submittedObj.content;
-        messageElement.dataset.auxiliaries = JSON.stringify(submittedObj.auxiliaries);
+        messageElement.dataset.auxiliaries = JSON.stringify(messageObj.auxiliaries);
         scrollToLast(true, messageElement);
     }
 
@@ -255,7 +384,6 @@ async function buildRequestObjectForAiConv(msgAttributes, messageElement = null,
                 }
                 auxiliaries.push(aux);
             };
-
             activateMessageControls(messageElement);
 
             const requestObj = {
@@ -366,7 +494,7 @@ async function initNewConv(messageObj){
     submittedObj.content = messageObj.content;
     // messageObj.content is still not processed. it equals the rawData.
     messageElement.dataset.rawMsg = submittedObj.content;
-    messageElement.dataset.auxiliaries = JSON.stringify(submittedObj.auxiliaries);
+    messageElement.dataset.auxiliaries = JSON.stringify(messageObj.auxiliaries);
 
     // set the unassigned attirbutes to the temporarily made message Element.
     updateMessageElement(messageElement, submittedObj);
@@ -392,6 +520,13 @@ function startNewChat(){
     }
 
     document.getElementById('input-container').focus();
+
+    // make sure we don't carry over any files
+    const textArea = document.getElementById('main-input-field');
+    textArea.dataset.files = [];
+    const fileList = document.getElementById('drop-file-list');
+    fileList.innerHTML = '';
+    
 }
 
 function createChatItem(conv = null){
