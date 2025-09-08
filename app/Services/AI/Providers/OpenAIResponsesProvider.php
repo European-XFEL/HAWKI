@@ -76,11 +76,10 @@ class OpenAIResponsesProvider extends BaseAIModelProvider
                     // this is a stringified JSON at this point
                     $content = json_decode($aux['content'], true);
                     if (!$content) {
-                        Log::info("Attachement failure");
+                        //Log::info("Attachement failure");
                         continue;
                     }
-
-                    Log::info("attachment ". $content['type']);
+                    //Log::info("attachment ". $content['type']);
 
                     switch ($content['type']) {
                         case 'application/pdf':

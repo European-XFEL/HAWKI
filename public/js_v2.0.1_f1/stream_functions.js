@@ -221,7 +221,6 @@ function createMsgObject(msg){
         },
         auxiliaries: filteredAux,
     }
-
     return messageObject;
 }
 

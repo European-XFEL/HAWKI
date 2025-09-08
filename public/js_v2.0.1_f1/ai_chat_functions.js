@@ -175,7 +175,10 @@ async function sendMessageConv(inputField) {
     setSendBtnStatus(SendBtnStatus.LOADING);
 
     // format auxiliary data that me might want to add
-    let files = JSON.parse(inputField.dataset.files);
+    let files = [];
+    try {
+        files = JSON.parse(inputField.dataset.files);
+    } catch (error) {}
     auxiliaries = [];
     for(let file of files) {
         auxiliaries.push({
