@@ -106,7 +106,7 @@ class AiConvController extends Controller
         // delete auxiliary data
         foreach($conv->messages as $msg) {
             foreach($msg->auxiliaries as $aux) {
-                if ($aux['type'] == 'imageResponse') {
+                if ($aux['type'] == 'imageResponse' || strpos($aux['type'], 'attachment:') === 0) {
                     EncryptedDataStorageController::delete($aux['content']);
                 }
             }
