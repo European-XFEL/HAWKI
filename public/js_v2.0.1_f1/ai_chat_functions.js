@@ -303,6 +303,8 @@ async function buildRequestObjectForAiConv(msgAttributes, messageElement = null,
             messageObj.model = msgAttributes['model'];
             messageObj.auxiliaries = data.auxiliaries;
 
+            console.log("AUX", data.auxiliaries);
+
             if (!messageElement) {
                 initializeMessageFormating()
                 messageElement = addMessageToChatlog(messageObj, false);
