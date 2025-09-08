@@ -20,18 +20,28 @@ function displayAttachments(messageElement, files) {
 function displayAnnotations(messageElement, annotations) {
     const annotationDiv = messageElement.querySelector('#annotation-list');
     if (!annotationDiv) return;
+
+    var existingAnnotations = new Set();
     if (annotations.length > 0) {
         annotationDiv.style.display = 'inline-block';
         annotations.forEach((item, index) => {
-            const annotation = document.createElement('div');
-            annotation.classList.add('annotation-item');
-            annotation.innerHTML = `<a href="${item.url}">${item.title}</a>`;
-            annotationDiv.appendChild(annotation);
-
+            if (!existingAnnotations.has(item.url)) {
+                const annotation = document.createElement('div');
+                annotation.classList.add('annotation-item');
+                annotation.innerHTML = `<a href="${item.url}" target="blank" title="${item.url}" >&#x1F310; ${item.title}</a>`;
+                annotationDiv.appendChild(annotation);
+                existingAnnotations.add(item.url);
+            }
         });
     } else {
         annotationDiv.style.display = 'none';
     }
+}
+
+function clearAnnotations(messageElement) {
+    const annotationDiv = messageElement.querySelector('#annotation-list');
+    if (!annotationDiv) return;
+    annotationDiv.innerHTML = '';
 }
 
 function addMessageToChatlog(messageObj, isFromServer = false){
@@ -749,7 +759,7 @@ async function onRegenerateBtn(btn){
     btn.disabled = true;
     btn.style.opacity = '.2';
     const messageElement = btn.closest('.message');
-
+    clearAnnotations(messageElement);
     regenerateMessage(messageElement, async(Done)=>{
         btn.disabled = false;
         btn.style.opacity = '1';

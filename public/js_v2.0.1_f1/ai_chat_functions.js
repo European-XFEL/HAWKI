@@ -303,11 +303,19 @@ async function buildRequestObjectForAiConv(msgAttributes, messageElement = null,
             messageObj.model = msgAttributes['model'];
             messageObj.auxiliaries = data.auxiliaries;
 
-            console.log("AUX", data.auxiliaries);
-
             if (!messageElement) {
                 initializeMessageFormating()
                 messageElement = addMessageToChatlog(messageObj, false);
+            } else {
+                var annotations = [];
+                for (aux of messageObj.auxiliaries ?? []) {
+                    if (aux['type'] == 'webSearchAnnotations') {
+                        // content in this case is a JSON string, if this was passed
+                        const content = JSON.parse(aux['content']);
+                        annotations = annotations.concat(content);
+                    }
+                }
+                displayAnnotations(messageElement, annotations);
             }
             messageElement.dataset.rawMsg = msg;
             messageElement.dataset.auxiliaries = JSON.stringify(messageObj.auxiliaries);

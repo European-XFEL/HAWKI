@@ -1023,12 +1023,13 @@
     width: 100%;
     clear: both;
     font-size: small;
+     cursor: help;
 }
 
 .annotation-item {
-    color: #584cc2;
-    background-color: #f3f2ff;
-    border: 1px solid #584cc2;
+    color: #c4c3c3;
+    background-color: #f2f2f2;
+    border: 1px solid  #c4c3c3;
     
     float: left;
     padding: 3px;
@@ -1037,7 +1038,9 @@
     border-radius: 5px;
 }
 
-
+.annotation-item:hover {
+    text-decoration: underline;
+}
 
 #send-btn{
     display: flex;
