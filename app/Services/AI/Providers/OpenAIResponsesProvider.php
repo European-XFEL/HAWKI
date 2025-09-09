@@ -136,8 +136,9 @@ class OpenAIResponsesProvider extends BaseAIModelProvider
         }
 
         // keep encrypted reasoning tokens if requested
+        $include = [];
         if (isset($config['keep_reasoning_tokens']) && $config['keep_reasoning_tokens']) {
-            $payload['include'] = ["reasoning.encrypted_content"];
+            $include[] = "reasoning.encrypted_content";
         }
 
         $tools = [];
@@ -155,12 +156,28 @@ class OpenAIResponsesProvider extends BaseAIModelProvider
             }
             $tools[] = $imageTool;
         }
+
+        if (isset($modelConfig['enable_web_search']) && $modelConfig['enable_web_search']) {
+            $webSearchTool = ['type' => 'web_search'];
+            if (isset($modelConfig['user_location']) ) {
+                $webSearchTool['user_location'] = $modelConfig['user_location'];
+            }
+            $tools[] = $webSearchTool;
+
+             if (isset($modelConfig['include_search_results']) && $modelConfig['include_search_results']) {
+                 $include[] = "web_search_call.action.sources";
+             }
+        }
        
         if (!empty($tools)) {
             $payload['tools'] = $tools;
             $payload['tool_choice'] = 'auto';
         }
-        
+
+        if (!empty($include)) {
+             $payload['include'] = $include;
+        }
+
         return $payload;
     }
 
@@ -179,6 +196,7 @@ class OpenAIResponsesProvider extends BaseAIModelProvider
         $texts = [];
         $reasoning = [];
         $imageData = '';
+        $annotations = [];
         
         if (!empty($jsonContent['output']) && is_array($jsonContent['output'])) {
             foreach ($jsonContent['output'] as $outputItem) {
@@ -188,6 +206,15 @@ class OpenAIResponsesProvider extends BaseAIModelProvider
                             foreach ($outputItem['content'] as $c) {
                                 if ($c['type'] == 'output_text') {
                                     $texts[] = $c['text'];
+                                }
+
+                                foreach($c['annotations'] ?? [] as $a) {
+                                    if ($a['type'] == 'url_citation') {
+                                        $annotations[] = [
+                                            "url" => $a['url'],
+                                            "title" => $a['title'],
+                                        ];
+                                    }
                                 }
                             }
                         }
@@ -216,6 +243,15 @@ class OpenAIResponsesProvider extends BaseAIModelProvider
                 'content' => "data:image/png;base64,".$imageData,
             ];
         }
+
+        if ($annotations) {
+            $auxiliaries[] = [
+                'type' => 'webSearchAnnotations',
+                // the prefix is missing
+                'content' => json_encode($annotations),
+            ];
+        }
+        
         
         return [
             'content' => [
@@ -257,6 +293,7 @@ class OpenAIResponsesProvider extends BaseAIModelProvider
         // Completed event:
         $reasoning = [];
         $imageData = '';
+        $annotations = [];
         if (isset($jsonChunk['type']) && in_array($jsonChunk['type'], ['response.completed', 'response.refreshed'], true)) {
             $isDone = true;
             // check for encrypted reasoning tokens
@@ -264,6 +301,19 @@ class OpenAIResponsesProvider extends BaseAIModelProvider
             foreach($output as $item) {
                 if ($item['type'] == 'reasoning' && isset($item['encrypted_content'])) {
                     $reasoning[] = $item;
+                } else if ($item['type'] == "message") {
+                    if (!empty($item['content']) && is_array($item['content'])) {
+                        foreach ($item['content'] as $c) {
+                            foreach($c['annotations'] ?? [] as $a) {
+                                if ($a['type'] == 'url_citation') {
+                                    $annotations[] = [
+                                        "url" => $a['url'],
+                                        "title" => $a['title'],
+                                    ];
+                                }
+                            }
+                        }
+                    }
                 }
             }
             // get the final image if we have one
@@ -334,6 +384,16 @@ class OpenAIResponsesProvider extends BaseAIModelProvider
             ];
             
         }
+
+        if ($annotations) {
+            $response['auxiliaries'][] = [
+                'type' => 'webSearchAnnotations',
+                // the prefix is missing
+                'content' => json_encode($annotations),
+            ];
+        }
+        
+
         return $response;
     }
 

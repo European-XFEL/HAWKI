@@ -61,6 +61,7 @@
 				<span class="assistant-mention"></span>
 				<span class="message-text"></span>
 			</div>
+			<div class="annotation-list" id="annotation-list" style="display: none;"></div>
 			<div class="message-controls">
 				<div class="controls">
 					<div class="buttons">
