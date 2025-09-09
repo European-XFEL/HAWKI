@@ -18,6 +18,7 @@
     <link rel="stylesheet" href="{{ asset_with_time('css_v2.0.1_f1/home-style.css') }}">
     <link rel="stylesheet" href="{{ asset_with_time('css_v2.0.1_f1/settings_style.css') }}">
     <link rel="stylesheet" href="{{ asset_with_time('css_v2.0.1_f1/hljs_custom.css') }}">
+	<link rel="stylesheet" href="{{ asset_with_time('xfel/xfel.css') }}">
 
     @vite('resources/js/app.js')
 
