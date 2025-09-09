@@ -78,6 +78,11 @@ function addMessageToChatlog(messageObj, isFromServer = false){
         messageElement.dataset.auxiliaries = '';
     }
 
+    //show spinner 
+    if(!isFromServer && activeModel.streamable && messageObj.message_role == "assistant"){
+        messageElement.querySelector('.preparing_completion_spinner').style.display = "block";
+    }
+
     /// CLASSES & AVATARS
     // add classes AI ME MEMBER to the element
     if(messageObj.message_role === "assistant"){
@@ -239,6 +244,7 @@ function addMessageToChatlog(messageObj, isFromServer = false){
     if (messageObj.hasOwnProperty('completion')){
         if (messageObj.completion === 0 && messageElement.querySelector('#incomplete-msg-icon')) {
             messageElement.querySelector('#incomplete-msg-icon').style.display = 'flex';
+            $('.preparing_completion_spinner').remove();
         }else{
             messageElement.querySelector('#incomplete-msg-icon').style.display = 'none';
         }
@@ -305,6 +311,7 @@ function updateMessageElement(messageElement, messageObj, updateContent = false)
     if (messageObj.hasOwnProperty('completion')){
         if ((messageObj.completion === 0 || messageObj.completion === false) && messageElement.querySelector('#incomplete-msg-icon')) {
             messageElement.querySelector('#incomplete-msg-icon').style.display = 'flex';
+            $('.preparing_completion_spinner').remove();
         }else{
             messageElement.querySelector('#incomplete-msg-icon').style.display = 'none';
         }

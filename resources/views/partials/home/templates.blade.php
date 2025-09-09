@@ -57,6 +57,7 @@
 			<div>
 				<div id="attachment-list" class="attachment-list" style="display: none;"></div>
 			</div>
+			<div class="preparing_completion_spinner" style="margin-bottom:10px; display: none"></div>
 			<div class="message-content">
 				<span class="assistant-mention"></span>
 				<span class="message-text"></span>

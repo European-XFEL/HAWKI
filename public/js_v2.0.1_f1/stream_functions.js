@@ -51,6 +51,9 @@ function buildRequestObject(msgAttributes, onData) {
     });
 }
 
+function streamContentreceived(){
+    $('.preparing_completion_spinner').remove();
+}
 
 async function postData(data) {
 
@@ -86,7 +89,7 @@ async function processStream(stream, onData) {
     if (!stream) {
         return;
     }
-
+    let _contentReceived = false;
     const reader = stream.getReader();
     const textDecoder = new TextDecoder("utf-8");
     try{
@@ -111,6 +114,12 @@ async function processStream(stream, onData) {
                 if (part.trim()) {
                     try {
                         const data = JSON.parse(part);
+                        //start getting data from stream
+                        //empty content looks like {"text":""} so for performance optimization we consider everything longer
+                        if(!_contentReceived && (data.content.length > 12 || data.isDone)){  
+                            _contentReceived = true;
+                            streamContentreceived();    
+                        }
                         //send back the data
                         if(data.isDone){
                             onData(data, true);
