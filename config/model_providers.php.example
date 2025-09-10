@@ -52,16 +52,6 @@ return [
                     'label' => 'OpenAI GPT 4o',
                     'streamable' => true,
                 ],
-                [
-                    'id' => 'gpt-4o-mini',
-                    'label' => 'OpenAI GPT 4o mini',
-                    'streamable' => true,
-                ],
-                [
-                    'id' => 'o1-mini',
-                    'label' => 'OpenAI O1 mini',
-                    'streamable' => false,
-                ]
             ]
         ],
 
@@ -72,32 +62,26 @@ return [
             'api_key' => env('OPENAI_API_KEY', ''),
             'api_url' => 'https://api.openai.com/v1/responses',
             'ping_url' => 'https://api.openai.com/v1/models',
-            // set this to true to keep encrypted reasoning
-            // tokens as part of the conversation history
-            // reasoning tokens are used in their encrypred variant
-            // with the store := false setting of messages
-            'keep_reasoning_tokens' => true,
             'models' => [
                 [
                     'id' => 'gpt-5',
                     'label' => 'OpenAI GPT 5',
-                    'streamable' => false,
+                    'streamable' => true,
                     'reasoning_effort' => 'medium',
-                    // the openai-responses API supports image genertion
+                    'keep_reasoning_tokens' => true, // set this to true to keep encrypted reasoning tokens as part of the conversation history reasoning tokens are used in their encrypred variant with the store := false setting of messages
+                    
+                    //Images
                     'enable_image_generation' => true,
-                    'enable_document_input' => true,
-                    'max_attachment_size_kb' => 5*1024,
                     'quality' => 'low', // low, mediun, high, auto
                     'size' => '1024x1024', //1024x1024, 1024x1536, 1536x1024, or auto
                     'partial_images' => 3, // maximum number of partial image updates to generate when streaming, can be up to 3
-                    // previously generated images in the thread are added to the input of the next request.
-                    'add_thread_images_as_input' => true,
-                ],
-                [
-                    'id' => 'gpt-5-mini',
-                    'label' => 'OpenAI GPT 5 mini',
-                    'streamable' => false,
-                    'reasoning_effort' => 'medium',
+                    'add_thread_images_as_input' => false, // previously generated images in the thread are added to the input of the next request.
+                    
+                    //Upload files
+                    'enable_document_input' => true,
+                    'max_attachment_size_kb' => 2*1024,
+                    
+                    //Web search
                     'enable_web_search' => true,
                     'user_location' => [  // the location assumed for the websearch, to not add a location, comment this
                         'country' => 'DE',
