@@ -137,7 +137,7 @@ class OpenAIResponsesProvider extends BaseAIModelProvider
 
         // keep encrypted reasoning tokens if requested
         $include = [];
-        if (isset($config['keep_reasoning_tokens']) && $config['keep_reasoning_tokens']) {
+        if ($modelConfig['keep_reasoning_tokens']) {
             $include[] = "reasoning.encrypted_content";
         }
 
