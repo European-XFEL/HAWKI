@@ -52,7 +52,7 @@ function buildRequestObject(msgAttributes, onData) {
 }
 
 function streamContentreceived(){
-    $('.preparing_completion_spinner').remove();
+    $('.preparing_completion_spinner').hide();
 }
 
 async function postData(data) {
