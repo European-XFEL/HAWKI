@@ -15,7 +15,7 @@
         <div class="spinner"></div> 
         <div style="display: inline-block;vertical-align: middle">
             <span  style="color: green;">Logging in...</span> 
-            <br>May take 5-20 seconds
+            <br>It may take some time to check your training status
         </div>
     </div>
     <div id="login-Button-panel">

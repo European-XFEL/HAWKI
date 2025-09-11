@@ -39,39 +39,57 @@ class PermissionCheck
             return $next($request);
         }
         
-        $ldapService = new LdapService(); 
+        $ldapService = new LdapService();
+        
+        $dachsRequirementId = config('xfel_access.dachs_requirement_id');
+        $trainingResourceName = config('xfel_access.training_resource_name');
+        $baseResourceName = config('xfel_access.base_resource_name');
         
         if ($ldapService->checkCredentials($username, $request->get('password'))){
-            $accountInfo = $accountService->getAccountInfo($username);
             
-            //If getAccountInfo fail lets just skip it. Access permissions will be checked with the following default ldap auth
-            //E.g. when external systems are down
-            if (empty($accountInfo) || empty($accountInfo['dachs_requirements']) || empty($accountInfo['ldap'])){
-                Log::error('PermissionCheck getAccountInfo failed: ' . $username);
+            $ldapResourceGroups = (array)$ldapService->getReourceGroups($username);
+            //something wrong. fall back for default LDAP auth
+            if(empty($ldapResourceGroups)){
+                return $next($request); 
+            }
+            
+            $hasBaseResource = in_array($baseResourceName, $ldapResourceGroups);
+            $hasTrainingResource = in_array($trainingResourceName, $ldapResourceGroups);
+            
+            //both resources are there - continue to default LDAP auth
+            //this is needed to speed up the  log in
+            if($hasBaseResource && $hasTrainingResource){
+                //@TODO - background task to check training expire
                 return $next($request);
             }
             
-            $dachsRequirementId = config('xfel_access.dachs_requirement_id');
-            $trainingResourceName = config('xfel_access.training_resource_name');
-            $baseResourceName = config('xfel_access.base_resource_name');
-            
-            // If basic resource is in configuration lets check it.
-            // This will be always checked with the following default ldap auth, but here we can cut it earlier and have a proper message to user
-            if( !empty($baseResourceName) && !in_array($baseResourceName, (array)$accountInfo['ldap']['resource_groups'])){
+            //base resource is missing
+            if( !$hasBaseResource){
                 return response()->json([
                     'success' => false,
                     'message' => 'You do not have permissions. Staff members only.']);
             }
+            
+            // here we come to the case when only training Resource is missing
+            // and we want to check training 
+            $accountInfo = $accountService->getAccountInfo($username);
+            
+            //If getAccountInfo fail lets just skip it. Access permissions will be checked with the following default ldap auth
+            //E.g. when external systems are down
+            if (empty($accountInfo) || empty($accountInfo['dachs_requirements'])){
+                Log::error('PermissionCheck getAccountInfo failed: ' . $username);
+                return $next($request);
+            }
+            
             
             // If conditional resources related to trainings are in the configuration lets check them.
             // This will be always checked with the following default ldap auth,
             // but here we can update resource based on training and give a nice messsages to user
             if($dachsRequirementId && $trainingResourceName){
                 $trainingValid =  (bool)$accountInfo['dachs_requirements'][$dachsRequirementId]['valid'];
-                $hasResource = in_array($trainingResourceName, (array)$accountInfo['ldap']['resource_groups']);
 
                 if ($trainingValid){
-                    if(!$hasResource){
+                    if(!$hasTrainingResource){
                         //assign resource
                         // but user may need to wait
                         $apiResponse = $accountService->assignResource($username, $trainingResourceName);
@@ -85,7 +103,7 @@ class PermissionCheck
                 }
                 else{
                     //If training is not valid but still have resource - revoke it
-                    if($hasResource){
+                    if($hasTrainingResource){
                         $apiResponse = $accountService->unassignResource($username, $trainingResourceName);
                     }
                     return response()->json([
