@@ -244,7 +244,7 @@ function addMessageToChatlog(messageObj, isFromServer = false){
     if (messageObj.hasOwnProperty('completion')){
         if (messageObj.completion === 0 && messageElement.querySelector('#incomplete-msg-icon')) {
             messageElement.querySelector('#incomplete-msg-icon').style.display = 'flex';
-            $('.preparing_completion_spinner').remove();
+            messageElement.querySelector('.preparing_completion_spinner').style.display="none";
         }else{
             messageElement.querySelector('#incomplete-msg-icon').style.display = 'none';
         }
@@ -311,7 +311,7 @@ function updateMessageElement(messageElement, messageObj, updateContent = false)
     if (messageObj.hasOwnProperty('completion')){
         if ((messageObj.completion === 0 || messageObj.completion === false) && messageElement.querySelector('#incomplete-msg-icon')) {
             messageElement.querySelector('#incomplete-msg-icon').style.display = 'flex';
-            $('.preparing_completion_spinner').remove();
+            messageElement.querySelector('.preparing_completion_spinner').style.display="none";
         }else{
             messageElement.querySelector('#incomplete-msg-icon').style.display = 'none';
         }
@@ -767,6 +767,7 @@ async function onRegenerateBtn(btn){
     btn.style.opacity = '.2';
     const messageElement = btn.closest('.message');
     clearAnnotations(messageElement);
+    messageElement.querySelector('.preparing_completion_spinner').style.display = "block";
     regenerateMessage(messageElement, async(Done)=>{
         btn.disabled = false;
         btn.style.opacity = '1';
