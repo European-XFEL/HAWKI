@@ -24,22 +24,25 @@ class LdapService
     }
     
     public function checkCredentials($username, $password){
-        $ldap_basen = config('ldap.custom_connection.ldap_search_dn');
+        $ldap_base = config('ldap.custom_connection.ldap_search_dn');
         $ldap_attribute_username = config('ldap.custom_connection.attribute_map.username');
-        $userDn = $ldap_attribute_username ."=".$username.",ou=people,".$ldap_basen;
+        $userDn = $ldap_attribute_username ."=".$username.",ou=people,".$ldap_base;
         
         $bind = @ldap_bind($this->_getConnection(), $userDn, $password);
         return (bool)$bind;
     }
     
-    public function getUserGroups($username)
+    public function getReourceGroups($username)
     {
-        $ldap_basen = config('ldap.custom_connection.ldap_search_dn');
+        $ldap_base = env('LDAP_SEARCH_DN');
+        $ldap_group_base = env('LDAP_RESOURCE_SEARCH_DN');
+        if(!$ldap_group_base){
+            return [];
+        }
         $ldap_attribute_username = config('ldap.custom_connection.attribute_map.username');
-        $groupDn  = "ou=group," . $ldap_basen;
-        $peopleDn = "ou=people,".$ldap_basen;
+        $groupDn  = "ou=group," . $ldap_group_base;
+        $peopleDn = "ou=people,".$ldap_base;
         $userDn = $ldap_attribute_username ."=".$username.",".$peopleDn;
-        
         
         $search_filter = "uniqueMember=".$userDn;
         $attributes = ["cn"];
@@ -57,11 +60,6 @@ class LdapService
             $result[] = $entries[$i]["cn"][0];
         }
         return $result;
-    }
-    public function isInGroup($username, $group)
-    {
-        $groups = $this->getUserGroups($username);
-        return !empty($groups) && in_array($group, $groups);
     }
     
 }

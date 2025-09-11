@@ -32,6 +32,12 @@
 
         <div class="loginPanel">
 			{!! $authForms !!}
+            @if(env('XFEL_TRAINING_URL'))
+                <div style="font-size: 12px; margin-top: 20px;">
+                    🛈 - to access RAY <a href="{{env('XFEL_TRAINING_URL')}}" style="text-decoration: underline; color: #f5871f">EuXFEL AI training</a>
+                    is required.
+                </div>
+            @endif
         </div>
 
 
