@@ -417,7 +417,7 @@ async function buildRequestObjectForAiConv(msgAttributes, messageElement = null,
 
                 submittedObj.content = cryptoContent;
                 messageElement.dataset.rawMsg = msg;
-                messageElement.dataset.auxiliaries = JSON.stringify(submittedObj.auxiliaries);
+                messageElement.dataset.auxiliaries = JSON.stringify(messageObj.auxiliaries);
                 // messageElement.dataset.groundingMetadata = metadata;
                 addGoogleRenderedContent(messageElement, metadata);
                 updateMessageElement(messageElement, submittedObj);

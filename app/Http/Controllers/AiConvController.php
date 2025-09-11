@@ -233,15 +233,12 @@ class AiConvController extends Controller
         if (isset($validatedData['auxiliaries'])) {
             foreach($validatedData['auxiliaries'] as $auxiliary) {
                 // images are stored by path only
-                $auxType = $auxiliary['type'];
                 if ($auxiliary['type'] == 'imageResponse') {
-                    // for images we get the from disk as we only have the path contained
-                    $imagePath = EncryptedDataStorageController::storeData($auxiliary['content'], 'user_images');
-                    $auxiliary['content'] = $imagePath;
-                } else if (strpos($auxType, 'attachment:') === 0) {
+                    $encryptedImage = $auxiliary['content'];
+                    $auxiliary['content'] = EncryptedDataStorageController::storeData($auxiliary['content'], 'user_images');
+                } else if (strpos($auxiliary['type'], 'attachment:') === 0) {
                     // similar as for images, but we use a different storage path
-                    $attachmentPath = EncryptedDataStorageController::storeData($auxiliary['content'], 'user_attachments');
-                    $auxiliary['content'] = $attachmentPath;
+                    $auxiliary['content'] = EncryptedDataStorageController::storeData($auxiliary['content'], 'user_attachments');
                 }
             
                 $aux = AiConvMsgAux::create([
@@ -251,6 +248,11 @@ class AiConvController extends Controller
                     'type' => $auxiliary['type'],
                     'content' => $auxiliary['content'],
                 ]);
+                
+                // to be consistent this return encrypter content instead of file path
+                if ($aux['type'] == 'imageResponse') {
+                    $aux['content'] = $encryptedImage;
+                }
                 $auxiliaries[] = $aux->toArray();
             }
             
