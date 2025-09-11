@@ -95,7 +95,7 @@ class PermissionCheck
                         $apiResponse = $accountService->assignResource($username, $trainingResourceName);
                         return response()->json([
                             'success' => false,
-                            'message' => 'We\'re setting up your permissions. Please try logging in again in about 5 minutes.']);
+                            'message' => 'We\'re setting up your permissions. This process only needs to be done once. Please try logging in again in about 5 minutes.']);
                     }
                     else{
                         return $next($request); // if both are ok - proceed to default ldap auth
@@ -108,7 +108,7 @@ class PermissionCheck
                     }
                     return response()->json([
                         'success' => false,
-                        'message' => 'AI online training required it may take 5-10 minutes before training becomes effective).']);                    
+                        'message' => 'AI online training is required. Please be aware that it may take about 5–10 minutes before the training takes effect.']);                    
                 }
             }
             //else we do not do anything - resources will be checked with the following default ldap auth
