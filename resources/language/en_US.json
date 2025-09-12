@@ -93,7 +93,7 @@
     "Filedrop_Unsupported": "The current model doesn't support file attachments",
     "Filedrop_Error": "The following files have unsupported file types or exceed the maximum file size of ${maxFileSize} kB",
     "Model_Capability_Image_Gen": "The current model supports image generation.",
-    "Model_Capability_Attachments": "The current model support file attachments.",
+    "Model_Capability_Attachments": "The current model support file attachments. Drag files into the text area.",
     "Model_Capability_Websearch": "The current model can search the web for additional information.",
     "Input_Placeholder_Room": "Write a group message or use the AI model by mentioning",
     "language": "Language",

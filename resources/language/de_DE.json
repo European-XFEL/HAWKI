@@ -93,7 +93,7 @@
     "Filedrop_Error": "Folgende Dateien haben ein nicht unterstütztes Dateiformat oder oder sind größer als ${maxFileSize} kB",
     "Filedrop_Unsupported": "Das aktuelle Modell unterstützt keine Dateianhänge",
     "Model_Capability_Image_Gen": "Das aktuelle Modell kann Bilder generieren",
-    "Model_Capability_Attachments": "Das aktuelle Modell erlaubt es Dateien anzuhängen",
+    "Model_Capability_Attachments": "Das aktuelle Modell erlaubt es Dateien anzuhängen. Dateien ins Textfeld ziehen.",
     "Model_Capability_Websearch": "Das aktuelle Modell durchsucht das Internet nach Informationen",
     "Input_Placeholder_Room": "Schreibe eine Gruppennachricht oder nutze die KI mit ",
     "language": "Sprache",
