@@ -15,6 +15,12 @@ class UsageAnalyzerService
 {
 
     public function submitUsageRecord($usage, $type, $model, $roomId = null) {
+
+        $skip_usage_record = env('XFEL_SKIP_USAGE_RECORD');
+        if ($skip_usage_record) {
+            return;
+        }
+
         $today = Carbon::today();
         $userId = Auth::user()->id;
 
