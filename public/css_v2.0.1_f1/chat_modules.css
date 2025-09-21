@@ -925,6 +925,11 @@
     transition: padding var(--transition-medium);
 }
 
+.input-field-highlight {
+	background-color: rgb(154, 244, 154);
+    border: 1px dashed rgb(42, 95, 42);
+}
+
 /* @container inputWrapper (width < 20rem) {
     .input-field {
         background-color: red;

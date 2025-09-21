@@ -177,7 +177,7 @@ class OpenAIResponsesProvider extends BaseAIModelProvider
         if (!empty($include)) {
              $payload['include'] = $include;
         }
-
+        Log::info("Payload", $payload);
         return $payload;
     }
 
@@ -294,6 +294,25 @@ class OpenAIResponsesProvider extends BaseAIModelProvider
         $reasoning = [];
         $imageData = '';
         $annotations = [];
+
+        // check for errors - if we find one we are done at this point
+        if (isset($jsonChunk['type']) && $jsonChunk['type'] == 'error') {
+            $isDone = true;
+            $output = $jsonChunk['message'];
+        }
+
+        if (isset($jsonChunk['type']) && $jsonChunk['type'] == 'response.failed') {
+            $isDone = true;
+            $output = $jsonChunk['response']['error']['message'];
+        }
+
+        if (isset($jsonChunk['type']) && $jsonChunk['type'] == 'response.incomplete') {
+            $isDone = true;
+            $output = $jsonChunk['response']['incomplete_details']['reason'];
+            $output = "Streaming didn't complete due to error: " . $$output;
+        }
+        
+
         if (isset($jsonChunk['type']) && in_array($jsonChunk['type'], ['response.completed', 'response.refreshed'], true)) {
             $isDone = true;
             // check for encrypted reasoning tokens
