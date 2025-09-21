@@ -177,7 +177,6 @@ class OpenAIResponsesProvider extends BaseAIModelProvider
         if (!empty($include)) {
              $payload['include'] = $include;
         }
-        Log::info("Payload", $payload);
         return $payload;
     }
 
