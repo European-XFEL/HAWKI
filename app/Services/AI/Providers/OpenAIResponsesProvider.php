@@ -177,6 +177,7 @@ class OpenAIResponsesProvider extends BaseAIModelProvider
         if (!empty($include)) {
              $payload['include'] = $include;
         }
+
         return $payload;
     }
 
@@ -368,6 +369,31 @@ class OpenAIResponsesProvider extends BaseAIModelProvider
             ];
         }
 
+        // websearch updates, we forward the urls to show as "searching"
+        $thinking_updates = [];
+        if (isset($jsonChunk['type']) && $jsonChunk['type'] == 'response.output_item.done') {
+            if (isset($jsonChunk['item'])) {
+                $item = $jsonChunk['item'];
+                if (($item['type'] ?? '') == 'web_search_call' && ($item['status'] ?? '') == 'completed') {
+                    if (isset($item['action'])) {
+                        $action = $item['action'];
+                        if (($action['type'] ?? '') == 'search') {
+                            foreach (($action['sources'] ?? []) as $source) {
+                                if (($source['type'] ?? '') == 'url') {
+                                    $thinking_updates[] = $source['url'];
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        if (isset($jsonChunk['type']) && in_array($jsonChunk['type'], ['response.web_search_call.searching', ' response.web_search_call.in_progress'], true)) {
+            $thinking_updates[] = 'Searching web...';
+        }
+    
+        
         // Extract usage data if available
         if (!empty($jsonChunk['usage'])) {
             $usage = $this->extractUsage($jsonChunk);
@@ -387,7 +413,7 @@ class OpenAIResponsesProvider extends BaseAIModelProvider
             'isDone' => $isDone,
             'usage' => $usage,
             'auxiliaries' => [],
-            'skip' => empty($content) && empty($imageData) && !$isDone && !$isFirstUpdate,
+            'skip' => empty($content) && empty($imageData) && !$isDone && !$isFirstUpdate && empty($thinking_updates),
         ];
         
         
@@ -411,12 +437,17 @@ class OpenAIResponsesProvider extends BaseAIModelProvider
         if ($annotations) {
             $response['auxiliaries'][] = [
                 'type' => 'webSearchAnnotations',
-                // the prefix is missing
                 'content' => json_encode($annotations),
             ];
         }
-        
 
+        if ($thinking_updates) {
+            $response['auxiliaries'][] = [
+                'type' => 'thinkingUpdates',
+                'content' => json_encode($thinking_updates),
+            ];
+        }
+        
         return $response;
     }
 
@@ -463,7 +494,9 @@ class OpenAIResponsesProvider extends BaseAIModelProvider
     {
         // Ensure stream is set to false
         $payload['stream'] = false;
-        set_time_limit(120);
+        
+        $time_limit = $this->config['time_limit'] ?? 240;
+        set_time_limit($time_limit);
 
         // Initialize cURL
         $ch = curl_init();
@@ -497,7 +530,8 @@ class OpenAIResponsesProvider extends BaseAIModelProvider
         // Ensure stream is set to true
         $payload['stream'] = true;
         
-        set_time_limit(120);
+        $time_limit = $this->config['streaming_time_limit'] ?? 240;
+        set_time_limit($time_limit);
 
         // Set headers for SSE
         header('Content-Type: text/event-stream');
@@ -515,11 +549,16 @@ class OpenAIResponsesProvider extends BaseAIModelProvider
         // Set streaming-specific options
         $this->setStreamingCurlOptions($ch, $streamCallback);
 
+         // Set low speed options to prevent timeout
+        curl_setopt($ch, CURLOPT_LOW_SPEED_LIMIT, 1); // 1 byte per second
+        curl_setopt($ch, CURLOPT_LOW_SPEED_TIME, 60); // 20 seconds
+
         // Execute the cURL session
         curl_exec($ch);
 
         // Handle errors
         if (curl_errno($ch)) {
+            Log::info('Error: ' . curl_error($ch));
             $streamCallback('Error: ' . curl_error($ch));
             if (ob_get_length()) {
                 ob_flush();

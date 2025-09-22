@@ -239,6 +239,9 @@ class AiConvController extends Controller
                 } else if (strpos($auxiliary['type'], 'attachment:') === 0) {
                     // similar as for images, but we use a different storage path
                     $auxiliary['content'] = EncryptedDataStorageController::storeData($auxiliary['content'], 'user_attachments');
+                } else if ($auxiliary['type'] == 'thinkingUpdates') {
+                    // we don't perstist these
+                    continue;
                 }
             
                 $aux = AiConvMsgAux::create([
@@ -329,6 +332,9 @@ class AiConvController extends Controller
                     // similar as for images, but we use a different storage path
                     $attachmentPath = EncryptedDataStorageController::storeData($auxiliary['content'], 'user_attachments');
                     $auxiliary['content'] = $attachmentPath;
+                } else if ($auxiliary['type'] == 'thinkingUpdates') {
+                    // we don't perstist these
+                    continue;
                 }
                 $aux = AiConvMsgAux::create([
                     'msg_id' => $message->id,

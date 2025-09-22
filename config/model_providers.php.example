@@ -62,6 +62,8 @@ return [
             'api_key' => env('OPENAI_API_KEY', ''),
             'api_url' => 'https://api.openai.com/v1/responses',
             'ping_url' => 'https://api.openai.com/v1/models',
+            'streaming_time_limit' => 240,
+            'time_limit' => 240,
             'models' => [
                 [
                     'id' => 'gpt-5',
