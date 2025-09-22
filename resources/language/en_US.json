@@ -1,6 +1,6 @@
 {
     "Guidelines": "Guidelines for Using Ray",
-    
+
 
     "Chat":"Chat",
     "Groupchat":"Group Chat",
@@ -116,14 +116,14 @@
     "Reg_SL1_T": "Your chats will be saved, so you can access them later at any time, across devices. Your entries are stored by XFEL and are completely secure: everything you write is encrypted. This means that no one can see what you have written. However according to OpenAI policies your entries are stored by them for 30 days.",
     "Reg_SL2_B": "Got it!",
     "Reg_SL2_H": "Your keys 💡",
-    "Reg_SL2_T": "The chat data is encrypted with your personal key. This key will be requested each time you use a new device, new bowser etc. If your lost your key and you recovery code, there is no way to decrypt your chat history. In this case you will have to delete you RAY account and start from scratch.",
+    "Reg_SL2_T": "The chat data is encrypted with your personal key. This key will be requested each time you use a new device, new browser, etc. If you lose your key and your recovery code, there is no way to decrypt your chat history. In this case you will have to delete you RAY account and start from scratch.",
     "Reg_SL4_B": "Will do!",
     "Reg_SL4_H": "Create your Datakey! 🔒",
-    "Reg_SL4_T": "<strong>Important:</strong> On your first login, you create your personal data key, a type of password. Your chats are encrypted with this data key before being stored on our server. In addition to the login, you will need your data key when you log in on a new device. Your device or browser remembers your data key, so you don't have to enter it every time. In the final step, you can also download the recovery code for your data key.",
+    "Reg_SL4_T": "<strong>Important:</strong> On your first login, you create your personal Datakey, a type of password. Your chats are encrypted with this Datakey before being stored on our server. In addition to the login, you will need your Datakey when you log in on a new device. Your device or browser remembers your Datakey, so you don't have to enter it every time. In the final step, you can also download the recovery code for your Datakey.",
     "Reg_SL5_H": "Create your Datakey! 🔒",
-    "Reg_SL5_T": "<strong>Please note:</strong> Your chat messages are securely encrypted. If you lose your data key, you will no longer be able to access your previous chats. Therefore, keep your data key safe and protect it from third-party access.",
+    "Reg_SL5_T": "<strong>Please note:</strong> Your chat messages are securely encrypted. If you lose your Datakey, you will no longer be able to access your previous chats. Therefore, keep your Datakey safe and protect it from third-party access.",
     "Reg_SL6_H": "Secure your Recovery Code! 🔒",
-    "Reg_SL6_T": "With this recovery code, you can restore your data key if you forget or lose it. Download your code onto your device and store it in a secure location, such as on a USB stick or in a protected environment.",
+    "Reg_SL6_T": "With this recovery code, you can restore your Datakey if you forget or lose it. Download your code onto your device and store it in a secure location, such as on a USB stick or in a protected environment.",
 
     "Reg_SL5_PH1": "Enter your Datakey",
     "Reg_SL5_PH2": "Repeat the Datakey",

@@ -46,10 +46,10 @@
             <button class="btn-sm" onclick="toggleSettingsPanel(true)">
                 <x-icon name="settings-icon"/>
             </button>
-            <div class="impressumPanel">
-                <a href="/dataprotection" target="_blank">{{ $translation["DataProtection"] }}</a>
-                <a href="{{ env("IMPRINT_LOCATION") }}" target="_blank">{{ $translation["Impressum"] }}</a>
-            </div>
+{{--            <div class="impressumPanel">--}}
+{{--                <a href="/dataprotection" target="_blank">{{ $translation["DataProtection"] }}</a>--}}
+{{--                <a href="{{ env("IMPRINT_LOCATION") }}" target="_blank">{{ $translation["Impressum"] }}</a>--}}
+{{--            </div>--}}
         </div>
 
     </div>
