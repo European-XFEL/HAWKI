@@ -297,12 +297,12 @@ class OpenAIResponsesProvider extends BaseAIModelProvider
         // check for errors - if we find one we are done at this point
         if (isset($jsonChunk['type']) && $jsonChunk['type'] == 'error') {
             $isDone = true;
-            $output = $jsonChunk['message'] ?? "Unknown error!";
+            $content = $jsonChunk['message'] ?? "Unknown error!";
         }
 
         if (isset($jsonChunk['type']) && $jsonChunk['type'] == 'response.failed') {
             $isDone = true;
-            $output = isset($jsonChunk['response']['error']['message']) 
+            $content = isset($jsonChunk['response']['error']['message']) 
                       ? $jsonChunk['response']['error']['message'] 
                       : 'Unknown error!';
 
@@ -313,7 +313,7 @@ class OpenAIResponsesProvider extends BaseAIModelProvider
             $reason = isset($jsonChunk['response']['incomplete_details']['reason']) 
                       ? $jsonChunk['response']['incomplete_details']['reason'] 
                       : 'Unknown reason!';
-            $output = "Streaming didn't complete due to error: " . $reason;
+            $content = "Streaming didn't complete due to error: " . $reason;
         }
         
 
