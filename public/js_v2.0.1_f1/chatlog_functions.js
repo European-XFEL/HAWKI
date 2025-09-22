@@ -377,6 +377,17 @@ function setModel(modelID = null){
     document.querySelector('#model-capability-websearch').style.display = activeModel.enable_web_search ? "inline-block" : "none";
 
 }
+
+function highlightInputField(isHighlight) {
+    if (!activeModel.enable_document_input) return;
+    
+    var inputField = document.getElementById('main-input-field');
+    if (isHighlight) {
+        inputField.classList.add('input-field-highlight');
+    } else {
+        inputField.classList.remove('input-field-highlight');
+    }
+}
 //#endregion
 
 

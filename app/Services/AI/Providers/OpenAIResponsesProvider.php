@@ -177,7 +177,6 @@ class OpenAIResponsesProvider extends BaseAIModelProvider
         if (!empty($include)) {
              $payload['include'] = $include;
         }
-
         return $payload;
     }
 
@@ -294,6 +293,30 @@ class OpenAIResponsesProvider extends BaseAIModelProvider
         $reasoning = [];
         $imageData = '';
         $annotations = [];
+
+        // check for errors - if we find one we are done at this point
+        if (isset($jsonChunk['type']) && $jsonChunk['type'] == 'error') {
+            $isDone = true;
+            $content = $jsonChunk['message'] ?? "Unknown error!";
+        }
+
+        if (isset($jsonChunk['type']) && $jsonChunk['type'] == 'response.failed') {
+            $isDone = true;
+            $content = isset($jsonChunk['response']['error']['message']) 
+                      ? $jsonChunk['response']['error']['message'] 
+                      : 'Unknown error!';
+
+        }
+
+        if (isset($jsonChunk['type']) && $jsonChunk['type'] == 'response.incomplete') {
+            $isDone = true;
+            $reason = isset($jsonChunk['response']['incomplete_details']['reason']) 
+                      ? $jsonChunk['response']['incomplete_details']['reason'] 
+                      : 'Unknown reason!';
+            $content = "Streaming didn't complete due to error: " . $reason;
+        }
+        
+
         if (isset($jsonChunk['type']) && in_array($jsonChunk['type'], ['response.completed', 'response.refreshed'], true)) {
             $isDone = true;
             // check for encrypted reasoning tokens

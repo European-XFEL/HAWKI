@@ -35,8 +35,8 @@
 
 
 	<div class="dy-main-panel"
-		ondrop="event.preventDefault();"
-		ondragover="event.preventDefault();">
+		ondrop="event.preventDefault(); highlightInputField(false);"
+		ondragover="event.preventDefault(); highlightInputField(true);">
 
 		<div class="dy-main-content" id="chat">
 
