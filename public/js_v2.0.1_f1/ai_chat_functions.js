@@ -346,6 +346,7 @@ async function buildRequestObjectForAiConv(msgAttributes, messageElement = null,
 
             // add any images we might have
             for (aux of messageObj.auxiliaries) {
+                
                 if (aux['type'] == 'imageResponse') {
                     const img = document.createElement('img');
                     const imageData = aux['content'];
@@ -356,9 +357,27 @@ async function buildRequestObjectForAiConv(msgAttributes, messageElement = null,
 
                     // make this friendly for the clipboard
                     messageElement.dataset.imageData = imageData;
+                }  else if (aux['type'] == 'thinkingUpdates') {
+                    // content in this case is a JSON string, if this was passed
+                    
+                    const updates = JSON.parse(aux['content']);
+                    
+                    $('.preparing_completion_status').empty(); // Clear existing content
+
+                    const displayUpdates = updates.slice(0, 3).map(update => 
+                        update.length > 20 ? update.substring(0, 20) + '...' : update
+                    );
+
+                    if (updates.length > 3) {
+                        displayUpdates.push(`+${updates.length - 3}`);
+                    }
+
+                    $('.preparing_completion_status').append(`<span>${displayUpdates.join(', ')}</span>`);
+
                 }
             }
-    
+
+            
             scrollToLast(false, messageElement);
         }
 

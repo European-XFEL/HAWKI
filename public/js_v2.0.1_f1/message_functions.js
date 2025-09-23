@@ -81,6 +81,7 @@ function addMessageToChatlog(messageObj, isFromServer = false){
     //show spinner 
     if(!isFromServer && activeModel.streamable && messageObj.message_role == "assistant"){
         messageElement.querySelector('.preparing_completion_spinner').style.display = "block";
+        messageElement.querySelector('.preparing_completion_status').style.display = "block";
     }
 
     /// CLASSES & AVATARS
@@ -234,7 +235,7 @@ function addMessageToChatlog(messageObj, isFromServer = false){
             // content in this case is a JSON string, if this was passed
             const content = JSON.parse(aux['content']);
             annotations = annotations.concat(content);
-        }
+        } 
     }
 
     displayAttachments(messageElement, attachments);
@@ -245,6 +246,7 @@ function addMessageToChatlog(messageObj, isFromServer = false){
         if (messageObj.completion === 0 && messageElement.querySelector('#incomplete-msg-icon')) {
             messageElement.querySelector('#incomplete-msg-icon').style.display = 'flex';
             messageElement.querySelector('.preparing_completion_spinner').style.display="none";
+             messageElement.querySelector('.preparing_completion_status').style.display = "none";
         }else{
             messageElement.querySelector('#incomplete-msg-icon').style.display = 'none';
         }
@@ -312,6 +314,7 @@ function updateMessageElement(messageElement, messageObj, updateContent = false)
         if ((messageObj.completion === 0 || messageObj.completion === false) && messageElement.querySelector('#incomplete-msg-icon')) {
             messageElement.querySelector('#incomplete-msg-icon').style.display = 'flex';
             messageElement.querySelector('.preparing_completion_spinner').style.display="none";
+             messageElement.querySelector('.preparing_completion_status').style.display = "none";
         }else{
             messageElement.querySelector('#incomplete-msg-icon').style.display = 'none';
         }
@@ -768,6 +771,7 @@ async function onRegenerateBtn(btn){
     const messageElement = btn.closest('.message');
     clearAnnotations(messageElement);
     messageElement.querySelector('.preparing_completion_spinner').style.display = "block";
+    messageElement.querySelector('.preparing_completion_status').style.display = "block";
     regenerateMessage(messageElement, async(Done)=>{
         btn.disabled = false;
         btn.style.opacity = '1';

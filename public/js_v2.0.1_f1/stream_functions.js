@@ -53,6 +53,7 @@ function buildRequestObject(msgAttributes, onData) {
 
 function streamContentreceived(){
     $('.preparing_completion_spinner').hide();
+    $('.preparing_completion_status').hide();
 }
 
 async function postData(data) {
