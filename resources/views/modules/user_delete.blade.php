@@ -7,8 +7,8 @@
 				<h3 class="red-text">Delete RAY user records</h3>
 				<div class="center-text" style="font-size: 11px; padding-bottom: 20px;">
 					This will delete ALL your RAY data: chat history, personal settings etc - NO RECOVERY possible.<br>
-					Do this ONLY if you lost both <i>Passkey</i> and <i>Backup code</i>.<br>
-					After the deletion please log in again and follow the instructions to set up new Passkey and Backup code.
+					Do this ONLY if you lost both the <i>Datakey</i> and the <i>Recovery code</i>.<br>
+					After the deletion, please log in again and follow the instructions to set up a new Datakey and Recovery code.
 				</div>
 				<form method="post" class="center-text" action="{{url('user/delete')}}">
 					@csrf
