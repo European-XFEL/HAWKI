@@ -318,6 +318,18 @@ async function buildRequestObjectForAiConv(msgAttributes, messageElement = null,
                 displayAnnotations(messageElement, annotations);
             }
             messageElement.dataset.rawMsg = msg;
+
+            // need to merge image auxiliaries - we preserve the last update
+            var auxiliaries =  messageElement.dataset.auxiliaries ? JSON.parse( messageElement.dataset.auxiliaries) : [];
+            auxiliaries.reverse();
+            for (const aux of auxiliaries) {
+            
+                if (aux['type'] == 'imageResponse') {
+                    messageObj.auxiliaries.push(aux);
+                    break;
+                }
+            }
+
             messageElement.dataset.auxiliaries = JSON.stringify(messageObj.auxiliaries);
     
             const msgTxtElement = messageElement.querySelector(".message-text");
