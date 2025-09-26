@@ -236,7 +236,7 @@ function loadMessagesOnGUI(messages) {
     // set the model in the current conversation
     // as the one used in the last message
     let lastMessage = messages.at(-1);
-    setModel(lastMessage.model);
+    if (lastMessage && lastMessage.model) { setModel(lastMessage.model); }
 }
 
 
