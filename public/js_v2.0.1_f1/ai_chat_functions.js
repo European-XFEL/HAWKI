@@ -548,6 +548,7 @@ async function initNewConv(messageObj){
 function startNewChat(){
     chatlogElement.classList.add('start-state');
     clearChatlog();
+    setModel(defaultModel);
     history.replaceState(null, '', `/chat`);
 
     const systemPromptFields = document.querySelectorAll('.system_prompt_field');

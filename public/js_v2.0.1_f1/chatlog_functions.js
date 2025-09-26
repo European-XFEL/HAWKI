@@ -232,6 +232,11 @@ function loadMessagesOnGUI(messages) {
     threads.forEach(thread => {
         checkThreadUnreadMessages(thread);
     });
+
+    // set the model in the current conversation
+    // as the one used in the last message
+    let lastMessage = messages.at(-1);
+    setModel(lastMessage.model);
 }
 
 
