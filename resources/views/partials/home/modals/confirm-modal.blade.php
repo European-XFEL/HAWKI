@@ -27,7 +27,7 @@
 
     const ModalType = {
         CONFIRM: { header: 'Confirm' },
-        WARNING: { header: 'Warning!' },
+        WARNING: { header: 'Warning' },
         ERROR: { header: 'Error' },
         INFO: { header: 'Info' },
     };
