@@ -413,7 +413,7 @@ class OpenAIResponsesProvider extends BaseAIModelProvider
             'isDone' => $isDone,
             'usage' => $usage,
             'auxiliaries' => [],
-            'skip' => empty($content) && empty($imageData) && !$isDone && !$isFirstUpdate && empty($thinking_updates),
+            'skip' => trim($content) === "" && empty($imageData) && !$isDone && !$isFirstUpdate && empty($thinking_updates),
         ];
         
         
