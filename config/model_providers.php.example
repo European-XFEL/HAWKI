@@ -23,9 +23,9 @@ return [
     |
     */
     'system_models' => [
-        'title_generator' => 'gpt-4o-mini',
-        'prompt_improver' => 'gpt-4o-mini',
-        'summarizer' => 'gpt-4o-mini',
+        'title_generator' => 'gpt-4o-mini-SYSTEM',
+        'prompt_improver' => 'gpt-4o-mini-SYSTEM',
+        'summarizer' => 'gpt-4o-mini-SYSTEM',
     ],
 
     /*
@@ -52,6 +52,13 @@ return [
                     'label' => 'OpenAI GPT 4o',
                     'streamable' => true,
                 ],
+                [
+                    'id' => 'gpt-4o-mini',
+                    'label' => 'OpenAI GPT O4 mini stream',
+                    'streamable' => false,
+                    'visible' => false,
+                    
+                ]
             ]
         ],
 
@@ -92,6 +99,14 @@ return [
                         "type" => "approximate",
                     ],
                     'include_search_results' => true,
+                ],
+                [
+                    'id' => 'gpt-4o-mini-SYSTEM',
+                    'label' => 'OpenAI GPT O4 mini stream',
+                    'streamable' => false,
+                    'visible' => false,
+                    'keep_reasoning_tokens' => false,
+                    
                 ]
             ]
         ],

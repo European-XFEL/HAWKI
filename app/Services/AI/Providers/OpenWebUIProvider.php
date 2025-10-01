@@ -16,6 +16,9 @@ class OpenWebUIProvider extends BaseAIModelProvider
     {
         $messages = $rawPayload['messages'];
         $modelId = $rawPayload['model'];
+
+        // strip off any -SYSTEM part
+        $modelId = str_replace('-SYSTEM', '', $modelId);
         
         // Handle special cases for specific models
         $messages = $this->handleModelSpecificFormatting($modelId, $messages);

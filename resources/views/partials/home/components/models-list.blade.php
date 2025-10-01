@@ -1,5 +1,10 @@
 <div class="model-selection-panel">
     @foreach($models['models'] as $model)
+        @if(array_key_exists('visible',$model))
+            @if(!$model['visible'])
+                @continue
+            @endif
+        @endif
         <button class="model-selector burger-item" onclick="selectModel(this); closeBurgerMenus()" value="{{ json_encode($model) }}">
             
             

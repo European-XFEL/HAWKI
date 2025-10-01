@@ -17,6 +17,9 @@ class GoogleProvider extends BaseAIModelProvider
         $messages = $rawPayload['messages'];
         $modelId = $rawPayload['model'];
 
+        // strip off any -SYSTEM part
+        $modelId = str_replace('-SYSTEM', '', $modelId);
+
         // Extract system prompt from first message item
         $systemInstruction = [];
         if (isset($messages[0]) && $messages[0]['role'] === 'system') {

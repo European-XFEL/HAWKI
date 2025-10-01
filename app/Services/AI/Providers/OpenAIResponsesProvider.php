@@ -48,6 +48,9 @@ class OpenAIResponsesProvider extends BaseAIModelProvider
             }
         }
 
+        // strip off any -SYSTEM part
+        $modelId = str_replace('-SYSTEM', '', $modelId);
+
         // Convert messages into the Responses API "input" shape
         $input = [];
         foreach ($messages as $message) {
@@ -177,7 +180,7 @@ class OpenAIResponsesProvider extends BaseAIModelProvider
         if (!empty($include)) {
              $payload['include'] = $include;
         }
-
+        
         return $payload;
     }
 
@@ -276,6 +279,7 @@ class OpenAIResponsesProvider extends BaseAIModelProvider
         $isDone = false;
         $usage = null;
 
+       
         if (empty($jsonChunk) || !is_array($jsonChunk)) {
             return [
                 'content' => ['text' => ''],
