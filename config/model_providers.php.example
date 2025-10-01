@@ -52,13 +52,6 @@ return [
                     'label' => 'OpenAI GPT 4o',
                     'streamable' => true,
                 ],
-                [
-                    'id' => 'gpt-4o-mini',
-                    'label' => 'OpenAI GPT O4 mini stream',
-                    'streamable' => false,
-                    'visible' => false,
-                    
-                ]
             ]
         ],
 

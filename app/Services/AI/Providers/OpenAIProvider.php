@@ -18,16 +18,6 @@ class OpenAIProvider extends BaseAIModelProvider
         $messages = $rawPayload['messages'];
         $modelId = $rawPayload['model'];
 
-        // add aditional configuration options
-        $config = $this->config;
-        $modelConfig = [];
-        foreach ($config['models'] as $conf) {
-            if ($conf['id'] == $modelId) {
-                $modelConfig = $conf;
-                break;
-            }
-        }
-
         // strip off any -SYSTEM part
         $modelId = str_replace('-SYSTEM', '', $modelId);
 
@@ -37,50 +27,6 @@ class OpenAIProvider extends BaseAIModelProvider
         // Format messages for OpenAI
         $formattedMessages = [];
         foreach ($messages as $message) {
-            $auxiliaries = $message['auxiliaries'] ?? [];
-            
-            foreach($auxiliaries as $aux) {
-                // only handle auxiliaries of the correct type
-                if (strpos($aux['type'], 'attachment') === 0) {
-                    // this is a stringified JSON at this point
-                    $content = json_decode($aux['content'], true);
-                    if (!$content) {
-                        //Log::info("Attachement failure");
-                        continue;
-                    }
-                    //Log::info("attachment ". $content['type']);
-
-                    switch ($content['type']) {
-                        case 'application/pdf':
-                            $input[] = [
-                                'role' => 'user',
-                                'content' => [
-                                    [
-                                    'type' => 'input_file',
-                                    'filename' => $content['name'],
-                                    'file_data' => $content['content'], 
-                                    ]
-                                ]
-                            ];
-                            break;
-                        case 'image/png':
-                        case 'image/jpeg':
-                            $input[] = [
-                                'role' => 'user',
-                                'content' => [
-                                    [
-                                    'type' => 'input_image',
-                                    'image_url' => $content['content'], 
-                                    ]
-                                ]
-                            ];
-                            break;    
-                    }
-                    
-                }
-                
-            }
-
             $formattedMessages[] = [
                 'role' => $message['role'],
                 'content' => $message['content']['text']
