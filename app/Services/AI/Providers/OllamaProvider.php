@@ -16,6 +16,9 @@ class OllamaProvider extends BaseAIModelProvider
     {
         $messages = $rawPayload['messages'];
         $modelId = $rawPayload['model'];
+
+        // strip off any -SYSTEM part
+        $modelId = str_replace('-SYSTEM', '', $modelId);
         
         // Format messages for Ollama
         $formattedMessages = [];
