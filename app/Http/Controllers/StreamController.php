@@ -263,9 +263,12 @@ class StreamController extends Controller
         $openBraces = 0;
         $startFound = false;
         $startPos = 0;
+        $openQuote = false;
 
         for($i = 0; $i < strlen($buffer); $i++) {
             $char = $buffer[$i];
+            if ($char === '"') $openQuote = !$openQuote;
+            if ($openQuote) continue; // if we are inside a quote brace matching doesn't matter!
             if($char === '{') {
                 if(!$startFound) {
                     $startFound = true;
