@@ -181,13 +181,12 @@ class StreamController extends Controller
         $onData = function ($data) use ($user, $avatar_url, $payload, $provider) {
             
             // Only use normaliseDataChunk if the content of $data does not begin with ‘data: ’.
-            // make sure we do not format various benigh flavors of OpenAI responses
-            
             if (strpos(trim($data), 'data: ') !== 0) {
                 $data = $this->normalizeDataChunk($data);
                 //Log::info('google chunk detected');
             }
 
+            // Skip non-JSON or empty chunks
             $chunks = explode("data: ", $data);
             foreach ($chunks as $chunk) {
                 if (connection_aborted()) break;
