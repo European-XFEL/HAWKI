@@ -176,19 +176,18 @@ class StreamController extends Controller
         // we do this outside the $onData function so that the provider
         // instance can capture state across streaming events
         $provider = $this->aiConnectionService->getProviderForModel($payload['model']);
-        $isOpenAIProvider = str_contains(get_class($provider), "OpenAI");
-
+        
         // Create a callback function to process streaming chunks
-        $onData = function ($data) use ($user, $avatar_url, $payload, $provider, $isOpenAIProvider) {
+        $onData = function ($data) use ($user, $avatar_url, $payload, $provider) {
             
             // Only use normaliseDataChunk if the content of $data does not begin with ‘data: ’.
             // make sure we do not format various benigh flavors of OpenAI responses
-            if (!$isOpenAIProvider && strpos(trim($data), 'data: ') !== 0) {
+            
+            if (strpos(trim($data), 'data: ') !== 0) {
                 $data = $this->normalizeDataChunk($data);
                 //Log::info('google chunk detected');
             }
 
-            // Skip non-JSON or empty chunks
             $chunks = explode("data: ", $data);
             foreach ($chunks as $chunk) {
                 if (connection_aborted()) break;
@@ -224,8 +223,9 @@ class StreamController extends Controller
                     'isDone' => $formatted['isDone'],
                     'content' => json_encode($formatted['content']),
                     'auxiliaries' => $formatted['auxiliaries'] ?? [],
+                    'isFinalText' => $formatted['isFinalText'] ?? false,
                 ];
-               
+                
                 echo json_encode($messageData) . "\n";
             }
         };

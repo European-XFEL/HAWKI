@@ -180,7 +180,7 @@ class OpenAIResponsesProvider extends BaseAIModelProvider
         if (!empty($include)) {
              $payload['include'] = $include;
         }
-        
+
         return $payload;
     }
 
@@ -274,11 +274,13 @@ class OpenAIResponsesProvider extends BaseAIModelProvider
      */
     public function formatStreamChunk(string $chunk): array
     {
-        $jsonChunk = json_decode($chunk, true);
+        
+        $jsonChunk = json_decode($chunk, true );
         $content = '';
         $isDone = false;
         $usage = null;
 
+        
        
         if (empty($jsonChunk) || !is_array($jsonChunk)) {
             return [
@@ -298,6 +300,7 @@ class OpenAIResponsesProvider extends BaseAIModelProvider
         $reasoning = [];
         $imageData = '';
         $annotations = [];
+        $isFinalText = false;
 
         // check for errors - if we find one we are done at this point
         if (isset($jsonChunk['type']) && $jsonChunk['type'] == 'error') {
@@ -340,6 +343,10 @@ class OpenAIResponsesProvider extends BaseAIModelProvider
                                     ];
                                 }
                             }
+                            if ($c["type"] == "output_text") {
+                                $content = $content.$c["text"];
+                                $isFinalText = true;
+                            }
                         }
                     }
                 }
@@ -354,6 +361,12 @@ class OpenAIResponsesProvider extends BaseAIModelProvider
         // Delta-style updates may include output/content deltas
         if (isset($jsonChunk['type']) && $jsonChunk['type'] == 'response.output_text.delta') {
            $content = $jsonChunk['delta'];
+        }
+
+        // final response
+        if (isset($jsonChunk['type']) && $jsonChunk['type'] == 'response.output_text.done') {
+           $content = $jsonChunk['text'];
+           $isFinalText = true;
         }
 
         // image data comes in form of partial images - or only the final - it's the same data
@@ -417,7 +430,8 @@ class OpenAIResponsesProvider extends BaseAIModelProvider
             'isDone' => $isDone,
             'usage' => $usage,
             'auxiliaries' => [],
-            'skip' => empty($content) && $content != "0" && empty($imageData) && !$isDone && !$isFirstUpdate && empty($thinking_updates),
+            'skip' => empty($content) && $content != "0" && empty($imageData) && !$isDone && !$isFirstUpdate && empty($thinking_updates) && !$isFinalText,
+            'isFinalText' => $isFinalText,
         ];
         
         
@@ -451,6 +465,8 @@ class OpenAIResponsesProvider extends BaseAIModelProvider
                 'content' => json_encode($thinking_updates),
             ];
         }
+
+        
         
         return $response;
     }
