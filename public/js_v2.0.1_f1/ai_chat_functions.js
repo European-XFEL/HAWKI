@@ -621,8 +621,7 @@ async function generateChatName(firstMessage, convItem) {
         slug: '',
     };
 
-    console.log(requestObject);
-
+    
     return new Promise((resolve, reject) => {
         postData(requestObject)
             .then(response => {
