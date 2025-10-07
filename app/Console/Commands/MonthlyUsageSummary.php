@@ -27,8 +27,8 @@ class MonthlyUsageSummary extends Command
      */
     public function handle()
     {
-        $service = new UsageAnalyzerService();
-        $service->summarizeAndCleanup();
+        //$service = new UsageAnalyzerService();
+        //$service->summarizeAndCleanup();
         
     }
 }
