@@ -176,7 +176,7 @@ class StreamController extends Controller
         // we do this outside the $onData function so that the provider
         // instance can capture state across streaming events
         $provider = $this->aiConnectionService->getProviderForModel($payload['model']);
-
+        
         // Create a callback function to process streaming chunks
         $onData = function ($data) use ($user, $avatar_url, $payload, $provider) {
             
@@ -191,8 +191,6 @@ class StreamController extends Controller
             foreach ($chunks as $chunk) {
                 if (connection_aborted()) break;
                 if (!json_decode($chunk, true) || empty($chunk)) continue;
-                
-                
                 
                 // Format the chunk
                 $formatted = $provider->formatStreamChunk($chunk);
@@ -224,8 +222,9 @@ class StreamController extends Controller
                     'isDone' => $formatted['isDone'],
                     'content' => json_encode($formatted['content']),
                     'auxiliaries' => $formatted['auxiliaries'] ?? [],
+                    'isFinalText' => $formatted['isFinalText'] ?? false,
                 ];
-               
+                
                 echo json_encode($messageData) . "\n";
             }
         };
@@ -263,9 +262,12 @@ class StreamController extends Controller
         $openBraces = 0;
         $startFound = false;
         $startPos = 0;
+        $openQuote = false;
 
         for($i = 0; $i < strlen($buffer); $i++) {
             $char = $buffer[$i];
+            if ($char === '"') $openQuote = !$openQuote;
+            if ($openQuote) continue; // if we are inside a quote brace matching doesn't matter!
             if($char === '{') {
                 if(!$startFound) {
                     $startFound = true;

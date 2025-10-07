@@ -283,7 +283,6 @@ async function buildRequestObjectForAiConv(msgAttributes, messageElement = null,
 
     // Start buildRequestObject processing
     buildRequestObject(msgAttributes, async (data, done) => {
-
         if(data){
             if(!msgAttributes['broadcasting'] && msgAttributes['stream']){
                 setSendBtnStatus(SendBtnStatus.STOPPABLE);
@@ -295,7 +294,13 @@ async function buildRequestObjectForAiConv(msgAttributes, messageElement = null,
             }
 
             const content = messageText;
-            msg += content;
+            
+            if (!data.isFinalText) {
+                msg += content;
+            } else {
+                // final update from OpenAI model
+                msg = content;
+            }
             messageObj = data;
             messageObj.message_role = 'assistant';
             messageObj.content = content;
@@ -334,7 +339,7 @@ async function buildRequestObjectForAiConv(msgAttributes, messageElement = null,
     
             const msgTxtElement = messageElement.querySelector(".message-text");
 
-            msgTxtElement.innerHTML = formatChunk(content, groundingMetadata);
+            msgTxtElement.innerHTML = formatChunk(content, groundingMetadata, data.isFinalText);
             formatMathFormulas(msgTxtElement);
             formatHljs(messageElement);
 
@@ -616,6 +621,7 @@ async function generateChatName(firstMessage, convItem) {
         slug: '',
     };
 
+    
     return new Promise((resolve, reject) => {
         postData(requestObject)
             .then(response => {

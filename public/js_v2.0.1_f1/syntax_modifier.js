@@ -12,7 +12,7 @@ function initializeMessageFormating() {
   summedText = '';
 }
 
-function formatChunk(chunk, groundingMetadata) {
+function formatChunk(chunk, groundingMetadata, isFinal=false) {
   // Validate input
   if (chunk === undefined || chunk === null) {
     console.warn('Received empty chunk in formatChunk');
@@ -22,8 +22,13 @@ function formatChunk(chunk, groundingMetadata) {
   // Ensure chunk is a string
   const chunkStr = String(chunk);
 
-  // Append the incoming chunk to the summedText
-  summedText += chunkStr;
+  if (!isFinal) {
+    // Append the incoming chunk to the summedText
+    summedText += chunkStr;
+  } else {
+    // replace the summed text with the final text
+    summedText = chunkStr;
+  }
 
   // Create a temporary copy for formatting
   let formatText = summedText;
