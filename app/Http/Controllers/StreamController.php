@@ -176,18 +176,53 @@ class StreamController extends Controller
         // we do this outside the $onData function so that the provider
         // instance can capture state across streaming events
         $provider = $this->aiConnectionService->getProviderForModel($payload['model']);
+
+        // OpenAI will provide valid json
+        $isOpenAIProvider = str_contains(get_class($provider), "OpenAI");
         
         // Create a callback function to process streaming chunks
-        $onData = function ($data) use ($user, $avatar_url, $payload, $provider) {
-            
-            // Only use normaliseDataChunk if the content of $data does not begin with ‘data: ’.
-            if (strpos(trim($data), 'data: ') !== 0) {
-                $data = $this->normalizeDataChunk($data);
-                //Log::info('google chunk detected');
-            }
+        $buffer = '';
+        $onData = function ($data) use ($user, $avatar_url, $payload, $provider, $isOpenAIProvider, $buffer) {
+            $chunks = [];
+            if ($isOpenAIProvider) {
+                // This is as per https://github.com/openai/openai-python/blob/main/src/openai/_streaming.py
+                // partition of data part
+                $lines = preg_split('/\r\n|\r|\n/', $data);
+                foreach ($lines as $line) {
+                    // Check if it starts with "data:" (case-sensitive). Use strncmp for speed.
+                    if (strncmp($line, 'data:', 5) === 0) {
+                        
+                        // Remove the "data:" prefix and trim the remainder
+                        $value = substr($line, 5);
+                        if ($value !== '' && $value[0] === ' ') {
+                            $value = substr($value, 1);
+                        }
+                        $buffer .= "\n".$value;
+                    }
+                    if (empty($line)) {
+                        
+                        if (json_decode($buffer, true)) {
+                            $chunks[] = $buffer;
+                            $buffer = '';
+                        } 
+                    }
+                }
 
-            // Skip non-JSON or empty chunks
-            $chunks = explode("data: ", $data);
+                if (json_decode($buffer, true)) {
+                    $chunks[] = $buffer;
+                    $buffer = '';
+                }
+            } else {
+
+                // Only use normaliseDataChunk if the content of $data does not begin with ‘data: ’.
+                if (strpos(trim($data), 'data: ') !== 0) {
+                    $data = $this->normalizeDataChunk($data);
+                    //Log::info('google chunk detected');
+                }
+
+                // Skip non-JSON or empty chunks
+                $chunks = explode("data: ", $data);
+            }
             foreach ($chunks as $chunk) {
                 if (connection_aborted()) break;
                 if (!json_decode($chunk, true) || empty($chunk)) continue;
