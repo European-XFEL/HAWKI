@@ -629,7 +629,11 @@ async function generateChatName(firstMessage, convItem) {
                 let convName = ""; // Initialize to an empty string
                 const onData = (data, done) => {
                     if (data) {
-                        convName += deconstContent(data.content).messageText;
+                        if (!data.isFinalText) {
+                            convName += deconstContent(data.content).messageText;
+                        } else {
+                            convName = deconstContent(data.content).messageText;
+                        }
                         convElement.innerText = convName;
                     }
                     if (done) {
