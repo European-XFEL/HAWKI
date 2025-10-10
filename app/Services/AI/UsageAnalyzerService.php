@@ -57,5 +57,21 @@ class UsageAnalyzerService
             ->whereYear('created_at', Carbon::now()->subMonth()->year)
             ->delete();
     }
+    
+    
+    public function monthlyStats($periodInMonthes = 12)
+    {
+        $till = Carbon::now()->subMonths($periodInMonthes);
+        
+        // Updated summary logic to include the 'model' column
+        $summaries = UsageRecord::selectRaw('DATE_FORMAT(created_at, \'%Y-%m\') AS month_year, model, ROUND(SUM(prompt_tokens)/1000000, 1) as prompt_tokens_M, ROUND(SUM(completion_tokens)/1000000, 1) as completion_tokens_M')
+            ->where('created_at', '>', $till)
+            ->orderBy('month_year')->orderBy('model')
+            ->groupBy('month_year', 'model')
+            ->get()
+            ->toArray();
+        
+        return $summaries;
+    }
 
 }
