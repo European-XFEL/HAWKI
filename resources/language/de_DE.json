@@ -62,6 +62,8 @@
     "DataProtection": "Datenschutz",
     "Delete": "Löschen",
     "DeleteChat": "Chat Löschen",
+    "EditTitle": "Titel Bearbeiten",
+    "PleaseEnterTitle": "Bitte geben Sie den neuen Titel ein",
     "Description": "Beschreibung",
     "Download": "herunterladen",
     "Export": "Exportieren",

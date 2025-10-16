@@ -11,6 +11,7 @@
 
 		@if($activeModule === 'chat')
 			<button class="burger-item red-text" onclick="requestDeleteConv()">{{ $translation["DeleteChat"] }}</button>
+			<button class="burger-item" onclick="editConvTitle()">{{ $translation["EditTitle"] }}</button>
 		@elseif($activeModule === 'groupchat')
 			<button class="burger-item red-text" onclick="leaveRoom()">{{ $translation["LeaveRoom"] }}</button>
 		@endif
