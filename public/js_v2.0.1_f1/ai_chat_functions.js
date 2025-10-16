@@ -852,7 +852,7 @@ async function editConvTitle() {
     const messageHTML = `
     <div>
         <p>${translation.PleaseEnterTitle}:</p>
-        <input type="text" style="width: 90%" id="modal-input" value="${currentTitle}" />
+        <input type="text" style="width: 90%" id="modal-input" value="${currentTitle}" maxlength="255"/>
     </div>
     `;
 
