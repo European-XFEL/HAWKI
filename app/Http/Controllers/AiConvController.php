@@ -123,7 +123,7 @@ class AiConvController extends Controller
 
     public function editConvTitle(Request $request, $slug){
         $user = Auth::user();
-        $conv = AiConv::where('slug', $slug)->firstOrFail();
+        $conv = AiConv::where('slug', $slug)->first();
 
         // Check if the conv exists
         if (!$conv) {
@@ -131,7 +131,7 @@ class AiConvController extends Controller
         }
 
         // Check if the user is the owner of the conv
-        if ($conv->user_id != $user->id) {
+        if (!$user || $conv->user_id != $user->id) {
             return response()->json(['success' => false, 'message' => 'Unauthorized'], 403);
         }
 
