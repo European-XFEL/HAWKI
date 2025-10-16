@@ -127,7 +127,7 @@ class AiConvController extends Controller
 
         // Check if the conv exists
         if (!$conv) {
-            return response()->json(['success' => false, 'message' => 'Conv not found'], 404);
+            return response()->json(['success' => false, 'message' => 'Conversation not found'], 404);
         }
 
         // Check if the user is the owner of the conv
