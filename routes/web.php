@@ -68,8 +68,8 @@ Route::middleware('prevent_back')->group(function () {
         Route::post('/req/conv/updateMessage/{slug}', [AiConvController::class, 'updateMessage']);
         Route::post('/req/conv/updateInfo/{slug}', [AiConvController::class, 'updateInfo']);
         Route::delete('/req/conv/removeConv/{slug}', [AiConvController::class, 'removeConv']);
-    
-    
+        Route::post('/req/conv/editConvTitle/{slug}', [AiConvController::class, 'editConvTitle']);
+        
         // GROUPCHAT ROUTES
         Route::get('/groupchat', [HomeController::class, 'show']);
         Route::get('/groupchat/{slug?}', [HomeController::class, 'show']);

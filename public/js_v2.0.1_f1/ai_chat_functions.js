@@ -836,4 +836,55 @@ async function requestDeleteConv() {
     }
 }
 
+
+async function editConvTitle() {
+
+    const listItem = document.querySelector(`.selection-item[slug="${activeConv.slug}"]`);
+    const titleElement = listItem.querySelector('.label.singleLineTextarea');
+    let currentTitle;
+
+    if (titleElement) {
+        currentTitle = titleElement.innerText; // Fetch the current title
+    } else {
+        return;
+    }
+
+    const messageHTML = `
+    <div>
+        <p>${translation.PleaseEnterTitle}:</p>
+        <input type="text" style="width: 90%" id="modal-input" value="${currentTitle}" maxlength="255"/>
+    </div>
+    `;
+
+    const confirmed = await openModal(ModalType.CONFIRM, messageHTML, translation.EditTitle);
+    if (!confirmed) {
+        return;
+    }
+
+    const url = `/req/conv/editConvTitle/${activeConv.slug}`;
+    const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+    const newTitle = document.getElementById("modal-input").value; 
+
+    try {
+        const response = await fetch(url, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': csrfToken
+            },
+            body: JSON.stringify({ conv_name: newTitle })
+        });
+        const data = await response.json();
+
+        if (data.success) {
+            titleElement.innerText = newTitle;
+        } else {
+            console.error('Conv title edit was not successful!');
+        }
+    } catch (error) {
+        console.error(error);
+        console.error('Failed to rename conv!');
+    }
+}
+
 //#endregion

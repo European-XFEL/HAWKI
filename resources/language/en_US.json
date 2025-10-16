@@ -64,6 +64,8 @@
     "DataProtection": "Data Protection",
     "Delete": "Delete",
     "DeleteChat": "Delete Chat",
+    "EditTitle": "Edit Title",
+    "PleaseEnterTitle": "Please enter the new title",
     "Description": "Description",
     "Download": "download",
     "Export": "Export",

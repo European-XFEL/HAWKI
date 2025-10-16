@@ -120,6 +120,34 @@ class AiConvController extends Controller
         return response()->json(['success' => true, 'message' => 'Conv deleted successfully']);
     }
 
+
+    public function editConvTitle(Request $request, $slug){
+        $user = Auth::user();
+        $conv = AiConv::where('slug', $slug)->first();
+
+        // Check if the conv exists
+        if (!$conv) {
+            return response()->json(['success' => false, 'message' => 'Conversation not found'], 404);
+        }
+
+        // Check if the user is the owner of the conv
+        if (!$user || $conv->user_id != $user->id) {
+            return response()->json(['success' => false, 'message' => 'Unauthorized'], 403);
+        }
+
+        $validatedData = $request->validate([
+            'conv_name' => 'string|max:255'
+        ]);
+
+        $conv->update(['conv_name' => $validatedData['conv_name']]);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Title updated successfully',
+        ]);
+
+    }
+
     public function getUserConvs(Request $request)
     {
         // Assuming the user is authenticated
