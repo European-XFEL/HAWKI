@@ -130,7 +130,7 @@ class AiConvController extends Controller
             return response()->json(['success' => false, 'message' => 'Conv not found'], 404);
         }
 
-        // Check if the user is an admin of the conv
+        // Check if the user is the owner of the conv
         if ($conv->user_id != $user->id) {
             return response()->json(['success' => false, 'message' => 'Unauthorized'], 403);
         }
