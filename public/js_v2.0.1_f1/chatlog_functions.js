@@ -377,10 +377,10 @@ function setModel(modelID = null){
         }
     });
     
-    document.querySelector('#model-capability-image-gen').style.display = activeModel.enable_image_generation ? "inline-block" : "none";
-    document.querySelector('.image-quota-info').style.display = activeModel.enable_image_generation ? "inline-block" : "none";
-    document.querySelector('#model-capability-attachments').style.display = activeModel.enable_document_input ? "inline-block" : "none";
-    document.querySelector('#model-capability-websearch').style.display = activeModel.enable_web_search ? "inline-block" : "none";
+    if(activeModel.enable_image_generation) $('.model-capability-image-gen').show(); else $('.model-capability-image-gen').hide();
+    if(activeModel.enable_image_generation) $('.image-quota-info').show(); else $('.image-quota-info').hide();
+    if(activeModel.enable_document_input) $('.model-capability-attachments').show(); else $('.model-capability-attachments').hide();
+    if(activeModel.enable_web_search) $('.model-capability-websearch').show(); else $('.model-capability-websearch').hide();
 
 }
 

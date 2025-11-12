@@ -225,9 +225,9 @@
         </div>
     </div>
     <div class="model-capabilities">
-        <span class="model-capability" id="model-capability-image-gen" title="{{ $translation['Model_Capability_Image_Gen'] }}">&#x1F3DE;</span>
-        <span class="model-capability" id="model-capability-attachments" title="{{ $translation['Model_Capability_Attachments'] }}">&#x1F4CE;</span>
-        <span class="model-capability" id="model-capability-websearch" title="{{ $translation['Model_Capability_Websearch'] }}">&#x1F310;</span>
+        <span class="model-capability model-capability-image-gen" title="{{ $translation['Model_Capability_Image_Gen'] }}">&#x1F3DE;</span>
+        <span class="model-capability model-capability-attachments" title="{{ $translation['Model_Capability_Attachments'] }}">&#x1F4CE;</span>
+        <span class="model-capability model-capability-websearch" title="{{ $translation['Model_Capability_Websearch'] }}">&#x1F310;</span>
         <span class="image-quota-info hint warn_hint" @if(!$imageQuota['reached']) style="display: none" @endif>Your've reached your daily image quota of {{$imageQuota['quota']}} images</span>
     </div>
 </div>
