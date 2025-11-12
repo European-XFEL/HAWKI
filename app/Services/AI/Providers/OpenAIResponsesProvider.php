@@ -2,6 +2,7 @@
 
 namespace App\Services\AI\Providers;
 
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Http;
 
@@ -145,7 +146,7 @@ class OpenAIResponsesProvider extends BaseAIModelProvider
         }
 
         $tools = [];
-        if (isset($modelConfig['enable_image_generation']) && $modelConfig['enable_image_generation']) {
+        if ($modelConfig['enable_image_generation'] && !Auth::user()->imageQuotaReached()) {
             $imageTool = ['type' => 'image_generation'];
             if (isset($modelConfig['quality']) ) {
                 $imageTool['quality'] = $modelConfig['quality'];
