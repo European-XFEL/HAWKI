@@ -56,10 +56,11 @@ function ContentReceived(data) {
     $('.preparing_completion_status').hide();
 
     if (data.imageQuota && data.imageQuota.reached) {
-        $('.image-quota-info').show();
+        $('.image-quota-info').data('reached', 1);
     } else {
-        $('.image-quota-info').hide();
+        $('.image-quota-info').data('reached', 0);
     }
+    if(activeModel.enable_image_generation && $('.image-quota-info').data('reached')) $('.image-quota-info').show(); else $('.image-quota-info').hide();    
 }
 
 async function postData(data) {

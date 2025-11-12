@@ -378,9 +378,9 @@ function setModel(modelID = null){
     });
     
     if(activeModel.enable_image_generation) $('.model-capability-image-gen').show(); else $('.model-capability-image-gen').hide();
-    if(activeModel.enable_image_generation) $('.image-quota-info').show(); else $('.image-quota-info').hide();
     if(activeModel.enable_document_input) $('.model-capability-attachments').show(); else $('.model-capability-attachments').hide();
     if(activeModel.enable_web_search) $('.model-capability-websearch').show(); else $('.model-capability-websearch').hide();
+    if(activeModel.enable_image_generation && $('.image-quota-info').data('reached')) $('.image-quota-info').show(); else $('.image-quota-info').hide();
 
 }
 
