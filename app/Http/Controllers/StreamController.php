@@ -156,6 +156,7 @@ class StreamController extends Controller
                     'isDone' => true,
                     'content' => $result['content'],
                     'auxiliaries' => $result['auxiliaries'] ?? [],
+                    'imageQuota' => Auth::user()->imageQuotaData(),
                 ]);
             }
         }
@@ -258,6 +259,7 @@ class StreamController extends Controller
                     'content' => json_encode($formatted['content']),
                     'auxiliaries' => $formatted['auxiliaries'] ?? [],
                     'isFinalText' => $formatted['isFinalText'] ?? false,
+                    'imageQuota' => Auth::user()->imageQuotaData(),
                 ];
                 
                 echo json_encode($messageData) . "\n";

@@ -72,5 +72,14 @@ class User extends Authenticatable
         }
         return ($this->imagesToday() >= $_quota );
     }
+    
+    public function imageQuotaData(){
+        return [
+            'quota' => config('model_providers.image_quota'),
+            'today' => $this->imagesToday(),
+            'reached' => $this->imageQuotaReached(),
+        ];
+    }
+    
 
 }

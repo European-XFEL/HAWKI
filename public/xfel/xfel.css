@@ -14,3 +14,12 @@
     0% { transform: rotate(0deg); }
     100% { transform: rotate(360deg); }
 }
+
+.hint{
+    font-size: var(--font-xs);
+    opacity: 0.5;
+}
+
+.hint.warn_hint{
+    color: red;
+}

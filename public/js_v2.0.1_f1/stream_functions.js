@@ -51,9 +51,15 @@ function buildRequestObject(msgAttributes, onData) {
     });
 }
 
-function streamContentreceived(){
+function ContentReceived(data) {
     $('.preparing_completion_spinner').hide();
     $('.preparing_completion_status').hide();
+
+    if (data.imageQuota && data.imageQuota.reached) {
+        $('.image-quota-info').show();
+    } else {
+        $('.image-quota-info').hide();
+    }
 }
 
 async function postData(data) {
@@ -119,7 +125,7 @@ async function processStream(stream, onData) {
                         //empty content looks like {"text":""} so for performance optimization we consider everything longer
                         if(!_contentReceived && (data.content.length > 12 || data.isDone)){  
                             _contentReceived = true;
-                            streamContentreceived();    
+                            ContentReceived(data);    
                         }
                         //send back the data
                         if(data.isDone){
@@ -151,6 +157,7 @@ async function processStream(stream, onData) {
 async function processResponse(response, onData){
 
     const responseJson = await response.json();
+    ContentReceived(responseJson);
     onData(responseJson, true);
 
 }

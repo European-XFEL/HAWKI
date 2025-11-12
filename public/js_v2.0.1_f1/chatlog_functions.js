@@ -378,6 +378,7 @@ function setModel(modelID = null){
     });
     
     document.querySelector('#model-capability-image-gen').style.display = activeModel.enable_image_generation ? "inline-block" : "none";
+    document.querySelector('.image-quota-info').style.display = activeModel.enable_image_generation ? "inline-block" : "none";
     document.querySelector('#model-capability-attachments').style.display = activeModel.enable_document_input ? "inline-block" : "none";
     document.querySelector('#model-capability-websearch').style.display = activeModel.enable_web_search ? "inline-block" : "none";
 
