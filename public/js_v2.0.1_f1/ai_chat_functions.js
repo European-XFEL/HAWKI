@@ -326,9 +326,7 @@ async function buildRequestObjectForAiConv(msgAttributes, messageElement = null,
 
             // need to merge image auxiliaries - we preserve the last update
             var auxiliaries =  messageElement.dataset.auxiliaries ? JSON.parse( messageElement.dataset.auxiliaries) : [];
-            auxiliaries.reverse();
             for (const aux of auxiliaries) {
-            
                 if (aux['type'] == 'imageResponse') {
                     messageObj.auxiliaries.push(aux);
                     break;
@@ -370,7 +368,13 @@ async function buildRequestObjectForAiConv(msgAttributes, messageElement = null,
                     img.src = imageData.startsWith('data:') ? imageData : 'data:image/png;base64,' + imageData;
                     img.alt = 'image';
                     img.width = '500';
-                    msgTxtElement.appendChild(img);
+                    
+                    //remove last image and replace it with a new one - steaming
+                    const _imgs = msgTxtElement.querySelectorAll('img');
+                    if (_imgs.length > 0) {
+                        _imgs[_imgs.length - 1].remove();
+                    }
+                    msgTxtElement.appendChild(img); //<== IMG added HERE
 
                     // make this friendly for the clipboard
                     messageElement.dataset.imageData = imageData;
