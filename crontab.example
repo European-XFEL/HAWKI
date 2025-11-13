@@ -1,0 +1,3 @@
+#put this to /etc/cron.d/_your_project_
+#run every minute. If run not each minute some tasks may be skipped
+* * * * * root sudo -u www-data php /_your_project_path_/artisan schedule:run >> /dev/null 2>&1
