@@ -22,6 +22,7 @@ use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
 
 class StreamController extends Controller
@@ -30,6 +31,7 @@ class StreamController extends Controller
     protected $usageAnalyzer;
     protected $aiConnectionService;
     private $jsonBuffer = '';
+    private $jsonBuffer2 = '';
 
     public function __construct(
         UsageAnalyzerService $usageAnalyzer,
@@ -182,36 +184,37 @@ class StreamController extends Controller
         $isOpenAIProvider = str_contains(get_class($provider), "OpenAI");
         
         // Create a callback function to process streaming chunks
-        $buffer = '';
-        $onData = function ($data) use ($user, $avatar_url, $payload, $provider, $isOpenAIProvider, $buffer) {
+        $onData = function ($data) use ($user, $avatar_url, $payload, $provider, $isOpenAIProvider) {
             $chunks = [];
             if ($isOpenAIProvider) {
                 // This is as per https://github.com/openai/openai-python/blob/main/src/openai/_streaming.py
                 // partition of data part
                 $lines = preg_split('/\r\n|\r|\n/', $data);
                 foreach ($lines as $line) {
+                    $line = trim($line);
+                    if (strncmp($line, 'event:', 6) === 0) {
+                        continue;
+                    }
                     // Check if it starts with "data:" (case-sensitive). Use strncmp for speed.
                     if (strncmp($line, 'data:', 5) === 0) {
-                        
                         // Remove the "data:" prefix and trim the remainder
-                        $value = substr($line, 5);
-                        if ($value !== '' && $value[0] === ' ') {
-                            $value = substr($value, 1);
-                        }
-                        $buffer .= "\n".$value;
+                        $this->jsonBuffer2 .= "\n".trim(substr($line, 5));
                     }
-                    if (empty($line)) {
-                        
-                        if (json_decode($buffer, true)) {
-                            $chunks[] = $buffer;
-                            $buffer = '';
-                        } 
+                    else{
+                        if (empty($line)) {
+                            if (Str::isJson($this->jsonBuffer2)) {
+                                $chunks[] = $this->jsonBuffer2;
+                                $this->jsonBuffer2 = '';
+                            }
+                        }
+                        elseif(!empty($this->jsonBuffer2)) { //this is the case when partial image data is split into several messages
+                            $this->jsonBuffer2 .= $line;
+                        }
                     }
                 }
-
-                if (json_decode($buffer, true)) {
-                    $chunks[] = $buffer;
-                    $buffer = '';
+                if (Str::isJson($this->jsonBuffer2)) {
+                    $chunks[] = $this->jsonBuffer2;
+                    $this->jsonBuffer2 = '';
                 }
             } else {
 
