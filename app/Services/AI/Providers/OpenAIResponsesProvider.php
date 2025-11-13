@@ -520,7 +520,22 @@ class OpenAIResponsesProvider extends BaseAIModelProvider
 
         // Initialize cURL
         $ch = curl_init();
-        curl_setopt($ch, CURLOPT_URL, $this->config['api_url']);
+        $modelConfig = [];
+        foreach ($this->config['models'] as $conf) {
+            if ($conf['id'] == $payload['model']) {
+                $modelConfig = $conf;
+                break;
+            }
+        }
+        $api_url = $modelConfig['api_url'] ?? $this->config['api_url'];
+        curl_setopt($ch, CURLOPT_URL, $api_url);
+
+        if ($modelConfig['unsafe_ssl'] || false) {
+            curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+        }
+        
+        //curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 2);
+        
 
         // Set common cURL options
         $this->setCommonCurlOptions($ch, $payload, $this->getHttpHeaders());
@@ -561,7 +576,19 @@ class OpenAIResponsesProvider extends BaseAIModelProvider
 
         // Initialize cURL
         $ch = curl_init();
-        curl_setopt($ch, CURLOPT_URL, $this->config['api_url']);
+        $modelConfig = [];
+        foreach ($this->config['models'] as $conf) {
+            if ($conf['id'] == $payload['model']) {
+                $modelConfig = $conf;
+                break;
+            }
+        }
+        $api_url = $modelConfig['api_url'] ?? $this->config['api_url'];
+        curl_setopt($ch, CURLOPT_URL, $api_url);
+
+        if ($modelConfig['unsafe_ssl'] || false) {
+            curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+        }
 
         // Set common cURL options
         $this->setCommonCurlOptions($ch, $payload, $this->getHttpHeaders(true));
