@@ -53,14 +53,7 @@ class User extends Authenticatable
     
     public function imagesToday(){
         if ($this->_imagesToday === null) {
-            $this->_imagesToday = AiConvMsg::query()
-                ->from('ai_convs as c')
-                    ->leftJoin('ai_conv_msgs as m', 'm.conv_id', '=', 'c.id')
-                    ->leftJoin('ai_conv_msg_auxes as ma','ma.msg_id', '=', 'm.id')
-                    ->where('c.user_id', $this->id)
-                    ->where('ma.type', 'imageResponse')
-                    ->whereDate('ma.created_at', today())
-                    ->count();
+            $this->_imagesToday = UserQuota::getImageCounter($this->username);
         }
         return $this->_imagesToday;
     }

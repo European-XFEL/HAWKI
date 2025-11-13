@@ -7,6 +7,7 @@ use App\Models\AiConvMsg;
 use App\Models\AiConvMsgAux;
 use App\Models\User;
 
+use App\Models\UserQuota;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
@@ -283,6 +284,7 @@ class AiConvController extends Controller
                 // to be consistent this return encrypter content instead of file path
                 if ($aux['type'] == 'imageResponse') {
                     $aux['content'] = $encryptedImage;
+                    UserQuota::incImageCounter(Auth::user()->username);
                 }
                 $auxiliaries[] = $aux->toArray();
             }
