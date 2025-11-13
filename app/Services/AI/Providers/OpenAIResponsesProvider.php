@@ -530,7 +530,7 @@ class OpenAIResponsesProvider extends BaseAIModelProvider
         $api_url = $modelConfig['api_url'] ?? $this->config['api_url'];
         curl_setopt($ch, CURLOPT_URL, $api_url);
 
-        if ($modelConfig['unsafe_ssl'] || false) {
+        if ($modelConfig['unsafe_ssl'] ?? false) {
             curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
         }
         
@@ -586,7 +586,7 @@ class OpenAIResponsesProvider extends BaseAIModelProvider
         $api_url = $modelConfig['api_url'] ?? $this->config['api_url'];
         curl_setopt($ch, CURLOPT_URL, $api_url);
 
-        if ($modelConfig['unsafe_ssl'] || false) {
+        if ($modelConfig['unsafe_ssl'] ?? false) {
             curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
         }
 
