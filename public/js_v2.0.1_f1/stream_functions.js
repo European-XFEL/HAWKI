@@ -51,7 +51,7 @@ function buildRequestObject(msgAttributes, onData) {
     });
 }
 
-function ContentReceived(data) {
+function contentReceived(data) {
     $('.preparing_completion_spinner').hide();
     $('.preparing_completion_status').hide();
 
@@ -126,7 +126,7 @@ async function processStream(stream, onData) {
                         //empty content looks like {"text":""} so for performance optimization we consider everything longer
                         if(!_contentReceived && (data.content.length > 12 || data.isDone)){  
                             _contentReceived = true;
-                            ContentReceived(data);    
+                            contentReceived(data);    
                         }
                         //send back the data
                         if(data.isDone){
@@ -158,7 +158,7 @@ async function processStream(stream, onData) {
 async function processResponse(response, onData){
 
     const responseJson = await response.json();
-    ContentReceived(responseJson);
+    contentReceived(responseJson);
     onData(responseJson, true);
 
 }
