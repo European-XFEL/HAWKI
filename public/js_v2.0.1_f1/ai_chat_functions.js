@@ -454,6 +454,9 @@ async function buildRequestObjectForAiConv(msgAttributes, messageElement = null,
                 requestObj.isAi = true;
                 //console.log('checkpoint')
                 const submittedObj = await submitMessageToServer(requestObj, `/req/conv/sendMessage/${activeConv.slug}`);
+                if(submittedObj.imageQuota){
+                    updateQuotaInfo(submittedObj);    
+                }
 
                 submittedObj.content = cryptoContent;
                 messageElement.dataset.rawMsg = msg;

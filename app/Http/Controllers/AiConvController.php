@@ -283,7 +283,7 @@ class AiConvController extends Controller
                 // to be consistent this return encrypter content instead of file path
                 if ($aux['type'] == 'imageResponse') {
                     $aux['content'] = $encryptedImage;
-                    UserQuota::incImageCounter(Auth::user()->username);
+                    Auth::user()->incImageCounter();
                 }
                 $auxiliaries[] = $aux->toArray();
             }
@@ -301,6 +301,7 @@ class AiConvController extends Controller
         $messageData['created_at'] = $message->created_at->format('Y-m-d+H:i');
         $messageData['updated_at'] = $message->updated_at->format('Y-m-d+H:i');
         $messageData['auxiliaries'] =  $auxiliaries;
+        $messageData['imageQuota'] =  Auth::user()->imageQuota(); //send quotas again after the server side update
 
         return response()->json([
             'success' => true,

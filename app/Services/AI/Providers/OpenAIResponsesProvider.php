@@ -146,7 +146,7 @@ class OpenAIResponsesProvider extends BaseAIModelProvider
         }
 
         $tools = [];
-        if ($modelConfig['enable_image_generation'] && !Auth::user()->imageQuotaReached()) {
+        if ($modelConfig['enable_image_generation'] && !Auth::user()->imageQuota()['reached']) {
             $imageTool = ['type' => 'image_generation'];
             if (isset($modelConfig['quality']) ) {
                 $imageTool['quality'] = $modelConfig['quality'];

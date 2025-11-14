@@ -20,7 +20,7 @@ $_default_model_settings = [
 return [
     
     'defaultModel' => 'gpt-4o-mini',
-    'image_quota' => 3, //images per day; comment out for unlimited
+    'default_image_quota' => 10, //images per month; comment out for unlimited
     
     'system_models' => [
         'title_generator' => 'gpt-4o-mini',

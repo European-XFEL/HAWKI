@@ -54,13 +54,7 @@ function buildRequestObject(msgAttributes, onData) {
 function contentReceived(data) {
     $('.preparing_completion_spinner').hide();
     $('.preparing_completion_status').hide();
-
-    if (data.imageQuota && data.imageQuota.reached) {
-        $('.image-quota-info').data('reached', 1);
-    } else {
-        $('.image-quota-info').data('reached', 0);
-    }
-    if(activeModel.enable_image_generation && $('.image-quota-info').data('reached')) $('.image-quota-info').show(); else $('.image-quota-info').hide();    
+    updateQuotaInfo(data);
 }
 
 async function postData(data) {

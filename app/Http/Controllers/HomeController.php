@@ -72,7 +72,7 @@ class HomeController extends Controller
         $models = $this->aiConnService->getAvailableModels();
         
         //image quota
-        view()->share(['imageQuota' => Auth::user()->imageQuotaData()]);
+        view()->share(['imageQuota' => Auth::user()->imageQuota()]);
         
         // Pass translation, authenticationMethod, and authForms to the view
         return view('modules.' . $requestModule,
