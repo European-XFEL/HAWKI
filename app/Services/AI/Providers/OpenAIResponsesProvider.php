@@ -449,6 +449,7 @@ class OpenAIResponsesProvider extends BaseAIModelProvider
                     'type' => 'imageResponse',
                     // the prefix is missing
                     'content' => "data:image/png;base64,".$imageData,
+                    'img_id' => $jsonChunk['item_id'],
             ];
             
         }

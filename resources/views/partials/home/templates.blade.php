@@ -58,12 +58,12 @@
 			<div>
 				<div id="attachment-list" class="attachment-list" style="display: none;"></div>
 			</div>
-			<div class="preparing_completion_spinner" style="margin-bottom:10px; display: none"></div>
 			<div class="preparing_completion_status" style="display: none"></div>
 			<div class="message-content">
 				<span class="assistant-mention"></span>
 				<span class="message-text"></span>
 			</div>
+			<div class="preparing_completion_spinner" style="margin-bottom:10px; display: none"></div>
 			<div class="annotation-list" id="annotation-list" style="display: none;"></div>
 			<div class="message-controls">
 				<div class="controls">
