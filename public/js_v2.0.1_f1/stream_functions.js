@@ -52,8 +52,8 @@ function buildRequestObject(msgAttributes, onData) {
 }
 
 function contentReceived(data) {
-    $('.preparing_completion_spinner').hide();
-    $('.preparing_completion_status').hide();
+    $('.message .preparing_completion_spinner').hide();
+    $('.message .preparing_completion_status').hide();
     updateQuotaInfo(data);
 }
 

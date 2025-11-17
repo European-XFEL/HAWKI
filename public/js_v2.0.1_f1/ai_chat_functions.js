@@ -379,10 +379,8 @@ async function buildRequestObjectForAiConv(msgAttributes, messageElement = null,
                         const _old_img = msgTxtElement.querySelector('#'+aux['img_id']);
                         if (_old_img) {
                             _old_img.replaceWith(img);
-                            console.log('replace');
                         }
                         else{
-                            console.log('append');
                             msgTxtElement.appendChild(img); //<== IMG added HERE    
                         }
                     }
