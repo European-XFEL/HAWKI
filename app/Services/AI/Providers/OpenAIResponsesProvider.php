@@ -325,7 +325,7 @@ class OpenAIResponsesProvider extends BaseAIModelProvider
             $content = "Streaming didn't complete due to error: " . $reason;
         }
         
-
+        //when the whole request is completed
         if (isset($jsonChunk['type']) && in_array($jsonChunk['type'], ['response.completed', 'response.refreshed'], true)) {
             $isDone = true;
             // check for encrypted reasoning tokens
@@ -350,6 +350,9 @@ class OpenAIResponsesProvider extends BaseAIModelProvider
                             }
                         }
                     }
+                }
+                else if ($item['type'] == 'image_generation_call') { 
+                    Auth::user()->incImageCounter(); //count images generated via the request
                 }
             }
             // get the final image if we have one

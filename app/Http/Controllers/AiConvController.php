@@ -283,7 +283,6 @@ class AiConvController extends Controller
                 // to be consistent this return encrypter content instead of file path
                 if ($aux['type'] == 'imageResponse') {
                     $aux['content'] = $encryptedImage;
-                    Auth::user()->incImageCounter();
                 }
                 $auxiliaries[] = $aux->toArray();
             }
