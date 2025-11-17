@@ -740,10 +740,13 @@ async function loadConv(btn=null, slug=null){
     switchDyMainContent('chat');
 
     history.replaceState(null, '', `/chat/${slug}`);
+    const mainLoader = document.getElementById("main_loader");
+    mainLoader.style.display = "flex";
 
     const convData = await RequestConvContent(slug);
 
     if(!convData){
+        mainLoader.style.display = "none";
         return;
     }
 
@@ -784,7 +787,8 @@ async function loadConv(btn=null, slug=null){
         chatlogElement.classList.add('start-state');
     }
     loadMessagesOnGUI(convData.messages);
-    scrollToLast(true);
+    mainLoader.style.display = "none";
+    setTimeout(() => scrollToLast(true), 100);
 }
 
 
