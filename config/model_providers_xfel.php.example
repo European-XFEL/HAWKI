@@ -39,11 +39,15 @@ return [
                     ->images(false)
                     ->get(),
                 
-                \App\Models\ModelConfiguration::gptModel('gpt-5.1-codex-mini', 'OpenAI GPT 5.1 mini (codex)', $_default_gpt_model_settings)
+                \App\Models\ModelConfiguration::gptModel('gpt-5.1-codex-mini', 'OpenAI GPT 5.1 codex mini', $_default_gpt_model_settings)
                     ->images(false) // no image support in 5.1-codex
                     ->get(),
-                \App\Models\ModelConfiguration::gptModel('gpt-5.1-codex', 'OpenAI GPT 5.1 (codex)', $_default_gpt_model_settings)
+                \App\Models\ModelConfiguration::gptModel('gpt-5.1-codex', 'OpenAI GPT 5.1 codex', $_default_gpt_model_settings)
                     ->images(false) // no image support in 5.1-codex
+                    ->get(),
+                \App\Models\ModelConfiguration::gptModel('gpt-5.1-chat-latest', 'OpenAI GPT 5.1 chat latest', $_default_gpt_model_settings)
+                    ->get(),
+                \App\Models\ModelConfiguration::gptModel('gpt-5.1', 'OpenAI GPT 5.1', $_default_gpt_model_settings)
                     ->get(),
                 
                 \App\Models\ModelConfiguration::abstractModel('xfel-internal', 'XFEL-internal')
