@@ -47,8 +47,8 @@ function updateQuotaInfo(data) {
     const _quotaInfo = $('.image-quota-info');
     if (data.imageQuota) {
         _quotaInfo.data('reached', ((data.imageQuota.reached) ? 1 : 0));
-        _quotaInfo.data('quota-value', data.imageQuota.quota ?? 0);
-        _quotaInfo.data('quota-counter', data.imageQuota.counter ?? 0);
+        _quotaInfo.data('quota-value', data.imageQuota.quota ?? 'n/a');
+        _quotaInfo.data('quota-counter', data.imageQuota.remaining ?? 'n/a' );
     }
     if(activeModel.enable_image_generation) {
         if(_quotaInfo.data('quota-value') && _quotaInfo.data('quota-value')) {

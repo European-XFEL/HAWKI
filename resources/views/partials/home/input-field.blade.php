@@ -230,7 +230,7 @@
         <span class="model-capability model-capability-websearch" title="{{ $translation['Model_Capability_Websearch'] }}">&#x1F310;</span>
         @if($imageQuota['quota'])
             <span class="image-quota-info hint @if($imageQuota['reached']) warn_hint @endif">
-                Monthly image quota - <span class="quota-value">{{$imageQuota['quota']}}</span>, used - <span class="quota-counter">{{$imageQuota['counter']}}</span>
+                {!! $translation['Monthly image quota'] !!} - <span class="quota-value">{{$imageQuota['quota']}}</span>, {!! $translation['Monthly image quota remaining'] !!} - <span class="quota-counter">{{$imageQuota['remaining']}}</span>
             </span>
         @endif            
     </div>

@@ -33,6 +33,7 @@ class UserQuota extends Model
             $result['quota'] = (intval($user[$field.'_custom_quota'])) ?: $default_quota;
             if ($result['quota']){
                 $result['reached'] = ($result['counter'] >= $result['quota'] );
+                $result['remaining'] = max(0, $result['quota'] - $result['counter']);
             }
         }
         return $result;
