@@ -1,20 +1,11 @@
 <?php
 
-$_default_model_settings = [
-    'image_quality' => 'auto', // low, mediun, high, auto
-    'image_size' => '1024x1024', //1024x1024, 1024x1536, 1536x1024, or auto
+$_default_gpt_model_settings = [
+    'quality' => 'low', // low, medium, high, auto
+    'size' => '1024x1024', //1024x1024, 1024x1536, 1536x1024, or auto
     'partial_images' => 3, // maximum number of partial image updates to generate when streaming, can be up to 3,
-    'add_thread_images_as_input' => true,
-    
+
     'max_attachment_size_kb' => 5*1024, // maximum document size in KB (for the b64 encoded document)
-    
-    'web_search_user_location' => [  // the location assumed for the websearch, to not add a location, comment this
-        'country' => 'DE',
-        'city' => 'Hamburg',
-        "region" => 'Hamburg',
-        "type" => "approximate",
-    ],
-    'web_search_include_search_results' => true,
 ];
 
 return [
@@ -36,85 +27,31 @@ return [
             'api_key' => env('OPENAI_API_KEY', ''),
             'api_url' => 'https://api.openai.com/v1/responses',
             'ping_url' => 'https://api.openai.com/v1/models',
+            'streaming_time_limit' => 240,
+            'time_limit' => 240,            
             'models' => [
-                [
-                    'id' => 'gpt-4o-mini',
-                    'label' => 'OpenAI GPT O4 mini',
-                    'streamable' => false,
-                    'keep_reasoning_tokens' => false, //important to be false for "4" models
-                    
-                    //Images
-                    'enable_image_generation' => true,
-                    'quality' => $_default_model_settings['image_quality'], // low, mediun, high, auto
-                    'size' => $_default_model_settings['image_size'], //1024x1024, 1024x1536, 1536x1024, or auto
-                    'partial_images' => $_default_model_settings['partial_images'], // maximum number of partial image updates to generate when streaming, can be up to 3,
-                    'add_thread_images_as_input' => $_default_model_settings['add_thread_images_as_input'], // previously generated images in the thread are added to the input of the next request.
-                    
-                    //Upload files
-                    'enable_document_input' => true,
-                    'max_attachment_size_kb' => $_default_model_settings['max_attachment_size_kb'], // maximum document size in KB (for the b64 encoded document)
-                    
-                    //Web search
-                    'enable_web_search' => true,
-                    'user_location' =>   $_default_model_settings['web_search_user_location'], // the location assumed for the websearch, to not add a location, comment this
-                    'include_search_results' => $_default_model_settings['web_search_include_search_results'],
-                ],
-                [
-                    'id' => 'gpt-5-mini',
-                    'label' => 'OpenAI GPT 5 mini',
-                    'streamable' => true,
-                    'reasoning_effort' => 'medium',
-                    'keep_reasoning_tokens' => true, // set this to true to keep encrypted reasoning tokens as part of the conversation history reasoning tokens are used in their encrypred variant with the store := false setting of messages
-                    
-                    //Images
-                    'enable_image_generation' => true,
-                    'quality' => $_default_model_settings['image_quality'], // low, mediun, high, auto
-                    'size' => $_default_model_settings['image_size'], //1024x1024, 1024x1536, 1536x1024, or auto
-                    'partial_images' => $_default_model_settings['partial_images'], // maximum number of partial image updates to generate when streaming, can be up to 3,
-                    'add_thread_images_as_input' => $_default_model_settings['add_thread_images_as_input'], // previously generated images in the thread are added to the input of the next request.
-                    
-                    //Upload files
-                    'enable_document_input' => true,
-                    'max_attachment_size_kb' => $_default_model_settings['max_attachment_size_kb'], // maximum document size in KB (for the b64 encoded document)
-                    
-                    //Web search
-                    'enable_web_search' => true,
-                    'user_location' =>   $_default_model_settings['web_search_user_location'], // the location assumed for the websearch, to not add a location, comment this
-                    'include_search_results' => $_default_model_settings['web_search_include_search_results'],
-                ],
-                [
-                    'id' => 'gpt-5',
-                    'label' => 'OpenAI GPT 5',
-                    'streamable' => true,
-                    'reasoning_effort' => 'medium',
-                    'keep_reasoning_tokens' => true, // set this to true to keep encrypted reasoning tokens as part of the conversation history reasoning tokens are used in their encrypred variant with the store := false setting of messages
-                    
-                    //Images
-                    'enable_image_generation' => true,
-                    'quality' => $_default_model_settings['image_quality'], // low, mediun, high, auto
-                    'size' => $_default_model_settings['image_size'], //1024x1024, 1024x1536, 1536x1024, or auto
-                    'partial_images' => $_default_model_settings['partial_images'], // maximum number of partial image updates to generate when streaming, can be up to 3,
-                    'add_thread_images_as_input' => $_default_model_settings['add_thread_images_as_input'], // previously generated images in the thread are added to the input of the next request.
-                    
-                    //Upload files
-                    'enable_document_input' => true,
-                    'max_attachment_size_kb' => $_default_model_settings['max_attachment_size_kb'], // maximum document size in KB (for the b64 encoded document)
-                    
-                    //Web search
-                    'enable_web_search' => true,
-                    'user_location' =>   $_default_model_settings['web_search_user_location'], // the location assumed for the websearch, to not add a location, comment this
-                    'include_search_results' => $_default_model_settings['web_search_include_search_results'],
-                ],
-                [
-                    'id' => 'xfel-internal',
-                    'label' => 'XFEL-internal',
-                    'streamable' => false,
-                    'visible' => true,
-                    'keep_reasoning_tokens' => false,
-                    'api_url' => 'http://localhost/v1/responses',
-                    'unsafe_ssl' => true,
-                    
-                ]
+                \App\Models\ModelConfiguration::gptModel('gpt-4o-mini', 'OpenAI GPT O4 mini', $_default_gpt_model_settings)
+                    ->get(),
+                
+                \App\Models\ModelConfiguration::gptModel('gpt-5-mini', 'OpenAI GPT 5 mini', $_default_gpt_model_settings)
+                    ->get(),
+                \App\Models\ModelConfiguration::gptModel('gpt-5', 'OpenAI GPT 5', $_default_gpt_model_settings)
+                    ->images(false)
+                    ->get(),
+                
+                \App\Models\ModelConfiguration::gptModel('gpt-5.1-codex-mini', 'OpenAI GPT 5.1 mini (codex)', $_default_gpt_model_settings)
+                    ->images(false) // no image support in 5.1-codex
+                    ->get(),
+                \App\Models\ModelConfiguration::gptModel('gpt-5.1-codex', 'OpenAI GPT 5.1 (codex)', $_default_gpt_model_settings)
+                    ->images(false) // no image support in 5.1-codex
+                    ->get(),
+                
+                \App\Models\ModelConfiguration::abstractModel('xfel-internal', 'XFEL-internal')
+                    ->set('streamable', false)
+                    ->set('keep_reasoning_tokens', false)
+                    ->set('api_url', 'http://localhost/v1/responses')
+                    ->set('unsafe_ssl', true)
+                    ->get(),              
             ]
         ],
     ]
