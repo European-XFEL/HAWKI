@@ -104,6 +104,16 @@ return [
                     'user_location' =>   $_default_model_settings['web_search_user_location'], // the location assumed for the websearch, to not add a location, comment this
                     'include_search_results' => $_default_model_settings['web_search_include_search_results'],
                 ],
+                [
+                    'id' => 'xfel-internal',
+                    'label' => 'XFEL-internal',
+                    'streamable' => false,
+                    'visible' => true,
+                    'keep_reasoning_tokens' => false,
+                    'api_url' => 'http://localhost/v1/responses',
+                    'unsafe_ssl' => true,
+                    
+                ]
             ]
         ],
     ]
