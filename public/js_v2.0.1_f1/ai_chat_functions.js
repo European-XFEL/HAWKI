@@ -326,12 +326,13 @@ async function buildRequestObjectForAiConv(msgAttributes, messageElement = null,
 
             // need to merge image auxiliaries - we preserve the last update
             var auxiliaries =  messageElement.dataset.auxiliaries ? JSON.parse( messageElement.dataset.auxiliaries) : [];
-            auxiliaries.reverse();
+            var _last_id = 'x';
             for (const aux of auxiliaries) {
-            
                 if (aux['type'] == 'imageResponse') {
-                    messageObj.auxiliaries.push(aux);
-                    break;
+                    if(aux['img_id'] != _last_id){
+                        messageObj.auxiliaries.push(aux);
+                        _last_id = aux['img_id'];
+                    }
                 }
             }
 
@@ -362,7 +363,7 @@ async function buildRequestObjectForAiConv(msgAttributes, messageElement = null,
             }
 
             // add any images we might have
-            for (aux of messageObj.auxiliaries) {
+            for (aux of messageObj.auxiliaries.reverse()) {
                 
                 if (aux['type'] == 'imageResponse') {
                     const img = document.createElement('img');
@@ -370,7 +371,28 @@ async function buildRequestObjectForAiConv(msgAttributes, messageElement = null,
                     img.src = imageData.startsWith('data:') ? imageData : 'data:image/png;base64,' + imageData;
                     img.alt = 'image';
                     img.width = '500';
-                    msgTxtElement.appendChild(img);
+                    img.onload = () => scrollToLast(false, messageElement);
+
+                    //if we have image id - replace it
+                    if (aux['img_id']){
+                        img.id = aux['img_id'];
+                        const _old_img = msgTxtElement.querySelector('#'+aux['img_id']);
+                        if (_old_img) {
+                            _old_img.replaceWith(img);
+                        }
+                        else{
+                            msgTxtElement.appendChild(img); //<== IMG added HERE    
+                        }
+                    }
+                    //if we do not have id - replace the last image with a new one
+                    else{
+                        //remove last image and replace it with a new one - steaming
+                        const _imgs = msgTxtElement.querySelectorAll('img');
+                        if (_imgs.length > 0) {
+                            _imgs[_imgs.length - 1].remove();
+                        }
+                        msgTxtElement.appendChild(img); //<== IMG added HERE
+                    }
 
                     // make this friendly for the clipboard
                     messageElement.dataset.imageData = imageData;
@@ -450,6 +472,9 @@ async function buildRequestObjectForAiConv(msgAttributes, messageElement = null,
                 requestObj.isAi = true;
                 //console.log('checkpoint')
                 const submittedObj = await submitMessageToServer(requestObj, `/req/conv/sendMessage/${activeConv.slug}`);
+                if(submittedObj.imageQuota){
+                    updateQuotaInfo(submittedObj);    
+                }
 
                 submittedObj.content = cryptoContent;
                 messageElement.dataset.rawMsg = msg;
@@ -713,10 +738,13 @@ async function loadConv(btn=null, slug=null){
     switchDyMainContent('chat');
 
     history.replaceState(null, '', `/chat/${slug}`);
+    const mainLoader = document.getElementById("main_loader");
+    mainLoader.style.display = "flex";
 
     const convData = await RequestConvContent(slug);
 
     if(!convData){
+        mainLoader.style.display = "none";
         return;
     }
 
@@ -757,7 +785,8 @@ async function loadConv(btn=null, slug=null){
         chatlogElement.classList.add('start-state');
     }
     loadMessagesOnGUI(convData.messages);
-    scrollToLast(true);
+    mainLoader.style.display = "none";
+    setTimeout(() => scrollToLast(true), 100);
 }
 
 

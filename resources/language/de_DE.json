@@ -97,6 +97,8 @@
     "Model_Capability_Image_Gen": "Das aktuelle Modell kann Bilder generieren",
     "Model_Capability_Attachments": "Das aktuelle Modell erlaubt es Dateien anzuhängen. Dateien ins Textfeld ziehen.",
     "Model_Capability_Websearch": "Das aktuelle Modell durchsucht das Internet nach Informationen",
+    "Monthly image quota": "Monatliches Kontingent für Bilder",
+    "Monthly image quota remaining": "verbleibend",    
     "Input_Placeholder_Room": "Schreibe eine Gruppennachricht oder nutze die KI mit ",
     "language": "Sprache",
     "LeaveRoom": "Raum Verlassen",

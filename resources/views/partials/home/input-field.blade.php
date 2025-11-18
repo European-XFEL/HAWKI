@@ -225,8 +225,13 @@
         </div>
     </div>
     <div class="model-capabilities">
-        <span class="model-capability" id="model-capability-image-gen" title="{{ $translation['Model_Capability_Image_Gen'] }}">&#x1F3DE;</span>
-        <span class="model-capability" id="model-capability-attachments" title="{{ $translation['Model_Capability_Attachments'] }}">&#x1F4CE;</span>
-        <span class="model-capability" id="model-capability-websearch" title="{{ $translation['Model_Capability_Websearch'] }}">&#x1F310;</span>
+        <span class="model-capability model-capability-image-gen" title="{{ $translation['Model_Capability_Image_Gen'] }}">&#x1F3DE;</span>
+        <span class="model-capability model-capability-attachments" title="{{ $translation['Model_Capability_Attachments'] }}">&#x1F4CE;</span>
+        <span class="model-capability model-capability-websearch" title="{{ $translation['Model_Capability_Websearch'] }}">&#x1F310;</span>
+        @if($imageQuota['quota'])
+            <span class="image-quota-info hint @if($imageQuota['reached']) warn_hint @endif">
+                {!! $translation['Monthly image quota'] !!} - <span class="quota-value">{{$imageQuota['quota']}}</span>, {!! $translation['Monthly image quota remaining'] !!} - <span class="quota-counter">{{$imageQuota['remaining']}}</span>
+            </span>
+        @endif            
     </div>
 </div>

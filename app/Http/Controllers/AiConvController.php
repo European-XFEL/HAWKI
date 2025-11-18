@@ -6,7 +6,7 @@ use App\Models\AiConv;
 use App\Models\AiConvMsg;
 use App\Models\AiConvMsgAux;
 use App\Models\User;
-
+use App\Models\UserQuota;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
@@ -300,6 +300,7 @@ class AiConvController extends Controller
         $messageData['created_at'] = $message->created_at->format('Y-m-d+H:i');
         $messageData['updated_at'] = $message->updated_at->format('Y-m-d+H:i');
         $messageData['auxiliaries'] =  $auxiliaries;
+        $messageData['imageQuota'] =  Auth::user()->imageQuota(); //send quotas again after the server side update
 
         return response()->json([
             'success' => true,

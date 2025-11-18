@@ -11,6 +11,7 @@ class User extends Authenticatable
 {
     use HasApiTokens, HasFactory, Notifiable;
 
+    private $_imageQuota = null;
     
     protected $fillable = [
         'name',
@@ -49,5 +50,17 @@ class User extends Authenticatable
     public function revokProfile(){
         $this->update(['isRemoved'=> 1]);
     }
-
+    
+    public function imageQuota(){
+        if ($this->_imageQuota === null) {
+            $this->_imageQuota = UserQuota::getImageQuota($this->username);
+        }
+        return $this->_imageQuota;
+    }
+    
+    public function incImageCounter(){
+        UserQuota::incImageCounter($this->username);
+        $this->_imageQuota = null; //reset lazy counters on change
+    }
+    
 }

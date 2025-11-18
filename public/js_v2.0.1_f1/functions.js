@@ -41,3 +41,24 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     });
 });
+
+
+function updateQuotaInfo(data) {
+    const _quotaInfo = $('.image-quota-info');
+    if (data.imageQuota) {
+        _quotaInfo.data('reached', ((data.imageQuota.reached) ? 1 : 0));
+        _quotaInfo.data('quota-value', data.imageQuota.quota ?? 'n/a');
+        _quotaInfo.data('quota-counter', data.imageQuota.remaining ?? 'n/a' );
+    }
+    if(activeModel.enable_image_generation) {
+        if(_quotaInfo.data('quota-value') && _quotaInfo.data('quota-value')) {
+            $('.image-quota-info .quota-value').text(_quotaInfo.data('quota-value'));
+            $('.image-quota-info .quota-counter').text(_quotaInfo.data('quota-counter'));
+            if(_quotaInfo.data('reached')) _quotaInfo.addClass('warn_hint'); else _quotaInfo.removeClass('warn_hint');
+        }
+        _quotaInfo.show();
+    }
+    else {
+        _quotaInfo.hide();
+    }
+}

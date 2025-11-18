@@ -44,7 +44,10 @@
 				<div class="system-prompt"></div>
 			</div>
 
-
+			<div id="main_loader" style="display:none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255, 255, 255, 0.5); justify-content: center; align-items: center; z-index: 9999;">
+				<div class="preparing_completion_spinner" style="margin-bottom:10px;"></div>
+				<div>Loading chat...</div>
+			</div>
 			<div class="chatlog">
 				<div class="chatlog-container">
 

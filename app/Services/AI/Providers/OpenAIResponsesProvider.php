@@ -2,6 +2,7 @@
 
 namespace App\Services\AI\Providers;
 
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Http;
 
@@ -145,7 +146,7 @@ class OpenAIResponsesProvider extends BaseAIModelProvider
         }
 
         $tools = [];
-        if (isset($modelConfig['enable_image_generation']) && $modelConfig['enable_image_generation']) {
+        if ($modelConfig['enable_image_generation'] && !Auth::user()->imageQuota()['reached']) {
             $imageTool = ['type' => 'image_generation'];
             if (isset($modelConfig['quality']) ) {
                 $imageTool['quality'] = $modelConfig['quality'];
@@ -324,7 +325,7 @@ class OpenAIResponsesProvider extends BaseAIModelProvider
             $content = "Streaming didn't complete due to error: " . $reason;
         }
         
-
+        //when the whole request is completed
         if (isset($jsonChunk['type']) && in_array($jsonChunk['type'], ['response.completed', 'response.refreshed'], true)) {
             $isDone = true;
             // check for encrypted reasoning tokens
@@ -349,6 +350,9 @@ class OpenAIResponsesProvider extends BaseAIModelProvider
                             }
                         }
                     }
+                }
+                else if ($item['type'] == 'image_generation_call') { 
+                    Auth::user()->incImageCounter(); //count images generated via the request
                 }
             }
             // get the final image if we have one
@@ -448,6 +452,7 @@ class OpenAIResponsesProvider extends BaseAIModelProvider
                     'type' => 'imageResponse',
                     // the prefix is missing
                     'content' => "data:image/png;base64,".$imageData,
+                    'img_id' => $jsonChunk['item_id'],
             ];
             
         }
