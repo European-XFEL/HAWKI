@@ -338,15 +338,15 @@ function setModel(modelID = null){
 
             model = modelsList.find(m => m.id === localStorage.getItem("definedModel"));
         }
-        // if there is no defined model 
-        // or the defined model is outdated or cruppted
-        if(!model){            
-            model = modelsList.find(m => m.id === defaultModel);
-        }
     }
     else{
         model = modelsList.find(m => m.id === modelID);
     }
+    // if there is no defined model 
+    if(!model){
+        model = modelsList.find(m => m.id === defaultModel);
+    }
+    
     activeModel = model;
     localStorage.setItem("definedModel", activeModel.id);
 
