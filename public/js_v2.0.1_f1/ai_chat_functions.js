@@ -626,6 +626,7 @@ async function generateChatName(firstMessage, convItem) {
         payload: {
             model: systemModels.title_generator,
             stream: true,
+            context: "chat_name",
             messages: [
                 {
                     role: "system",
