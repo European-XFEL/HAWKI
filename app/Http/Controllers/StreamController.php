@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Controllers\RoomController;
 
+use App\Models\Performance;
 use App\Models\User;
 use App\Models\Room;
 use App\Models\Message;
@@ -32,6 +33,10 @@ class StreamController extends Controller
     protected $aiConnectionService;
     private $jsonBuffer = '';
     private $jsonBuffer2 = '';
+    
+    private $_streamResponseStarted = false;
+    private $_performance =null;
+    private $_streamPerformance = null;
 
     public function __construct(
         UsageAnalyzerService $usageAnalyzer,
@@ -105,6 +110,7 @@ class StreamController extends Controller
         $validatedData = $request->validate([
             'payload.model' => 'required|string',
             'payload.stream' => 'required|boolean',
+            'payload.context' => 'nullable|string',
             'payload.messages' => 'required|array',
             'payload.messages.*.role' => 'required|string',
             'payload.messages.*.content' => 'required|array',
@@ -186,6 +192,7 @@ class StreamController extends Controller
         // Create a callback function to process streaming chunks
         $onData = function ($data) use ($user, $avatar_url, $payload, $provider, $isOpenAIProvider) {
             $chunks = [];
+            //Storage::append('data.log', date('H:i:s') . "\n" . $data);
             if ($isOpenAIProvider) {
                 // This is as per https://github.com/openai/openai-python/blob/main/src/openai/_streaming.py
                 // partition of data part
@@ -193,6 +200,20 @@ class StreamController extends Controller
                 foreach ($lines as $line) {
                     $line = trim($line);
                     if (strncmp($line, 'event:', 6) === 0) {
+                        //these events happen when actual content streaming starts
+                        if(
+                            Str::contains($line, 'response.output_text.delta') ||
+                            Str::contains($line, 'response.image_generation_call.partial_image')
+                        ){
+                            if(!$this->_streamResponseStarted && $this->_streamPerformance){
+                                if(Str::contains($line, 'response.image_generation_call.partial_image')){
+                                    $this->_streamPerformance->attachments = 'images';
+                                    if($this->_performance){$this->_performance->attachments = 'images';}
+                                }
+                                $this->_streamPerformance->end();
+                                $this->_streamResponseStarted = true;
+                            }
+                        }
                         continue;
                     }
                     // Check if it starts with "data:" (case-sensitive). Use strncmp for speed.
@@ -269,11 +290,23 @@ class StreamController extends Controller
             }
         };
         // Process the streaming request
+        $this->_performance = new Performance([
+            'measured_on' => 'over', 
+            'model' => $payload['model'], 
+            'streaming' => (($payload['stream'])? 1 : null), 
+            'context' => $payload['context'] ?: 'default',
+        ]);
+        $this->_streamPerformance = clone $this->_performance;
+        $this->_streamPerformance->measured_on = 'stream_start';
+        
+        $this->_performance->start();
+        $this->_streamPerformance->start();
         $this->aiConnectionService->processRequest(
             $payload, 
             true, 
             $onData
         );
+        $this->_performance ->end();//save execution time
     }
     /*
      * Helper function to translate curl return object from google to openai format
