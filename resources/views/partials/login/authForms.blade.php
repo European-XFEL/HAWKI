@@ -1,3 +1,9 @@
+@if(strtolower(config('app.env')) != 'production')
+    <div style="font-size: 0.8rem; padding: 10px; background-color: whitesmoke; border: 1px solid red; color: red" class="center-text" >
+        Attention! This is the TEST system. If you are not a RAY developer please use<br>
+        <a href="https://ray.xfel.eu" style="text-decoration: underline; color: darkblue; font-size: 1rem;">https://ray.xfel.eu</a>
+    </div>
+@endif
 @if($authenticationMethod === 'OIDC')
     <form class="form-column" method="post" id="loginForm-OIDC" action="/req/login-oidc">
         @csrf
