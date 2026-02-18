@@ -144,13 +144,25 @@ class OpenAIProvider extends BaseAIModelProvider
      */
     public function makeNonStreamingRequest(array $payload)
     {
+        //model config
+        $modelConfig = [];
+        foreach ($this->config['models'] as $conf) {
+            if ($conf['id'] == $payload['model']) {
+                $modelConfig = $conf;
+                break;
+            }
+        }
+        
         // Ensure stream is set to false
         $payload['stream'] = false;
 
         // Initialize cURL
         $ch = curl_init();
-        curl_setopt($ch, CURLOPT_URL, $this->config['api_url']);
-
+        curl_setopt($ch, CURLOPT_URL, ($modelConfig['api_url'] ?? $this->config['api_url']));
+        
+        if ($modelConfig['unsafe_ssl']) {curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);};
+        if ($modelConfig['unsafe_ssl_host']) {curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);};
+        
         // Set common cURL options
         $this->setCommonCurlOptions($ch, $payload, $this->getHttpHeaders());
 
@@ -178,6 +190,15 @@ class OpenAIProvider extends BaseAIModelProvider
      */
     public function makeStreamingRequest(array $payload, callable $streamCallback)
     {
+        //model config
+        $modelConfig = [];
+        foreach ($this->config['models'] as $conf) {
+            if ($conf['id'] == $payload['model']) {
+                $modelConfig = $conf;
+                break;
+            }
+        }
+        
         // Ensure stream is set to true
         $payload['stream'] = true;
         // Enable usage reporting
@@ -194,8 +215,12 @@ class OpenAIProvider extends BaseAIModelProvider
         header('Access-Control-Allow-Origin: *');
 
         // Initialize cURL
+        // Initialize cURL
         $ch = curl_init();
-        curl_setopt($ch, CURLOPT_URL, $this->config['api_url']);
+        curl_setopt($ch, CURLOPT_URL, ($modelConfig['api_url'] ?? $this->config['api_url']));
+        
+        if ($modelConfig['unsafe_ssl']) {curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);};
+        if ($modelConfig['unsafe_ssl_host']) {curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);};
 
         // Set common cURL options
         $this->setCommonCurlOptions($ch, $payload, $this->getHttpHeaders(true));

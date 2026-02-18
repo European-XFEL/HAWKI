@@ -49,14 +49,24 @@ return [
                     ->get(),
                 \App\Models\ModelConfiguration::gptModel('gpt-5.1', 'OpenAI GPT 5.1', $_default_gpt_model_settings)
                     ->get(),
-                
-                \App\Models\ModelConfiguration::abstractModel('xfel-internal', 'XFEL-internal')
-                    ->set('streamable', false)
-                    ->set('keep_reasoning_tokens', false)
-                    ->set('api_url', 'http://localhost/v1/responses')
-                    ->set('unsafe_ssl', true)
-                    ->get(),              
             ]
         ],
+        
+        //openai generic protocol
+        'openai' => [
+            'id' => 'openai',
+            'active' => true,
+            'time_limit' => 240,
+            'models' => [
+                \App\Models\ModelConfiguration::abstractModel('xfel-internal', 'XFEL-internal')
+                    ->set('api_url', 'https://localhost:8888/v1/chat/completions')
+                    ->set('streamable', false)
+                    ->set('keep_reasoning_tokens', false)
+                    ->set('unsafe_ssl', true)
+                    //->set('unsafe_ssl_host', true)
+                    ->get(),
+            ]
+        ],
+
     ]
 ];
