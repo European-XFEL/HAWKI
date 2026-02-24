@@ -62,6 +62,7 @@
 	@include('partials.home.modals.guidelines-modal')
 	@include('partials.home.modals.add-member-modal')
 	@include('partials.home.modals.session-expiry-modal')
+	@include('partials.home.modals.models-explained')
 
 	@include('partials.overlay')
 

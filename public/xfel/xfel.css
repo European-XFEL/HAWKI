@@ -23,3 +23,11 @@
 .hint.warn_hint{
     color: red;
 }
+
+.x-orange {
+    color: #f39200 !important;
+}
+
+.bg-x-orange {
+    background-color: #f39200 !important;
+}

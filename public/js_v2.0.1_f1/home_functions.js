@@ -117,6 +117,16 @@ function toggleRelativePanelClass(targetID, sender, className, activation = null
 }
 //#endregion
 
+function toggleModelsExplained(show){
+    const modelsExplainModal = document.querySelector('#models-explained');
+    if(show == true){
+        modelsExplainModal.style.display = 'flex';
+    }
+    else{
+        modelsExplainModal.style.display = 'none';
+    }
+}
+
 
 //#region Burgers & Dropdown Click Events
 

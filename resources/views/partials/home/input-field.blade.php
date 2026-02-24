@@ -44,7 +44,16 @@
                         </div>
                     </button>
                 @endif
-   
+
+                @if(!$lite)
+                    <button class="btn-xs fast-access-btn bg-x-orange" value="export-panel" onclick="toggleModelsExplained(true)">
+                        <x-icon name="book"/>
+                        <div class="tooltip">
+                            {{ $translation["ModelsExplained"] }}
+                        </div>
+                    </button>
+                @endif                
+                
             </div>
 
             <div class="right">
@@ -79,6 +88,11 @@
                             <div class="label">{{ $translation["StartNewChat"] }}</div>
                         </button>
                         @endif
+                        
+                        <button class="btn-xs menu-item bg-x-orange" value="export-panel" onclick="toggleModelsExplained(true)">
+                            <x-icon name="book"/>
+                            <div class="label">{{ $translation["ModelsExplained"] }}</div>
+                        </button>
 
                         <button class="btn-xs menu-item" value="models_panel" onclick="switchControllerProp(this, 'models_panel')">
                             <x-icon name="layers"/>
