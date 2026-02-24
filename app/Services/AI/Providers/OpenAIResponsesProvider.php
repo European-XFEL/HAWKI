@@ -525,13 +525,11 @@ class OpenAIResponsesProvider extends BaseAIModelProvider
 
         // Initialize cURL
         $ch = curl_init();
-        $modelConfig = [];
-        foreach ($this->config['models'] as $conf) {
-            if ($conf['id'] == $payload['model']) {
-                $modelConfig = $conf;
-                break;
-            }
-        }
+        
+        $modelConfig = $this->config['models'][$payload['model']];
+        //if provider's model name specified directly in config.
+        if($modelConfig['model_name']){$payload['model'] = $modelConfig['model_name'];}
+        
         $api_url = $modelConfig['api_url'] ?? $this->config['api_url'];
         curl_setopt($ch, CURLOPT_URL, $api_url);
 
@@ -581,13 +579,11 @@ class OpenAIResponsesProvider extends BaseAIModelProvider
 
         // Initialize cURL
         $ch = curl_init();
-        $modelConfig = [];
-        foreach ($this->config['models'] as $conf) {
-            if ($conf['id'] == $payload['model']) {
-                $modelConfig = $conf;
-                break;
-            }
-        }
+        
+        $modelConfig = $this->config['models'][$payload['model']];
+        //if provider's model name specified directly in config.
+        if($modelConfig['model_name']){$payload['model'] = $modelConfig['model_name'];}
+        
         $api_url = $modelConfig['api_url'] ?? $this->config['api_url'];
         curl_setopt($ch, CURLOPT_URL, $api_url);
 

@@ -49,6 +49,14 @@ return [
                     ->get(),
                 \App\Models\ModelConfiguration::gptModel('gpt-5.1', 'OpenAI GPT 5.1', $_default_gpt_model_settings)
                     ->get(),
+                    
+                //example of the same model with different tools setup
+                \App\Models\ModelConfiguration::gptModel('gpt-5.2', 'OpenAI GPT 5.2', $_default_gpt_model_settings)
+                    ->get(),
+                \App\Models\ModelConfiguration::gptModel('gpt-5.2-q-high', 'OpenAI GPT 5.2 (img q: high)', $_default_gpt_model_settings)
+                    ->modelName('gpt-5.2')
+                    ->set('quality', 'high')
+                    ->get(),                
             ]
         ],
         
