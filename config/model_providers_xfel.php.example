@@ -31,11 +31,14 @@ return [
             'time_limit' => 240,            
             'models' => [
                 \App\Models\ModelConfiguration::gptModel('gpt-4o-mini', 'OpenAI GPT O4 mini', $_default_gpt_model_settings)
+                    ->description('A lightweight, cost-efficient multimodal model optimized for fast text and image understanding tasks.')
                     ->get(),
                 
                 \App\Models\ModelConfiguration::gptModel('gpt-5-mini', 'OpenAI GPT 5 mini', $_default_gpt_model_settings)
+                    ->description('A compact GPT-5 variant designed for low-latency, high-throughput general reasoning and chat.')
                     ->get(),
                 \App\Models\ModelConfiguration::gptModel('gpt-5', 'OpenAI GPT 5', $_default_gpt_model_settings)
+                    ->description('A flagship general-purpose model offering advanced reasoning, instruction following, and multimodal capabilities.')
                     ->images(false)
                     ->get(),
                 
