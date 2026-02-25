@@ -266,6 +266,10 @@ svg{
     width: auto;
 }
 
+#models-explained li{
+    margin-bottom: 1rem;
+}
+
 /* SECTION: BUTTONS */
 
 button{

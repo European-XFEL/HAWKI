@@ -5,6 +5,7 @@
                 @continue
             @endif
         @endif
+        @if($model['separator']) <hr> @endif
         <button class="model-selector burger-item" onclick="selectModel(this); closeBurgerMenus()" value="{{ json_encode($model) }}">
             
             

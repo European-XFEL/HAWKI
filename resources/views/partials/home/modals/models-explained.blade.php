@@ -14,6 +14,7 @@
                     @foreach(config('model_providers.providers') as $provider)
                         @foreach($provider['models'] as $model)
                             @if($model['visible'])
+                                @if($model['separator']) <hr> @endif
                                 <li>
                                     <b>{{$model['label']}}</b>
                                     @if($model['description']) - {!! $model['description'] !!} @endif

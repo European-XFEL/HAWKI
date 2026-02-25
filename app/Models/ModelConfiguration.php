@@ -72,5 +72,6 @@ class ModelConfiguration
     public function visible($flag){ return $this->set('visible', (bool) $flag);}
     public function modelName($name){ return $this->set('model_name', $name);}
     public function description($desc){ return $this->set('description', $desc);}
+    public function separator(){ return $this->set('separator', true);}
 
 }
