@@ -261,6 +261,11 @@ svg{
     align-items: center;
 }
 
+#models-explained .modal-panel {
+    max-width: 90vw;
+    width: auto;
+}
+
 /* SECTION: BUTTONS */
 
 button{
