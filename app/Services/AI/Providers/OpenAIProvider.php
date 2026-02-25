@@ -144,14 +144,9 @@ class OpenAIProvider extends BaseAIModelProvider
      */
     public function makeNonStreamingRequest(array $payload)
     {
-        //model config
-        $modelConfig = [];
-        foreach ($this->config['models'] as $conf) {
-            if ($conf['id'] == $payload['model']) {
-                $modelConfig = $conf;
-                break;
-            }
-        }
+        $modelConfig = $this->config['models'][$payload['model']];
+        //if provider's model name specified directly in config.
+        if($modelConfig['model_name']){$payload['model'] = $modelConfig['model_name'];}
         
         // Ensure stream is set to false
         $payload['stream'] = false;
@@ -190,14 +185,9 @@ class OpenAIProvider extends BaseAIModelProvider
      */
     public function makeStreamingRequest(array $payload, callable $streamCallback)
     {
-        //model config
-        $modelConfig = [];
-        foreach ($this->config['models'] as $conf) {
-            if ($conf['id'] == $payload['model']) {
-                $modelConfig = $conf;
-                break;
-            }
-        }
+        $modelConfig = $this->config['models'][$payload['model']];
+        //if provider's model name specified directly in config.
+        if($modelConfig['model_name']){$payload['model'] = $modelConfig['model_name'];}
         
         // Ensure stream is set to true
         $payload['stream'] = true;

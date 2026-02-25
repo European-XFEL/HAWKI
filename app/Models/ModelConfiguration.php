@@ -70,6 +70,7 @@ class ModelConfiguration
     public function documents($flag){ return $this->set('enable_document_input', (bool) $flag);}
     public function web($flag){ return $this->set('enable_web_search', (bool) $flag);}
     public function visible($flag){ return $this->set('visible', (bool) $flag);}
+    public function modelName($name){ return $this->set('model_name', $name);}
     public function description($desc){ return $this->set('description', $desc);}
 
 }
