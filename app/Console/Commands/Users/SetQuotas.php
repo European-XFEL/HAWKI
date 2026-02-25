@@ -2,6 +2,7 @@
 
 namespace App\Console\Commands\Users;
 
+use App\Models\User;
 use App\Models\UserQuota;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Validator;
@@ -38,6 +39,11 @@ class SetQuotas extends Command
             return;
         }
         
+        if(!User::query()->where('username', $username)->exists()) {
+            $this->error('User does not exist');
+            return;
+        }
+        UserQuota::userRecordCheck($username);
         
         if ($operation == 'get') {
             $result = UserQuota::find($username);
