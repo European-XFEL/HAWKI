@@ -16,7 +16,7 @@ class Performance extends Command
         {offset=0 : time scope offset, days}
         {measure_on=stream_start : stream_start | over}
         {context=default : default | chat_name}
-        {attachments? : \'\' | no-attachments | images}'
+        {attachments=no-attachments : any | no-attachments | images}'
     ;
 
     protected $description = 'Show model performance over last n days';
