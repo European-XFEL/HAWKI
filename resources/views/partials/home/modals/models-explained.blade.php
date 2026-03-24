@@ -27,6 +27,9 @@
                                         @endphp
                                         <div class="gray-text">Tools: {{implode(', ', $_tools)}}</div>
                                     @endif
+                                    @if($modelPerformance[$model['id']])
+                                        <div class="gray-text">Avg. response time: <u>{{$modelPerformance[$model['id']]['AVERAGE_TIME_SEC']}} sec</u></div>
+                                    @endif
                                 </li>
                             @endif
                         @endforeach

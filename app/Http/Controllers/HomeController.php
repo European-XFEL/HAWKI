@@ -7,6 +7,7 @@ use App\Http\Controllers\RoomController;
 use App\Http\Controllers\LanguageController;
 use App\Http\Controllers\InvitationController;
 
+use App\Models\Performance;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\View;
@@ -71,6 +72,7 @@ class HomeController extends Controller
 
         $models = $this->aiConnService->getAvailableModels();
         
+        view()->share(['modelPerformance' => Performance::performanceForUsers(true)]);
         //image quota
         view()->share(['imageQuota' => Auth::user()->imageQuota()]);
         
