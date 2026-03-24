@@ -5,6 +5,7 @@ namespace App\Console\Commands;
 use Carbon\Carbon;
 use Illuminate\Console\Command;
 use App\Models\Performance as ModelsPerformance;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\DB;
 
 
@@ -35,38 +36,12 @@ class Performance extends Command
         $context = $this->clean($this->input->getArgument('context'));
         $attachments = $this->clean($this->input->getArgument('attachments'));
         
-        $query = ModelsPerformance::query();
-
-        if($measureOn){
-            $query->where('measured_on', $measureOn);
-        }
-        
-        if(!empty($context)){
-            $query->where('context', $context);
-        }
-        if($attachments == 'no-attachments'){
-            $query->whereNull('attachments');
-        }
-        elseif ($attachments == 'images'){
-            $query->where('attachments', $attachments);
-        }
+        $params = compact('days', 'daysOffset', 'measureOn', 'context', 'attachments');
+        $result = ModelsPerformance::performancePerModel($params);
         
         $dateEnd = Carbon::now()->subDays(intval($daysOffset))->endOfDay();
         $dateStart = clone $dateEnd;
         $dateStart->subDays(intval($days))->startOfDay();
-        
-        $result = $query
-            ->whereBetween('created_at', [$dateStart, $dateEnd])
-            ->groupBy('model')
-            ->orderBy('model')
-            ->get([
-                'model',
-                DB::raw('round(avg(response_ms)/1000, 2) as AVERAGE_TIME_SEC'),
-                DB::raw('count(*) as requests'),
-                DB::raw('round(min(response_ms)/1000,2) as min_time'),
-                DB::raw('round(max(response_ms)/1000,2) as max_time')
-            ])
-            ->toArray();
         
         $this->info('The measured value is related to ' . $measureOn . '. Context: ' . $context);
         $this->info('Time scope ' . substr($dateStart, 0, 10) .' - '. substr($dateEnd, 0, 10));
@@ -75,7 +50,7 @@ class Performance extends Command
             $this->warn('No performance records found');
         }
         else{
-            $this->table(array_keys($result[0]), $result);
+            $this->table(array_keys(Arr::first($result)), $result);
         }
         
     }
