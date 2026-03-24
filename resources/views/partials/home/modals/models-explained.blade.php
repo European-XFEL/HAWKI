@@ -8,7 +8,7 @@
                 - image generation - if enabled just ask for it, <br>
                 - file upload - if enabled drag and drop your files on the input area,<br>
                 - websearch - if enabled it will be used automatically i.e searching current weather.<br><br>
-                <div class="center-text"><img src="{{url('media/help_model_select.png')}}" width="755"></div>
+                <div class="center-text"><img src="{{url('media/help_model_select.png?v=1774418063')}}" width="755"></div>
                 <h1 class="center-text">Current model list</h1>
                 <ul>
                     @foreach(config('model_providers.providers') as $provider)
