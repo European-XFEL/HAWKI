@@ -14,7 +14,7 @@ class Performance extends Command
     protected $signature = 'performance
         {days=30 : time scope, days}
         {offset=0 : time scope offset, days}
-        {measure_on=stream_start : stream_start | over}
+        {measure_on=response : stream_start | over | response}
         {context=default : default | chat_name}
         {attachments=no-attachments : any | no-attachments | images}'
     ;
@@ -43,9 +43,9 @@ class Performance extends Command
         $dateStart = clone $dateEnd;
         $dateStart->subDays(intval($days))->startOfDay();
         
-        $this->info('The measured value is related to ' . $measureOn . '. Context: ' . $context);
+        $this->info('The measured value is related to ' . strtoupper($measureOn) . '. Context: ' . strtoupper($context));
         $this->info('Time scope ' . substr($dateStart, 0, 10) .' - '. substr($dateEnd, 0, 10));
-        $this->info('Attachments filter: ' . ($attachments ?: 'none'));
+        $this->info('Attachments filter: ' . (strtoupper($attachments) ?: 'none'));
         if(empty($result)){
             $this->warn('No performance records found');
         }

@@ -2,6 +2,7 @@
 
 namespace App\Services\AI;
 
+use App\Models\Performance;
 use App\Services\AI\AIProviderFactory;
 use Illuminate\Support\Facades\Log;
 
@@ -45,7 +46,15 @@ class AIConnectionService
             return $provider->connect($formattedPayload, $streamCallback);
         } else {
             // Handle standard response
+            $performance = new Performance([
+                'measured_on' => 'over',
+                'model' => $rawPayload['model'],
+                'streaming' => (($rawPayload['stream'])? 1 : null),
+                'context' => $rawPayload['context'] ?: 'default',
+            ]);
+            $performance->start();
             $response = $provider->connect($formattedPayload);
+            $performance->end();
             return $provider->formatResponse($response);
         }
     }

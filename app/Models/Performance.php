@@ -57,9 +57,24 @@ class Performance extends Model
     {
         $query = self::query();
         
-        //stream_start | over
+        //stream_start | over | response
         if($params['measureOn']){
-            $query->where('measured_on', $params['measureOn']);
+            if($params['measureOn'] == 'response'){
+                $query->where(function ($query) {
+                    $query
+                        ->orWhere(function ($query){
+                            $query->where('measured_on', 'stream_start')
+                                ->whereNotNull('streaming');
+                        })
+                        ->orWhere(function ($query){
+                            $query->where('measured_on', 'over')
+                                ->whereNull('streaming');
+                        });
+                });
+            }
+            else{
+                $query->where('measured_on', $params['measureOn']);
+            }
         }
         
         //default | chat_name
@@ -104,7 +119,7 @@ class Performance extends Model
         $params = [
             'days' => 7, 
             'daysOffset' => 0, 
-            'measureOn' => 'stream_start', 
+            'measureOn' => 'response', 
             'context' => 'default', 
             'attachments' => 'no-attachments',
             'minimumRequests' => 10,
