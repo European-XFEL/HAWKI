@@ -4,10 +4,21 @@
             <div class="modal-content">
                 <h1 class="center-text">{{ $translation["ModelsExplained"] }}</h1>
                 In RAY you can switch between different models depending if you need fast answer, general chat, code generation or advanced analysis.<br> 
-                Different tools available depending on selected model:<br> 
-                - image generation - if enabled just ask for it, <br>
-                - file upload - if enabled drag and drop your files on the input area,<br>
-                - websearch - if enabled it will be used automatically i.e searching current weather.<br><br>
+                Different tools available depending on selected model:
+                <ul>
+                    <li>
+                        Image generation - if enabled just ask for it.
+                    </li>
+                    <li>
+                        File upload - if enabled drag and drop your files on the input area.
+                        @if(config('model_providers._defaults.max_attachment_size_kb')) Maximum: {{ round(config('model_providers._defaults.max_attachment_size_kb')/1024, 1) }}MB. @endif
+                        @if(is_array(config('model_providers._defaults.attachment_types'))) Supported types: {{ implode(', ', config('model_providers._defaults.attachment_types')) }}. @endif
+                            
+                    </li>
+                    <li>
+                        Websearch - if enabled it will be used automatically i.e searching current weather
+                    </li>
+                </ul>
                 <div class="center-text"><img src="{{url('media/help_model_select.png?v=1774418063')}}" width="755"></div>
                 <h1 class="center-text">Current model list</h1>
                 <ul>
@@ -22,10 +33,13 @@
                                         @php 
                                             $_tools = [];
                                             if($model['enable_image_generation']) $_tools[] = 'image generation';
-                                            if($model['enable_document_input']) $_tools[] = 'document input';
+                                            if($model['enable_document_input']) $_tools[] = 'document input <span style="font-size: 0.8em">('
+                                            .round($model['max_attachment_size_kb']/1024, 1).'MB'
+                                            .(is_array(config('model_providers._defaults.attachment_types'))? ' ' . implode(', ', config('model_providers._defaults.attachment_types')) : '')
+                                            .')</span>';
                                             if($model['enable_web_search']) $_tools[] = 'web search';
                                         @endphp
-                                        <div class="gray-text">Tools: {{implode(', ', $_tools)}}</div>
+                                        <div class="gray-text">Tools: {!!implode(', ', $_tools)!!}</div>
                                     @endif
                                     @if($modelPerformance[$model['id']])
                                         <div class="gray-text">Avg. response time: <u>{{$modelPerformance[$model['id']]['AVERAGE_TIME_SEC']}} sec</u></div>

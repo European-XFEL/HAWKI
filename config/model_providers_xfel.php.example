@@ -6,9 +6,12 @@ $_default_gpt_model_settings = [
     'partial_images' => 3, // maximum number of partial image updates to generate when streaming, can be up to 3,
 
     'max_attachment_size_kb' => 5*1024, // maximum document size in KB (for the b64 encoded document)
+    'attachment_types' => ['jpg', 'png', 'pdf'], //info only
+
 ];
 
 return [
+    '_defaults' => $_default_gpt_model_settings, //used for info
     
     'defaultModel' => 'gpt-4o-mini',
     'default_image_quota' => 10, //images per month; comment out for unlimited
