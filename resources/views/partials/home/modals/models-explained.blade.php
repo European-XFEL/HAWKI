@@ -32,10 +32,11 @@
                                     @if($model['enable_image_generation'] || $model['enable_document_input'] || $model['enable_web_search']) 
                                         @php 
                                             $_tools = [];
+                                            $_attachmentTypes = ($model['attachment_types'] ?: config('model_providers._defaults.attachment_types'));
                                             if($model['enable_image_generation']) $_tools[] = 'image generation';
                                             if($model['enable_document_input']) $_tools[] = 'document input <span style="font-size: 0.8em">('
                                             .round($model['max_attachment_size_kb']/1024, 1).'MB'
-                                            .(is_array(config('model_providers._defaults.attachment_types'))? ' ' . implode(', ', config('model_providers._defaults.attachment_types')) : '')
+                                            .(is_array($_attachmentTypes)? ' ' . implode(', ', $_attachmentTypes) : '')
                                             .')</span>';
                                             if($model['enable_web_search']) $_tools[] = 'web search';
                                         @endphp
