@@ -45,6 +45,7 @@ class ModelConfiguration
                 'size' => '1024x1024', //1024x1024, 1024x1536, 1536x1024, or auto
                 'partial_images' => 3, // maximum number of partial image updates to generate when streaming, can be up to 3,
                 'add_thread_images_as_input' => true, // previously generated images in the thread are added to the input of the next request.
+                'image_model' => null, //image tool can use different models
                 
                 //Upload files
                 'enable_document_input' => true,

@@ -4,6 +4,7 @@ $_default_gpt_model_settings = [
     'quality' => 'low', // low, medium, high, auto
     'size' => '1024x1024', //1024x1024, 1024x1536, 1536x1024, or auto
     'partial_images' => 3, // maximum number of partial image updates to generate when streaming, can be up to 3,
+    'image_model' => 'gpt-image-1',
 
     'max_attachment_size_kb' => 5*1024, // maximum document size in KB (for the b64 encoded document)
     'attachment_types' => ['jpg', 'png', 'pdf'], //info only
@@ -63,6 +64,12 @@ return [
                     ->modelName('gpt-5.2')
                     ->set('quality', 'high')
                     ->get(),                
+                \App\Models\ModelConfiguration::gptModel('gpt-5.2-q-high(mini)', 'OpenAI GPT 5.2 (img q: high, model: mini)', $_default_gpt_model_settings)
+                    ->modelName('gpt-5.2')
+                    ->description('A GPT-5.2 multimodal variant configured for cost effective good quality images.')
+                    ->set('quality', 'high')
+                    ->set('image_model', 'gpt-image-1-mini')
+                    ->get(),                    
             ]
         ],
         
@@ -73,11 +80,17 @@ return [
             'time_limit' => 240,
             'models' => [
                 \App\Models\ModelConfiguration::abstractModel('xfel-internal', 'XFEL-internal')
+                    ->separator()
                     ->set('api_url', 'https://localhost:8888/v1/chat/completions')
                     ->set('streamable', false)
                     ->set('keep_reasoning_tokens', false)
                     ->set('unsafe_ssl', true)
                     //->set('unsafe_ssl_host', true)
+                    
+                    //->set('enable_document_input', true)
+                    //->set('max_attachment_size_kb', $_default_gpt_model_settings['max_attachment_size_kb'])
+                    //->set('attachment_types', ['pdf']) //info only
+                    
                     ->get(),
             ]
         ],

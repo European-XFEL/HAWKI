@@ -33,7 +33,11 @@
                                         @php 
                                             $_tools = [];
                                             $_attachmentTypes = ($model['attachment_types'] ?: config('model_providers._defaults.attachment_types'));
-                                            if($model['enable_image_generation']) $_tools[] = 'image generation';
+                                            if($model['enable_image_generation']) $_tools[] = '<span data-details="'
+                                                . $model['quality'] . ', '
+                                                . $model['size'] . ', '
+                                                . $model['image_model']
+                                                .'">image generation</span>';
                                             if($model['enable_document_input']) $_tools[] = 'document input <span style="font-size: 0.8em">('
                                             .round($model['max_attachment_size_kb']/1024, 1).'MB'
                                             .(is_array($_attachmentTypes)? ' ' . implode(', ', $_attachmentTypes) : '')

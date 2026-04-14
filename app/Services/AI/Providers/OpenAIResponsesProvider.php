@@ -158,6 +158,9 @@ class OpenAIResponsesProvider extends BaseAIModelProvider
             if (isset($modelConfig['partial_images']) && $payload['stream']) {
                 $imageTool['partial_images'] = $modelConfig['partial_images'];
             }
+            if (isset($modelConfig['image_model']) ) {
+                $imageTool['model'] = $modelConfig['image_model'];
+            }
             $tools[] = $imageTool;
         }
 
