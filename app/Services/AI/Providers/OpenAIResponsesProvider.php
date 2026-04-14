@@ -416,10 +416,10 @@ class OpenAIResponsesProvider extends BaseAIModelProvider
     
         
         // Extract usage data if available
-        if (!empty($jsonChunk['usage'])) {
-            $usage = $this->extractUsage($jsonChunk);
-        } elseif (!empty($jsonChunk['metadata']['usage'])) {
-            $usage = $this->extractUsage($jsonChunk['metadata']['usage']);
+        if (!empty($jsonChunk['response']['usage'])) {
+            $usage = $this->extractUsage($jsonChunk['response']);
+        } elseif (!empty($jsonChunk['response']['metadata']['usage'])) {
+            $usage = $this->extractUsage($jsonChunk['response']['metadata']['usage']);
         }
 
         $responseId = '';
