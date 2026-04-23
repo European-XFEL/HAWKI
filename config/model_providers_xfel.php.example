@@ -82,6 +82,28 @@ return [
             ]
         ],
         
+        'openai-responses-local' => [
+            'id' => 'openai-responses-local',
+            'active' => true,
+            'time_limit' => 240,
+            'models' => [
+                \App\Models\ModelConfiguration::abstractModel('xfel-internal-ollama-gpt-oss', 'gpt-oss-on-premise')
+                    ->separator()
+                    ->description('gpt OSS model host on-premise, comparable to gpt-4o-mini, and useful for summarizing sensitive information')
+                    ->set('api_url', 'https://localhost:8889/v1/responses') //short host name is the one used in certificates
+                    ->set('streamable', true)
+                    ->set('keep_reasoning_tokens', false)
+                    ->set('unsafe_ssl', true)
+                    ->set('unsafe_ssl_host', true)
+                    
+                    ->set('enable_document_input', true)
+                    ->set('max_attachment_size_kb', $_default_gpt_model_settings['max_attachment_size_kb'])
+                    ->set('attachment_types', ['pdf']) //info only
+                    
+                    ->get(),
+            ]
+        ],        
+        
         //openai generic protocol
         'openai' => [
             'id' => 'openai',

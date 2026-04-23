@@ -539,6 +539,7 @@ class OpenAIResponsesProvider extends BaseAIModelProvider
         if ($modelConfig['unsafe_ssl'] ?? false) {
             curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
         }
+        if ($modelConfig['unsafe_ssl_host']) {curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);};
         
         //curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 2);
         
@@ -593,6 +594,7 @@ class OpenAIResponsesProvider extends BaseAIModelProvider
         if ($modelConfig['unsafe_ssl'] ?? false) {
             curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
         }
+        if ($modelConfig['unsafe_ssl_host']) {curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);};
 
         // Set common cURL options
         $this->setCommonCurlOptions($ch, $payload, $this->getHttpHeaders(true));

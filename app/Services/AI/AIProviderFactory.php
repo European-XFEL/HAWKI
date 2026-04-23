@@ -9,6 +9,7 @@ use App\Services\AI\Providers\GWDGProvider;
 use App\Services\AI\Providers\GoogleProvider;
 use App\Services\AI\Providers\OllamaProvider;
 use App\Services\AI\Providers\OpenWebUIProvider;
+use Illuminate\Support\Str;
 
 
 class AIProviderFactory
@@ -45,21 +46,20 @@ class AIProviderFactory
     
     public function getProviderInterface(string $providerId): AIModelProviderInterface
     {
-        switch ($providerId) {
-            case 'openai':
-                return new OpenAIProvider($this->config['providers']['openai']);
-            case 'openai-responses':
-                return new OpenAIResponsesProvider($this->config['providers']['openai-responses']);
-            case 'gwdg':
-                return new GWDGProvider($this->config['providers']['gwdg']);
-            case 'google':
-                return new GoogleProvider($this->config['providers']['google']);
-            case 'ollama':
-                return new OllamaProvider($this->config['providers']['ollama']);
-            case 'openWebUi':
-                return new OpenWebUIProvider($this->config['providers']['openWebUi']);
-            default:
-                throw new \Exception("Unsupported provider: {$providerId}");
+        if ($providerId === 'openai') {
+            return new OpenAIProvider($this->config['providers']['openai']);
+        } elseif (Str::startsWith($providerId, 'openai-responses')) {
+            return new OpenAIResponsesProvider($this->config['providers'][$providerId]);
+        } elseif ($providerId === 'gwdg') {
+            return new GWDGProvider($this->config['providers']['gwdg']);
+        } elseif ($providerId === 'google') {
+            return new GoogleProvider($this->config['providers']['google']);
+        } elseif ($providerId === 'ollama') {
+            return new OllamaProvider($this->config['providers']['ollama']);
+        } elseif ($providerId === 'openWebUi') {
+            return new OpenWebUIProvider($this->config['providers']['openWebUi']);
+        } else {
+            throw new \Exception("Unsupported provider: {$providerId}");
         }
     }
 
