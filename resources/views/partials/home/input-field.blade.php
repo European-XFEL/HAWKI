@@ -46,8 +46,8 @@
                 @endif
 
                 @if(!$lite)
-                    <button class="btn-xs fast-access-btn" value="export-panel" onclick="toggleModelsExplained(true)">
-                        <div class="bg-x-orange" style="font-size: 1rem; font-weight: bold; padding: 0px 10px">?</div>
+                    <button class="btn-xs fast-access-btn" style="padding:0px;" value="export-panel" onclick="toggleModelsExplained(true)">
+                        <div style="font-size: 1.3rem; padding:0px 5px;">?</div>
                         <div class="tooltip">
                             {{ $translation["ModelsExplained"] }}
                         </div>
@@ -89,8 +89,8 @@
                         </button>
                         @endif
                         
-                        <button class="btn-xs menu-item bg-x-orange" value="export-panel" onclick="toggleModelsExplained(true)">
-                            <div class="bg-x-orange" style="font-size: 1rem; font-weight: bold; padding: 0px 10px">?</div>
+                        <button class="btn-xs menu-item" value="export-panel" style="padding-left:10px;" onclick="toggleModelsExplained(true)">
+                            <div style="font-size: 1.3rem; padding: 0px 10px">?</div>
                             <div class="label">{{ $translation["ModelsExplained"] }}</div>
                         </button>
 
