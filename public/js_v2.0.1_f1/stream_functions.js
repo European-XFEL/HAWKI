@@ -254,11 +254,18 @@ async function requestPromptImprovement(sender) {
         payload: {
             model: systemModels.prompt_improver,
             stream: true,
+            context: "prompt_improve",
             messages: [
+                {
+                    role: "system",
+                    content: {
+                        text: translation.Improvement_Prompt
+                    },
+                },
                 {
                     role: "user",
                     content: {
-                        text: translation.Improvement_Prompt + "\n\n" +prompt
+                        text: prompt
                     }
                 }
             ]
@@ -301,9 +308,15 @@ async function requestChatlogSummery(msgs = null) {
 
     const messages = [
         {
+            role: "system",
+            content: {
+                text: translation.Summery_Prompt
+            },
+        },
+        {
             role: "user",
             content: {
-                text: translation.Summery_Prompt + "\n\n" + JSON.stringify(msgs)
+                text: JSON.stringify(msgs)
             }
         }
     ];
@@ -315,6 +328,7 @@ async function requestChatlogSummery(msgs = null) {
         payload:{
             model: systemModels.summarizer,
             stream: false,
+            context: "prompt_improve",
             messages: messages
         }
     };

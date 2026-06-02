@@ -91,6 +91,7 @@ return [
                 \App\Models\ModelConfiguration::abstractModel('local-service-model', 'Local service model') //must keep Abstract 
                     ->set('api_url', 'https://localhost:8889/v1/responses')
                     ->description('Service model for title_generator, prompt_improver, summarizer')
+                    ->set('message_format', 'ollama')
                     ->set('streamable', true) //must be true
                     ->set('visible', false)
                     ->set('unsafe_ssl', true)
@@ -102,6 +103,7 @@ return [
                     ->separator()
                     ->description('gpt OSS model host on-premise, comparable to gpt-4o-mini, and useful for summarizing sensitive information')
                     ->set('api_url', 'https://localhost:8889/v1/responses') //short host name is the one used in certificates
+                    ->set('message_format', 'ollama')
                     ->set('streamable', true)
                     ->set('keep_reasoning_tokens', false)
                     ->set('unsafe_ssl', true)

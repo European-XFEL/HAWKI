@@ -36,10 +36,17 @@ class AIConnectionService
     public function processRequest(array $rawPayload, bool $streaming = false, ?callable $streamCallback = null)
     {
         $modelId = $rawPayload['model'];
+        $modelDetails = $this->getModelDetails($modelId);
         $provider = $this->providerFactory->getProviderForModel($modelId);
         
         // Format the payload according to provider requirements
         $formattedPayload = $provider->formatPayload($rawPayload);
+        
+        //for local models we may have OpenAI format API but ollama messages dormat 
+        if($modelDetails['message_format'] == 'ollama'){
+            $formattedPayload['messages'] = $formattedPayload['input'];
+            unset($formattedPayload['input']);
+        }
         
         if ($streaming && $streamCallback) {
             // Handle streaming response
