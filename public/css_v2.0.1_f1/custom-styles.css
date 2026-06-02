@@ -103,3 +103,19 @@
     background-repeat: no-repeat;
     /* background-size: auto; */
 }
+
+.input-field.improving {
+    color: #444;
+    cursor: not-allowed;
+    font-style: italic;
+    animation: changeColor 1s infinite alternate;
+}
+
+@keyframes changeColor {
+    0% {
+        color: #DDD;
+    }
+    100% {
+        color: #444;
+    }
+}

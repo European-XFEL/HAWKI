@@ -242,8 +242,13 @@ function createMsgObject(msg){
 async function requestPromptImprovement(sender) {
     const inputField = sender.closest('.input').querySelector('.input-field');
     const prompt = inputField.value.trim();
-
-    await smoothDeleteWords(inputField, 700)
+    if(!prompt){
+        return;
+    }
+    
+    inputField.disabled = true;
+    inputField.classList.add('improving');
+    setSendBtnStatus(SendBtnStatus.LOADING);
 
     const requestObject = {
         payload: {
@@ -267,13 +272,15 @@ async function requestPromptImprovement(sender) {
     postData(requestObject)
     .then(response => {
         const onData = (data, done) => {
-            if (data && data.content != "") {
-                result += deconstContent(data.content).messageText
+            if (data && data.isDone && data.content != "") {
+                result = deconstContent(data.content).messageText
                 inputField.value = result.trim();
                 resizeInputField(inputField);
             }
             if (done) {
-                // console.log('done');
+                inputField.disabled = false;
+                inputField.classList.remove('improving');
+                setSendBtnStatus(SendBtnStatus.SENDABLE);
             }
         };
         processStream(response.body, onData);
@@ -281,7 +288,6 @@ async function requestPromptImprovement(sender) {
     .catch((error) => {
         // console.log(error);
     });
-    // write a cool math formula
 
 }
 
