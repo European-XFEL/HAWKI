@@ -251,15 +251,9 @@ async function requestPromptImprovement(sender) {
             stream: true,
             messages: [
                 {
-                    role: "system",
-                    content: {
-                        text: translation.Improvement_Prompt
-                    },
-                },
-                {
                     role: "user",
                     content: {
-                        text: prompt
+                        text: translation.Improvement_Prompt + "\n\n" +prompt
                     }
                 }
             ]
@@ -301,15 +295,9 @@ async function requestChatlogSummery(msgs = null) {
 
     const messages = [
         {
-            role: "system",
-            content: {
-                text: translation.Summery_Prompt
-            },
-        },
-        {
             role: "user",
             content: {
-                text: JSON.stringify(msgs)
+                text: translation.Summery_Prompt + "\n\n" + JSON.stringify(msgs)
             }
         }
     ];

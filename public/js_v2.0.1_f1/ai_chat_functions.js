@@ -629,15 +629,9 @@ async function generateChatName(firstMessage, convItem) {
             context: "chat_name",
             messages: [
                 {
-                    role: "system",
-                    content: {
-                        text: translation.Name_Prompt
-                    }
-                },
-                {
                     role: "user",
                     content: {
-                        text: firstMessage
+                        text: translation.Name_Prompt + "\n\n" + firstMessage
                     }
                 }
             ]

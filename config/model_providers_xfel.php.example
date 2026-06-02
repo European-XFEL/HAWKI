@@ -18,9 +18,9 @@ return [
     'default_image_quota' => 10, //images per month; comment out for unlimited
     
     'system_models' => [
-        'title_generator' => 'service-model',
-        'prompt_improver' => 'service-model',
-        'summarizer' => 'service-model',
+        'title_generator' => 'local-service-model',
+        'prompt_improver' => 'local-service-model',
+        'summarizer' => 'local-service-model',
     ],
     
     'providers' =>[
@@ -34,8 +34,8 @@ return [
             'streaming_time_limit' => 240,
             'time_limit' => 240,            
             'models' => [
-                //Service model - we do not want this model to use tools and streams
-                \App\Models\ModelConfiguration::abstractModel('service-model', 'Service model') //must keep Abstract 
+                //Service model - not using tools but sill sends data to the outside
+                \App\Models\ModelConfiguration::abstractModel('openai-service-model', 'OpenAI service model') //must keep Abstract 
                     ->modelName('gpt-4o-mini')
                     ->description('Service model for title_generator, prompt_improver, summarizer')
                     ->set('streamable', true) //must be true
@@ -87,6 +87,17 @@ return [
             'active' => true,
             'time_limit' => 240,
             'models' => [
+                //Local service model - not using tools and keep the data inside
+                \App\Models\ModelConfiguration::abstractModel('local-service-model', 'Local service model') //must keep Abstract 
+                    ->set('api_url', 'https://localhost:8889/v1/responses')
+                    ->description('Service model for title_generator, prompt_improver, summarizer')
+                    ->set('streamable', true) //must be true
+                    ->set('visible', false)
+                    ->set('unsafe_ssl', true)
+                    //->set('unsafe_ssl_host', true)
+                    ->get(),            
+            
+                //============================== normal models 
                 \App\Models\ModelConfiguration::abstractModel('xfel-internal-ollama-gpt-oss', 'gpt-oss-on-premise')
                     ->separator()
                     ->description('gpt OSS model host on-premise, comparable to gpt-4o-mini, and useful for summarizing sensitive information')
