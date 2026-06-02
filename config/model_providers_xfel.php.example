@@ -40,8 +40,6 @@ return [
                     ->description('Service model for title_generator, prompt_improver, summarizer')
                     ->set('streamable', true) //must be true
                     ->set('visible', false)
-                    ->set('unsafe_ssl', true)
-                    //->set('unsafe_ssl_host', true)
                     ->get(),
                 
                 //============================== normal models            
@@ -95,8 +93,11 @@ return [
                     ->description('Service model for title_generator, prompt_improver, summarizer')
                     ->set('streamable', true) //must be true
                     ->set('visible', false)
+                    ->set('unsafe_ssl', true)
+                    //->set('unsafe_ssl_host', true)
                     ->get(),            
             
+                //============================== normal models 
                 \App\Models\ModelConfiguration::abstractModel('xfel-internal-ollama-gpt-oss', 'gpt-oss-on-premise')
                     ->separator()
                     ->description('gpt OSS model host on-premise, comparable to gpt-4o-mini, and useful for summarizing sensitive information')
