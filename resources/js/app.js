@@ -23,7 +23,7 @@ window.hljs = hljs;
 import 'katex/dist/katex.min.css';
 import katex from 'katex';
 window.katex = katex;
-import renderMathInElement from 'katex/contrib/auto-render/auto-render.js';
+import renderMathInElement from 'katex/contrib/auto-render';
 window.renderMathInElement = renderMathInElement;
 
 import pako from 'pako';
