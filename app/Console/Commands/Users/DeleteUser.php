@@ -2,6 +2,7 @@
 
 namespace App\Console\Commands\Users;
 
+use App\Http\Controllers\ProfileController;
 use App\Models\PasskeyBackup;
 use App\Models\User;
 use Illuminate\Console\Command;
@@ -53,9 +54,10 @@ class DeleteUser extends Command
             return ['error' => 'No such user'];
         }
         
+        $profileCtrl = new ProfileController();
         DB::beginTransaction();
+        $profileCtrl->resetUserProfile($user);
         $user->delete();
-        PasskeyBackup::where('username', $username)->delete();
         DB::commit();
         
         return ['success' => 'Done'];
