@@ -32,7 +32,7 @@ function onSidebarButtonDown(pageID){
 }
 
 function redirectToModule(pageID){
-    window.location.href = `/${pageID}`;
+    window.location.href = appUrl(`/${pageID}`);
 }
 
 function setActiveSidebarButton(activeModule){
@@ -378,7 +378,7 @@ function checkWindowSize(thresholdWidth, thresholdHeight) {
 
 function setSessionCheckerTimer(time){
     setTimeout(() => {
-        fetch('/check-session')
+        fetch(appUrl('/check-session'))
             .then(response => response.json())
             .then(data => {
 

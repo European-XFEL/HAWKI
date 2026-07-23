@@ -56,6 +56,18 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Application Base Path
+    |--------------------------------------------------------------------------
+    |
+    | Set this when the application is exposed below a URL path such as
+    | https://example.test/ray. Do not include leading or trailing slashes.
+    |
+    */
+
+    'base_path' => trim(env('HAWKI_BASE_PATH', ''), '/'),
+
+    /*
+    |--------------------------------------------------------------------------
     | Application Timezone
     |--------------------------------------------------------------------------
     |

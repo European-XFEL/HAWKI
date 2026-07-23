@@ -91,7 +91,7 @@ class AuthenticationController extends Controller
 
             return response()->json([
                 'success' => true,
-                'redirectUri' => '/handshake',
+                'redirectUri' => app_url_path('handshake'),
             ]);
         }
         else{
@@ -101,7 +101,7 @@ class AuthenticationController extends Controller
 
             return response()->json([
                 'success' => true,
-                'redirectUri' => '/register',
+                'redirectUri' => app_url_path('register'),
             ]);
         }
     }
@@ -273,7 +273,7 @@ class AuthenticationController extends Controller
 
             return response()->json([
                 'success' => true,
-                'redirectUri' => '/chat',
+                'redirectUri' => app_url_path('chat'),
                 'userData' => $user
             ]);
 

@@ -130,7 +130,7 @@ class ProfileController extends Controller
 
             return response()->json([
                 'success' => true,
-                'redirectUri' => '/register',
+                'redirectUri' => app_url_path('register'),
             ]);
 
         }

@@ -83,7 +83,7 @@ async function onSendMessageToRoom(inputField) {
         threadID : activeThreadIndex,
     };
 
-    const submittedObj = await submitMessageToServer(messageObj, `/req/room/sendMessage/${activeRoom.slug}`)
+    const submittedObj = await submitMessageToServer(messageObj, appUrl(`/req/room/sendMessage/${activeRoom.slug}`))
     submittedObj.content = inputText;
 
     // console.log('submittedObj')
@@ -383,7 +383,7 @@ function updateTypingStatus() {
 
 function openRoomCreatorPanel(){
     activeRoom = null;
-    history.replaceState(null, '', `/groupchat`);
+    history.replaceState(null, '', appUrl(`/groupchat`));
     switchDyMainContent('room-creation');
 
     const lastActive = document.getElementById('rooms-list').querySelector('.selection-item.active');
@@ -418,11 +418,11 @@ function finishRoomCreation(){
 
     if(activeRoom){
         switchDyMainContent('chat');
-        history.replaceState(null, '', `/groupchat/${activeRoom.slug}`);
+        history.replaceState(null, '', appUrl(`/groupchat/${activeRoom.slug}`));
     }
     else{
         switchDyMainContent('group-welcome-panel');
-        history.replaceState(null, '', `/groupchat`);
+        history.replaceState(null, '', appUrl(`/groupchat`));
     }
 }
 
@@ -443,7 +443,7 @@ async function createNewRoom(){
     }
 
     try {
-        fetch('/req/room/createRoom', {
+        fetch(appUrl('/req/room/createRoom'), {
             method: "POST",
             headers: {
                 'Content-Type': 'application/json',
@@ -597,7 +597,7 @@ async function createAndSendInvitations(usersList, roomSlug){
 
 async function requestStoreInvitationsOnServer(invitations, slug){
     // Send the invitations to the server to store
-    await fetch(`/req/inv/store-invitations/${slug}`, {
+    await fetch(appUrl(`/req/inv/store-invitations/${slug}`), {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
@@ -609,7 +609,7 @@ async function requestStoreInvitationsOnServer(invitations, slug){
 
 async function sendInvitationEmail(mailContent){
     // Send the invitations to the server to store
-    await fetch(`/req/inv/sendExternInvitation`, {
+    await fetch(appUrl(`/req/inv/sendExternInvitation`), {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
@@ -623,7 +623,7 @@ async function sendInvitationEmail(mailContent){
 
 async function handleUserInvitations() {
     try{
-        const response = await fetch('/req/inv/requestUserInvitations', {
+        const response = await fetch(appUrl('/req/inv/requestUserInvitations'), {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',
@@ -673,7 +673,7 @@ async function handleTempLinkInvitation(tempLink){
 
     // GET INVITATION OBJECT
     try{
-        const response = await fetch(`/req/inv/requestInvitation/${slug}`, {
+        const response = await fetch(appUrl(`/req/inv/requestInvitation/${slug}`), {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',
@@ -699,7 +699,7 @@ async function handleTempLinkInvitation(tempLink){
 
 async function finishInvitationHandling(invitation_id, roomKey){
     // Send invitation_id to server to confirm successful decryption
-    const response = await fetch('/req/inv/roomInvitationAccept', {
+    const response = await fetch(appUrl('/req/inv/roomInvitationAccept'), {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
@@ -719,7 +719,7 @@ async function finishInvitationHandling(invitation_id, roomKey){
     }
 }
 
-NOTE:
+// NOTE:
     function openInvitationPanel(){
         const modal = document.querySelector('#add-member-modal');
         modal.querySelector('#user-search-bar').value = '';
@@ -753,7 +753,7 @@ function createRoomItem(roomData){
 async function loadRoom(btn=null, slug=null){
 
     if(rooms.length === 0){
-        history.replaceState(null, '', `/groupchat`);
+        history.replaceState(null, '', appUrl(`/groupchat`));
         switchDyMainContent('group-welcome-panel');
         return;
     }
@@ -772,7 +772,7 @@ async function loadRoom(btn=null, slug=null){
     btn.classList.add('active');
 
     switchDyMainContent('chat');
-    history.replaceState(null, '', `/groupchat/${slug}`);
+    history.replaceState(null, '', appUrl(`/groupchat/${slug}`));
 
     const roomData = await RequestRoomContent(slug);
     if(!roomData){
@@ -866,7 +866,7 @@ function loadRoomMembers(roomData) {
 
 async function RequestRoomContent(slug){
 
-    url = `/req/room/${slug}`;
+    url = appUrl(`/req/room/${slug}`);
     const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
     try{
         const response = await fetch(url, {
@@ -935,7 +935,7 @@ async function searchUser(searchBar) {
 
     if (query.length > 2) { // Start searching after 3 characters
         try {
-            const response = await fetch(`/req/search?query=${encodeURIComponent(query)}`);
+            const response = await fetch(appUrl(`/req/search?query=${encodeURIComponent(query)}`));
             const data = await response.json();
 
             if (data.success) {
@@ -1235,7 +1235,7 @@ async function requestDeleteRoom() {
         return;
     }
 
-    const url = `/req/room/removeRoom/${activeRoom.slug}`;
+    const url = appUrl(`/req/room/removeRoom/${activeRoom.slug}`);
     const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
 
     try {
@@ -1262,7 +1262,7 @@ async function requestDeleteRoom() {
             }
             else{
                 switchDyMainContent('group-welcome-panel');
-                history.replaceState(null, '', `/groupchat`);
+                history.replaceState(null, '', appUrl(`/groupchat`));
             }
 
 
@@ -1282,7 +1282,7 @@ async function leaveRoom(){
         return;
     }
 
-    const url = `/req/room/leaveRoom/${activeRoom.slug}`;
+    const url = appUrl(`/req/room/leaveRoom/${activeRoom.slug}`);
     const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
 
     try {
@@ -1318,7 +1318,7 @@ async function removeMemberFromRoom(username){
         return false;
     }
 
-    const url = `/req/room/removeMember/${activeRoom.slug}`;
+    const url = appUrl(`/req/room/removeMember/${activeRoom.slug}`);
     const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
 
     try {
@@ -1368,7 +1368,7 @@ function selectRoomAvatar(btn, upload = false){
 
 async function uploadRoomAvatar(imgBase64){
     // console.log(activeRoom)
-    const url = `/req/room/updateInfo/${activeRoom.slug}`;
+    const url = appUrl(`/req/room/updateInfo/${activeRoom.slug}`);
     const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
 
     try {
@@ -1404,7 +1404,7 @@ async function updateRoomInfo(slug, attributes){
     }
 
     const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
-    const url = `/req/room/updateInfo/${slug}`;
+    const url = appUrl(`/req/room/updateInfo/${slug}`);
 
     let requestObj = {};
     if(attributes.systemPrompt) requestObj.system_prompt = attributes.systemPrompt;

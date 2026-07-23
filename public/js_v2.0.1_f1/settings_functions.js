@@ -101,12 +101,12 @@ function SwitchDarkMode(isSet){
 
     if(darkMode === 'enabled'){
         document.documentElement.className = 'darkMode';
-        icon.setAttribute('src', '/img/moon.svg');
+        icon.setAttribute('src', appUrl('/img/moon.svg'));
         tog.classList.add('active');
     }
     else{
         document.documentElement.className = 'lightMode';
-        icon.setAttribute('src', '/img/sun.svg');
+        icon.setAttribute('src', appUrl('/img/sun.svg'));
         tog.classList.remove('active');
     }
     setupLoginBackgroud();
@@ -116,7 +116,7 @@ async function setupLoginBackgroud(){
     const loginBg = document.querySelector('.image_preview_container');
     const loginBgCredit = document.querySelector('.video-credits')
 
-    const videosUrl = '../bg_videos'
+    const videosUrl = appUrl('/bg_videos')
     let videosIndex;
     
     await fetch(`${videosUrl}/bg_videos.json`)
@@ -228,7 +228,7 @@ function changeLanguage(lang) {
     // Retrieve CSRF token from meta tag
     const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
     // console.log(lang);
-    fetch('/req/changeLanguage', {
+    fetch(appUrl('/req/changeLanguage'), {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',

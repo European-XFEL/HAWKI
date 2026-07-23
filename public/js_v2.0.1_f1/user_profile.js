@@ -43,7 +43,7 @@ function selectProfileAvatar(btn, upload = false){
 
 async function uploadProfileAvatar(imgBase64){
     
-    const url = `/req/profile/update`;
+    const url = appUrl(`/req/profile/update`);
     const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
 
     try {
@@ -107,7 +107,7 @@ async function updateUserInformation(){
 
     const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
     try {
-        const response = await fetch(`/req/profile/update`, {
+        const response = await fetch(appUrl(`/req/profile/update`), {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',

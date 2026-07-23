@@ -16,4 +16,11 @@ class ExampleTest extends TestCase
 
         $response->assertStatus(200);
     }
+
+    public function test_chat_uses_the_configured_application_base_path(): void
+    {
+        $response = $this->get('/chat');
+
+        $response->assertRedirect('/login');
+    }
 }

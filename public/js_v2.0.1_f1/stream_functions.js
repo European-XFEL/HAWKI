@@ -62,7 +62,7 @@ async function postData(data) {
     abortCtrl = new AbortController();
     const signal = abortCtrl.signal;
 
-    const url = data.broadcast ? `/req/room/streamAI/${activeRoom.slug}` : '/req/streamAI'
+    const url = appUrl(data.broadcast ? `/req/room/streamAI/${activeRoom.slug}` : '/req/streamAI')
     const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
 
     try{
@@ -368,4 +368,3 @@ function convertMsgObjToLog(messages){
 
     return list;
 }
-

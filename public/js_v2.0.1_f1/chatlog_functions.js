@@ -302,7 +302,7 @@ function markAllAsRead(){
 }
 
 async function sendReadStatToServer(message_id){
-    url = `/req/room/readstat/${activeRoom.slug}`
+    url = appUrl(`/req/room/readstat/${activeRoom.slug}`)
     const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
     try {
         const response = await fetch(url, {
@@ -473,5 +473,4 @@ function scrollPanelToLast(panel){
 }
 
 //#endregion
-
 

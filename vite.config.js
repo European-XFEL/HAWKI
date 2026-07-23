@@ -1,4 +1,4 @@
-import {defineConfig} from 'vite';
+import {defineConfig, loadEnv} from 'vite';
 import laravel from 'laravel-vite-plugin';
 
 /**
@@ -27,12 +27,19 @@ if (process.env.DOCKER_PROJECT_DOMAIN) {
     }
 }
 
-export default defineConfig({
-    plugins: [
-        laravel({
-            input: ['resources/css/app.css', 'resources/js/app.js'],
-            refresh: true,
-        }),
-    ],
-    server: serverConfig
+export default defineConfig(({mode}) => {
+    const env = loadEnv(mode, process.cwd(), '');
+    const basePath = (env.HAWKI_BASE_PATH ?? '').replace(/^\/+|\/+$/g, '');
+    const buildBase = `/${[basePath, 'build'].filter(Boolean).join('/')}/`;
+
+    return {
+        base: buildBase,
+        plugins: [
+            laravel({
+                input: ['resources/css/app.css', 'resources/js/app.js'],
+                refresh: true,
+            }),
+        ],
+        server: serverConfig
+    };
 });

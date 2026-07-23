@@ -507,9 +507,9 @@ function exportPrintPage(){
         slug = activeRoom.slug;
     }
 
-    history.replaceState(null, '', '/');
+    history.replaceState(null, '', appUrl('/'));
 
-    const url = `print/${activeModule}/${slug}`;
+    const url = appUrl(`/print/${activeModule}/${slug}`);
     window.open(url, '_blank');
 
 }
@@ -661,7 +661,5 @@ function generateMessageElements(messageObj){
     formatHljs(messageElement);
     return  messageElement;
 }
-
-
 
 
