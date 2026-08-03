@@ -87,7 +87,7 @@ async function postData(data) {
     }
 }
 
-async function processStream(stream, onData) {
+async function processStream(stream, onData, notifyContentReceived = true) {
     if (!stream) {
         return;
     }
@@ -118,7 +118,7 @@ async function processStream(stream, onData) {
                         const data = JSON.parse(part);
                         //start getting data from stream
                         //empty content looks like {"text":""} so for performance optimization we consider everything longer
-                        if(!_contentReceived && (data.content.length > 12 || data.isDone)){  
+                        if(notifyContentReceived && !_contentReceived && (data.content.length > 12 || data.isDone)){
                             _contentReceived = true;
                             contentReceived(data);    
                         }

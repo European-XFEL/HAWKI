@@ -513,12 +513,9 @@ async function initNewConv(messageObj){
     const convItem = createChatItem();
     convItem.classList.add('active');
 
-    //create conversation name.
-    const convName = await generateChatName(messageObj.content, convItem);
-    // console.log(convName);
     //submit conv to server.
     // after the server has accepted Submission conv data will be updated.
-    const convData = await submitConvToServer(convName);
+    const convData = await submitConvToServer('New Chat');
 
     //assign Slug to conv Item.
     convItem.setAttribute('slug', convData.slug);
@@ -571,6 +568,18 @@ async function initNewConv(messageObj){
     updateMessageElement(messageElement, submittedObj);
     // unlock message controls.
     activateMessageControls(messageElement);
+
+    //create conversation name in the background.
+    generateChatName(messageObj.content, convItem)
+        .then(convName => fetch(`/req/conv/editConvTitle/${convData.slug}`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+            },
+            body: JSON.stringify({ conv_name: convName })
+        }))
+        .catch(error => console.error('Failed to generate chat title:', error));
 
 }
 
@@ -666,7 +675,7 @@ async function generateChatName(firstMessage, convItem) {
                         resolve(convName); // Resolve the promise with convName
                     }
                 };
-                processStream(response.body, onData);
+                processStream(response.body, onData, false);
             })
             .catch(error => reject(error));
     });
