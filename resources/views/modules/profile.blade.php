@@ -46,11 +46,13 @@
                 @if(config('sanctum.allow_user_token') && config('sanctum.allow_external_communication'))
                     <button class="btn-md-txt" onclick="toggleAccessTokensPanel(true)">{{ $translation["AccessTokens"] }}</button>
                 @else
+                    {{-- 
                     <p class="gray-text zero-v-margin">{{ $translation["AccessTokens"] }}</p>
                     <p class="sub-descript">{{ $translation["Api_Warning"] }}</p>
+                    --}}
                 @endif
 
-                <button class="btn-md-txt red-text top-gap-2" onclick="clearPersonalData()">{{ $translation["ClearLocalData"] }}</button>
+                <button class="btn-lg-fill" onclick="clearPersonalData()">{{ $translation["ClearLocalData"] }}</button>
             </div>
 
         </div>
