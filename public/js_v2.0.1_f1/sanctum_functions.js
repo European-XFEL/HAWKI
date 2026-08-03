@@ -26,7 +26,7 @@ async function toggleAccessTokensPanel(active){
 async function fetchUserTokens(){
     const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
     try {
-        const response = await fetch(`/req/profile/fetch-tokens`, {
+        const response = await fetch(appUrl(`/req/profile/fetch-tokens`), {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',
@@ -83,7 +83,7 @@ async function addNewToken(){
 async function requestNewToken(name){
     const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
     try {
-        const response = await fetch(`/req/profile/create-token`, {
+        const response = await fetch(appUrl(`/req/profile/create-token`), {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -130,7 +130,7 @@ async function requestTokenRevoke(btn){
     const tokenId = item.dataset.index;
     const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
     try {
-        const response = await fetch(`/req/profile/revoke-token`, {
+        const response = await fetch(appUrl(`/req/profile/revoke-token`), {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',

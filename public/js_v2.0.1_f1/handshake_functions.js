@@ -103,7 +103,7 @@ async function checkPasskey(){
     try {
         const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
         // Send the registration data to the server
-        const response = await fetch('/req/profile/backupPassKey', {
+        const response = await fetch(appUrl('/req/profile/backupPassKey'), {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -213,7 +213,7 @@ async function completeRegistration() {
         const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
 
         // Send the registration data to the server
-        const response = await fetch('/req/complete_registration', {
+        const response = await fetch(appUrl('/req/complete_registration'), {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -262,7 +262,7 @@ async function verifyEnteredPassKey(provider){
         await setPassKey(enteredKey);
         await syncKeychain(serverKeychainCryptoData);
         // console.log('keychain synced');
-        window.location.href = '/chat';
+        window.location.href = appUrl('/chat');
     }
     else{
         errorMessage.innerText = "Failed to verify passkey. Please try again.";
@@ -385,7 +385,7 @@ async function requestPasskeyBackup(){
         try {
             const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
             // Send the registration data to the server
-            const response = await fetch('/req/profile/requestPasskeyBackup', {
+            const response = await fetch(appUrl('/req/profile/requestPasskeyBackup'), {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json',
@@ -414,7 +414,7 @@ async function requestPasskeyBackup(){
 
 async function redirectToChat(){
     await syncKeychain(serverKeychainCryptoData);
-    window.location.href = '/chat';
+    window.location.href = appUrl('/chat');
 }
 
 
@@ -422,7 +422,7 @@ async function requestProfileReset(){
     try {
         const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
         // Send the registration data to the server
-        const response = await fetch('/req/profile/reset', {
+        const response = await fetch(appUrl('/req/profile/reset'), {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',

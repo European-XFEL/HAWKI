@@ -4,6 +4,8 @@
     </IfModule>
 
     RewriteEngine On
+    #uncomment and change for subfolder instalation
+    #RewriteBase /legacy/
 
     # Handle Authorization Header
     RewriteCond %{HTTP:Authorization} .

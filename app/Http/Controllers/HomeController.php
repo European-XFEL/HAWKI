@@ -42,8 +42,19 @@ class HomeController extends Controller
         $translation = $this->languageController->getTranslation();
         $settingsPanel = (new SettingsController())->initialize();
 
-        // get the first part of the path if there's a slug.
-        $requestModule = explode('/', $request->path())[0];
+        // Remove the configured deployment prefix before resolving the module.
+        $pathSegments = $request->segments();
+        $basePath = trim((string) config('app.base_path'), '/');
+
+        if ($basePath !== '' && ($pathSegments[0] ?? null) === $basePath) {
+            array_shift($pathSegments);
+        }
+
+        $requestModule = $pathSegments[0] ?? null;
+
+        if (! in_array($requestModule, ['chat', 'groupchat', 'profile'], true)) {
+            abort(404);
+        }
 
         $convController = new AiConvController();
         $convs = $convController->getUserConvs(request());
@@ -151,4 +162,3 @@ class HomeController extends Controller
         return view('layouts.dataprotection', compact('translation'));
     }
 }
-

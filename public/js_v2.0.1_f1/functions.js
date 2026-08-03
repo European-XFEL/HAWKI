@@ -20,7 +20,7 @@ async function setOverlay(activation, smooth = true) {
 
 async function logout(){
     await setOverlay(true, true);
-    window.location.href = '/logout';
+    window.location.href = appUrl('/logout');
 }
 
 

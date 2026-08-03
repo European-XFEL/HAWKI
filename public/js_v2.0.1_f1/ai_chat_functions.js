@@ -250,7 +250,7 @@ async function sendMessageConv(inputField) {
             'completion': true,
             'auxiliaries': auxiliaries
         }
-        const submittedObj = await submitMessageToServer(requestObj, `/req/conv/sendMessage/${activeConv.slug}`);
+        const submittedObj = await submitMessageToServer(requestObj, appUrl(`/req/conv/sendMessage/${activeConv.slug}`));
         submittedObj.content = messageObj.content;
         submittedObj.username = userInfo.username;
         // these need to be the unencrypted auxiliaries
@@ -466,12 +466,12 @@ async function buildRequestObjectForAiConv(msgAttributes, messageElement = null,
 
             if(isUpdate){
                 requestObj.message_id = messageElement.id;
-                await requestMsgUpdate(requestObj, messageElement, `/req/conv/updateMessage/${activeConv.slug}`)
+                await requestMsgUpdate(requestObj, messageElement, appUrl(`/req/conv/updateMessage/${activeConv.slug}`))
             }
             else{
                 requestObj.isAi = true;
                 //console.log('checkpoint')
-                const submittedObj = await submitMessageToServer(requestObj, `/req/conv/sendMessage/${activeConv.slug}`);
+                const submittedObj = await submitMessageToServer(requestObj, appUrl(`/req/conv/sendMessage/${activeConv.slug}`));
                 if(submittedObj.imageQuota){
                     updateQuotaInfo(submittedObj);    
                 }
@@ -504,7 +504,7 @@ async function initNewConv(messageObj){
     // empty chatlog
     clearChatlog();
     // 
-    history.replaceState(null, '', `/chat`);
+    history.replaceState(null, '', appUrl(`/chat`));
 
     //add new message Element.
     const messageElement = addMessageToChatlog(messageObj, false);
@@ -520,7 +520,7 @@ async function initNewConv(messageObj){
     //assign Slug to conv Item.
     convItem.setAttribute('slug', convData.slug);
     //update URL
-    history.replaceState(null, '', `/chat/${convData.slug}`);
+    history.replaceState(null, '', appUrl(`/chat/${convData.slug}`));
 
     //update active conv cache.
     activeConv = convData;
@@ -555,7 +555,7 @@ async function initNewConv(messageObj){
         'completion': true,
         'auxiliaries': auxiliaries,
     }
-    const submittedObj = await submitMessageToServer(requestObj, `/req/conv/sendMessage/${activeConv.slug}`);
+    const submittedObj = await submitMessageToServer(requestObj, appUrl(`/req/conv/sendMessage/${activeConv.slug}`));
 
     // submitted message content is encrypted.
     // since we already have it we assign the unencrypted from messageObj.
@@ -588,7 +588,7 @@ function startNewChat(){
     chatlogElement.classList.add('start-state');
     clearChatlog();
     setModel(defaultModel);
-    history.replaceState(null, '', `/chat`);
+    history.replaceState(null, '', appUrl(`/chat`));
 
     const systemPromptFields = document.querySelectorAll('.system_prompt_field');
     systemPromptFields.forEach(field => {
@@ -702,7 +702,7 @@ async function submitConvToServer(convName) {
     }
 
     try {
-        const response = await fetch('/req/conv/createChat', {
+        const response = await fetch(appUrl('/req/conv/createChat'), {
             method: "POST",
             headers: {
                 'Content-Type': 'application/json',
@@ -747,7 +747,7 @@ async function loadConv(btn=null, slug=null){
 
     switchDyMainContent('chat');
 
-    history.replaceState(null, '', `/chat/${slug}`);
+    history.replaceState(null, '', appUrl(`/chat/${slug}`));
     const mainLoader = document.getElementById("main_loader");
     mainLoader.style.display = "flex";
 
@@ -804,7 +804,7 @@ async function loadConv(btn=null, slug=null){
 
 async function RequestConvContent(slug){
 
-    url = `/req/conv/${slug}`;
+    url = appUrl(`/req/conv/${slug}`);
     const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
 
     try{
@@ -838,7 +838,7 @@ async function requestDeleteConv() {
         return;
     }
 
-    const url = `/req/conv/removeConv/${activeConv.slug}`;
+    const url = appUrl(`/req/conv/removeConv/${activeConv.slug}`);
     const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
 
     try {
@@ -864,7 +864,7 @@ async function requestDeleteConv() {
             else{
                 clearChatlog();
                 chatlogElement.classList.remove('active');
-                history.replaceState(null, '', `/chat`);
+                history.replaceState(null, '', appUrl(`/chat`));
             }
 
         } else {
@@ -900,7 +900,7 @@ async function editConvTitle() {
         return;
     }
 
-    const url = `/req/conv/editConvTitle/${activeConv.slug}`;
+    const url = appUrl(`/req/conv/editConvTitle/${activeConv.slug}`);
     const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
     const newTitle = document.getElementById("modal-input").value; 
 

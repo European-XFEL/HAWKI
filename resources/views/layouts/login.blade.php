@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1.0, user-scalable=no">
 	<meta name="csrf-token" content="{{ csrf_token() }}">
+    @include('partials.app-base-path')
 
     <title>{{ env('APP_NAME') }}</title>
 
@@ -56,7 +57,7 @@
 
     <main>
         <div class="center-text" style="padding-top: 50px;">
-            <img src="{{url('xfel/xfel_logo.png')}}" alt="European XFEL">
+            <img src="{{ asset('xfel/xfel_logo.png') }}" alt="European XFEL">
             <h1>RAY - Reasoning Assistant for You</h1>
         </div>
     </main>
@@ -114,7 +115,7 @@
             formData.append("password", document.getElementById("password").value);
             const csrfToken = document.getElementById('loginForm-LDAP').querySelector('input[name="_token"]').value;
 
-            const response = await fetch('/req/login-ldap', {
+            const response = await fetch(appUrl('/req/login-ldap'), {
                 method: "POST",
                 headers: {
                     "X-CSRF-TOKEN": csrfToken

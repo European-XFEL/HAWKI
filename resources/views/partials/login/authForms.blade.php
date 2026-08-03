@@ -5,7 +5,7 @@
     </div>
 @endif
 @if($authenticationMethod === 'OIDC')
-    <form class="form-column" method="post" id="loginForm-OIDC" action="/req/login-oidc">
+    <form class="form-column" method="post" id="loginForm-OIDC" action="{{ app_url_path('req/login-oidc') }}">
         @csrf
         <button id="loginButton" class="btn-lg align-end top-gap-1">{{ $translation['Login'] }}</button>
     </form>
@@ -29,7 +29,7 @@
         <button id="loginButton" class="btn-lg-fill align-end top-gap-1" type="button" onclick="LoginLDAP()">{{ $translation['Login'] }}</button>
     </div>
 @elseif($authenticationMethod === 'Shibboleth')
-    <form class="form-column" method="post" id="loginForm-Shib" action="/req/login-shibboleth">
+    <form class="form-column" method="post" id="loginForm-Shib" action="{{ app_url_path('req/login-shibboleth') }}">
         @csrf
         <button id="loginButton" class="btn-lg-fill align-end top-gap-1" type="submit" name="submit">{{ $translation['Login'] }}</button >
     </form>

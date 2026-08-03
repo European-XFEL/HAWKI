@@ -83,7 +83,7 @@
         if(await getPassKey()){
             console.log('keychain synced');
             await syncKeychain(serverKeychainCryptoData);
-            window.location.href = '/chat';
+            window.location.href = appUrl('/chat');
         }
         else{
             console.log('opening passkey panel');

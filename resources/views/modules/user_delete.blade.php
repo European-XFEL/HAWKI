@@ -10,7 +10,7 @@
 					Do this ONLY if you lost both the <i>Datakey</i> and the <i>Recovery code</i>.<br>
 					After the deletion, please log in again and follow the instructions to set up a new Datakey and Recovery code.
 				</div>
-				<form method="post" class="center-text" action="{{url('user/delete')}}">
+				<form method="post" class="center-text" action="{{ app_url_path('user/delete') }}">
 					@csrf
 					<div>type your username to confirm</div>
 					<input name="username" id="username" type="text">

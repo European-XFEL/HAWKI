@@ -125,7 +125,7 @@ async function updateAiChatSystemPrompt(inputPrompt){
         'tag':cryptSystemPrompt.tag,
     });
 
-    const url = `/req/conv/updateInfo/${activeConv.slug}`;
+    const url = appUrl(`/req/conv/updateInfo/${activeConv.slug}`);
     const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
 
     try {

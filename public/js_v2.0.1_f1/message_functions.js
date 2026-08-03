@@ -731,11 +731,11 @@ async function confirmEditMessage(provider){
 
     switch(activeModule){
         case('chat'):
-            url = `/req/conv/updateMessage/${activeConv.slug}`
+            url = appUrl(`/req/conv/updateMessage/${activeConv.slug}`)
             key = await keychainGet('aiConvKey');
         break;
         case('groupchat'):
-            url = `/req/room/updateMessage/${activeRoom.slug}`
+            url = appUrl(`/req/room/updateMessage/${activeRoom.slug}`)
             const roomKey = await keychainGet(`${activeRoom.slug}`);
 
             if(messageElement.dataset.role === 'assistant'){

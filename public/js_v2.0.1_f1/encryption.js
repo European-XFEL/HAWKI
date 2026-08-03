@@ -495,7 +495,7 @@ async function backupKeychainOnServer(encKeychainData){
     }
 
     try{
-        const response = await fetch('/req/backupKeychain', {
+        const response = await fetch(appUrl('/req/backupKeychain'), {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -632,7 +632,7 @@ async function fetchServerSalt(saltLabel) {
     
     try {
         // Make a GET request to the server with saltlabel in the headers
-        const response = await fetch('/req/crypto/getServerSalt', {
+        const response = await fetch(appUrl('/req/crypto/getServerSalt'), {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',  // Optional for GET, but useful to include
