@@ -64,6 +64,10 @@ function clearChatlog(){
 
 
 async function submitMessageToServer(requestObj, url){
+    try { //send user it to check if local JS data fits server side session data
+        requestObj._user_id=userInfo.id
+    } catch (error) {}
+    
     try {
         const response = await fetch(url, {
             method: "POST",
@@ -80,8 +84,13 @@ async function submitMessageToServer(requestObj, url){
             return data.messageData;
             // updateMessageElement(messageElement, data.messageData);
         } else {
-            // Handle unexpected response
-            console.error('Unexpected response:', data);
+            if (response.status === 419) {
+                alert(data.error);
+                window.location.href = appUrl('/chat');
+            }
+            else{
+                console.error('Unexpected response:', data);
+            }
         }
     } catch (error) {
         console.error('There was a problem with the operation:', error);
