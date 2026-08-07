@@ -6,9 +6,6 @@ const encryption_failed_txt = 'Encryption error. PLEASE MAKE SURE YOU KNOW YOUR 
     'changed your Datakey in another browser or device. If you click “OK”, the outdated Datakey will be removed from this browser and you will be logged out. ' +
     'You will be asked to enter your current Datakey the next time you log in. '
 
-const encryption_failed_txt2 = 'Encryption error. The chat data can not be decrypted. We strongly recommend to relogin and if it does not help - contact IT. ' +
-    'Ignoring this error may cause the loss of chat data.'
-
 //#region Key Creation
 async function generateKey() {
     const key = await window.crypto.subtle.generateKey(
@@ -136,7 +133,6 @@ async function encryptWithSymKey(encKey, data, isKey = false) {
         };
     } catch (error) {
         console.error("Encryption failed:", error.message, error);
-        alert(encryption_failed_txt2);
         throw error; // Rethrow the error for further handling
     }
 }
@@ -170,7 +166,6 @@ async function decryptWithSymKey(encKey, ciphertext, iv, tag, isKey = false) {
         return isKey ? new Uint8Array(decryptedData) : new TextDecoder().decode(decryptedData);
     } catch (error) {
         console.error("Decryption failed:", error.message);
-        alert(encryption_failed_txt2);
         throw new Error("Decryption failed: " + error.message);
     }
 }

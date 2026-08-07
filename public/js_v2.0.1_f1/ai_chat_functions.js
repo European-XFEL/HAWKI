@@ -747,6 +747,8 @@ async function loadConv(btn=null, slug=null){
     if(!btn) btn = document.querySelector(`.selection-item[slug="${slug}"]`);
     // switchDyMainContent('chat');
 
+    const chatName = btn.querySelector(".label")?.textContent?.trim() || "";
+
     const lastActive = document.getElementById('chats-list').querySelector('.selection-item.active');
     if(lastActive){
         lastActive.classList.remove('active')
@@ -773,7 +775,21 @@ async function loadConv(btn=null, slug=null){
 
     const convKey = await keychainGet('aiConvKey');
     const systemPromptObj = JSON.parse(convData.system_prompt);
-    const systemPrompt = await decryptWithSymKey(convKey, systemPromptObj.ciphertext, systemPromptObj.iv, systemPromptObj.tag, false);
+
+    let systemPrompt;
+    try{
+        systemPrompt = await decryptWithSymKey(convKey, systemPromptObj.ciphertext, systemPromptObj.iv, systemPromptObj.tag, false);
+    }
+    catch (error){
+        if (error.message.includes('Decryption failed')){
+            alert('Encryption error. The chat "'+chatName+'" can not be decrypted. We strongly recommend to relogin and if it does not help - contact IT. ' +
+            'Ignoring this error may cause the loss of the chat data.');
+            window.location.href = appUrl('/chat');
+        }
+        else{
+            throw new Error(error.message);
+        }
+    }
 
     activeConv.system_prompt = systemPrompt;
 
@@ -791,7 +807,21 @@ async function loadConv(btn=null, slug=null){
         // console.log(msg.content);
         const auxiliaries = msg.auxiliaries ?? []
         for (const aux of auxiliaries) {
-            const decryptedContent =  await decryptWithSymKey(convKey, aux.content, aux.iv, aux.tag);
+            let decryptedContent;
+            try{
+                decryptedContent =  await decryptWithSymKey(convKey, aux.content, aux.iv, aux.tag);
+            }
+            catch (error){
+                if (error.message.includes('Decryption failed')){
+                    alert('Error. The chat "'+chatName+'" contains some files which can not be retrieved. We strongly recommend to relogin and if it does not help - contact IT. ' +
+                        'Ignoring this error may cause the loss of the chat data.');
+                    window.location.href = appUrl('/chat');
+                }
+                else{
+                    throw new Error(error.message);
+                }
+            }
+            
             aux.content = decryptedContent;
         }
     };
