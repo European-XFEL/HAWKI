@@ -47,6 +47,10 @@ class AiConvController extends Controller
         if (!$request['conv_name']) {
             $validatedData['conv_name'] = 'New Chat';
         }
+        
+        if($request->_user_id && $request->_user_id != Auth::id()){
+            return response()->json(['error' => 'Page expired and will be refreshed.'], 419);
+        }
 
         $user = Auth::user();
 
@@ -236,6 +240,10 @@ class AiConvController extends Controller
         $conv = AiConv::where('slug', $slug)->firstOrFail();
         if ($conv->user_id !== Auth::id()) {
             return response()->json(['error' => 'Access denied'], 403);
+        }
+        
+        if($request->_user_id && $request->_user_id != Auth::id()){
+            return response()->json(['error' => 'Page expired and will be refreshed.'], 419);
         }
 
         $user = $validatedData['isAi'] ? User::find(1) : Auth::user();

@@ -701,6 +701,11 @@ async function submitConvToServer(convName) {
         system_prompt: systemPromptStr
     }
 
+    try { //send user it to check if local JS data fits server side session data
+        requestObject._user_id=userInfo.id
+    } catch (error) {}
+
+
     try {
         const response = await fetch(appUrl('/req/conv/createChat'), {
             method: "POST",
@@ -716,8 +721,13 @@ async function submitConvToServer(convName) {
         if (data.success) {
             return data.conv;
         } else {
-            // Handle unexpected response
-            console.error('Unexpected response:', data);
+            if (response.status === 419) {
+                alert(data.error);
+                window.location.href = appUrl('/chat');
+            }
+            else{
+                console.error('Unexpected response:', data);
+            }
         }
     } catch (error) {
         console.error('There was a problem with the fetch operation:', error);
