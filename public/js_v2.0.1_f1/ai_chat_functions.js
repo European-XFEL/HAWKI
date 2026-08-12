@@ -813,7 +813,7 @@ async function loadConv(btn=null, slug=null){
             }
             catch (error){
                 if (error.message.includes('Decryption failed')){
-                    alert('Error. The chat "'+chatName+'" contains some files which can not be retrieved. We strongly recommend to relogin and if it does not help - contact IT. ' +
+                    alert('Error. The chat "'+chatName+'" contains some files which cannot be retrieved. We strongly recommend to log out and in again, and if it does not help, to contact IT-support. ' +
                         'Ignoring this error may cause the loss of the chat data.');
                     window.location.href = appUrl('/chat');
                 }
