@@ -782,7 +782,7 @@ async function loadConv(btn=null, slug=null){
     }
     catch (error){
         if (error.message.includes('Decryption failed')){
-            alert('Encryption error. The chat "'+chatName+'" can not be decrypted. We strongly recommend to relogin and if it does not help - contact IT. ' +
+            alert('Encryption error. The chat "'+chatName+'" cannot be decrypted. We strongly recommend to log out and in again, and if this does not help, to contact IT-support. ' +
             'Ignoring this error may cause the loss of the chat data.');
             window.location.href = appUrl('/chat');
         }
