@@ -2,6 +2,7 @@
 
 namespace App\Providers;
 
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\ServiceProvider;
 
 use App\Http\Middleware\RegistrationAccess;
@@ -52,6 +53,17 @@ class AppServiceProvider extends ServiceProvider
     {
         if(env('PHP_ERRORS') !== null){
             error_reporting(eval('return '.env('PHP_ERRORS').' ;'));    
-        }        
+        }
+        
+        if (env('DB_ROUTE_LOG', false) && config('app.env') != 'production') {
+            DB::listen(function (\Illuminate\Database\Events\QueryExecuted $query) {
+                \Log::info('database route', [
+                    'route' => $query->readWriteType,
+                    'sql' => $query->sql,
+                    'duration_ms' => $query->time,
+                ]);
+            });
+        }
+        
     }
 }
