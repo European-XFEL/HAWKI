@@ -58,7 +58,7 @@ class LdapService
             }
             
             Log::debug('050');
-            Log::debug($sr);
+            //Log::debug($sr);
             // Get first entry from search results
             $entryId = ldap_first_entry($ldapConn, $sr);
             if (!$entryId) {
