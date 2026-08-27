@@ -52,6 +52,8 @@ class AuthenticationController extends Controller
     /// Redirect to Handshake or Create Registration Access and redirect to Registration
     public function ldapLogin(Request $request)
     {
+        Log::debug('ldapLogin');
+        
         $request->validate([
             'account' => 'required|string',
             'password' => 'required|string',
@@ -67,12 +69,15 @@ class AuthenticationController extends Controller
 
         if(!$authenticatedUserInfo) {
             if($this->authMethod === 'LDAP'){
+                Log::debug('$this->ldapService->authenticate');
                 $authenticatedUserInfo = $this->ldapService->authenticate($username, $password);
             }
         }
 
         // If Login Failed
         if (!$authenticatedUserInfo) {
+            Log::debug('!$authenticatedUserInfo');
+            
             return response()->json([
                 'success' => false,
                 'message' => 'Login Failed!',
@@ -81,9 +86,9 @@ class AuthenticationController extends Controller
 
         $username = $authenticatedUserInfo['username'];
         $user = User::where('username', $username)->first();
-
-
-
+        
+        
+        Log::debug('user' . json_encode($user));
         $redirectUri = '';
         // If first time on HAWKI
         if($user && $user->isRemoved === 0){
