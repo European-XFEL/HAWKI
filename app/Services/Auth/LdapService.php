@@ -27,6 +27,7 @@ class LdapService
                 return false;
             }
             
+            Log::debug('010');
             // bypassing certificate validation
             ldap_set_option(NULL, LDAP_OPT_X_TLS_REQUIRE_CERT, LDAP_OPT_X_TLS_NEVER);
             // Connect to LDAP server
@@ -35,17 +36,20 @@ class LdapService
             if (!$ldapConn) {
                 return false;
             }
-
+            
+            Log::debug('020');
             // Set LDAP protocol version
             if (!ldap_set_option($ldapConn, LDAP_OPT_PROTOCOL_VERSION, 3)) {
                 return false;
             }
-        
+            
+            Log::debug('030');
             // Bind to LDAP server
             if ($ldap_binddn && !@ldap_bind($ldapConn, $ldap_binddn, $ldap_bindpw)) {
                 return false;
             }
-
+            
+            Log::debug('040');
             // Search LDAP for user
             $filter = str_replace("username", $username, $ldap_filter);
             $sr = ldap_search($ldapConn, $ldap_base, $filter);
@@ -53,18 +57,21 @@ class LdapService
                 return false;
             }
             
+            Log::debug('050');
             // Get first entry from search results
             $entryId = ldap_first_entry($ldapConn, $sr);
             if (!$entryId) {
                 return false;
             }
             
+            Log::debug('060');
             // Get DN from entry
             $userDn = ldap_get_dn($ldapConn, $entryId);
             if (!$userDn) {
                 return false;
             }
             
+            Log::debug('070');
             // Bind with user DN and password
             $passValid = ldap_bind($ldapConn, $userDn, $password); 
             if (!$passValid) {
@@ -72,8 +79,9 @@ class LdapService
             }
             $info = ldap_get_entries($ldapConn, $sr);
             ldap_close($ldapConn);
-
-
+            
+            
+            Log::debug('080');
             $userInfo = [];
             foreach ($ldap_attributeMap as $appAttr => $ldapAttr) {
                 if (isset($info[0][$ldapAttr][0])) {
@@ -82,7 +90,8 @@ class LdapService
                     $userInfo[$appAttr] = 'Unknown';
                 }
             }
-
+            
+            Log::debug('090');
             // Example specific logic for display name
             if (isset($userInfo['displayname'])) {
                 $parts = explode(", ", $userInfo['displayname']);
